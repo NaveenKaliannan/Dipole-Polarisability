@@ -41,12 +41,12 @@ int main ( int argc, char** argv )
   vector<Atom> r(natoms*nsteps);
   vector<Molecular> mol ;
 
-  readtrajectory(r, nsteps, natoms, xyzfilename);
+  readtrajectory(r, nsteps, natoms, xyzfilename, L);
   //readpsf(r, nsteps,  natoms, psffilename);
-  BringintoBox(r, nsteps, natoms, L);
   Print(r, nsteps, natoms, L, "new-traj.xyz");
   TransformAtomictoMolecular(r, nsteps, natoms, L, mol, nmol);
   Printmol(mol, nsteps, nmol, L, "new-traj.xyz");
+  Printdipol_pol(mol, nsteps, nmol, L, "new-traj.xyz");
 
   return 0;
 }

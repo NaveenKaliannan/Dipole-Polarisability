@@ -15,40 +15,9 @@
 
 using namespace std;
 
-void AssignAtomicMass(vector<Atom> &r, uint nsteps, uint natoms)
-{
-  for(uint t = 0; t < nsteps; ++t )
-    { 
-      for(uint i = 0;i < natoms;++i)
-        {
-          uint id = natoms*t+i; 
-          if((r[id].symbol[0] == 'N' || r[id].symbol[0] == 'n' ) && ( r[id].symbol[1] == 'A' || r[id].symbol[1] == 'a'))
-            {
-              r[id].atomicmass = 22.9897;
-            }
-          else if((r[id].symbol[0] == 'M' || r[id].symbol[0] == 'm' ) && ( r[id].symbol[1] == 'G' || r[id].symbol[1] == 'g'))
-            {
-              r[id].atomicmass = 24.305;
-            }
-          else if(r[id].symbol[0] == 'O' || r[id].symbol[0] == 'o' )
-            {
-              r[id].atomicmass = 15.999;
-            }
-          else if(r[id].symbol[0] == 'S' || r[id].symbol[0] == 's' )
-            {
-              r[id].atomicmass = 32.065;
-            }
-          else if(r[id].symbol[0] == 'H' || r[id].symbol[0] == 'h' )
-            {
-              r[id].atomicmass = 1.00784;
-            }
-        }
-    }
-}
-
 
 //Reading the xyz trajectory
-void readtrajectory(vector<Atom> &r, uint nsteps, uint natoms, string xyzfilename)
+void readtrajectory(vector<Atom> &r, uint nsteps, uint natoms, string xyzfilename, float L)
 {
   string temp;
   ifstream xyzfile(xyzfilename);
@@ -65,6 +34,7 @@ void readtrajectory(vector<Atom> &r, uint nsteps, uint natoms, string xyzfilenam
         }
     }
   AssignAtomicMass(r, nsteps, natoms);
+  BringintoBox(r, nsteps, natoms, L);
   xyzfile.close();
   xyzfile.clear();
 }
@@ -104,6 +74,91 @@ void readpsf(vector<Atom> &r, uint nsteps,  uint natoms, string psffilename)
   is.clear();
 }
 
+
+// new trajectory after applying pbc
+void Print(vector<Atom> &r, uint nsteps, uint natoms, float L, string filename)
+{
+  ofstream outfile(filename);
+  for(uint t = 0; t < nsteps; ++t )
+    { 
+      outfile << natoms << endl ;
+      outfile << "BOX Length " << L << "  " << L << "  " << L << "\n";
+      for(uint i = 0;i < natoms;++i)
+        {
+          uint id = natoms*t+i; 
+          outfile << r[id].symbol <<  "  " << r[id].x << "  " << r[id].y << "  " << r[id].z << endl;
+        }
+    }
+  outfile.close();
+  outfile.clear();
+}
+
+// new trajectory after applying pbc
+void Printmol(vector<Molecular> &r, uint nsteps, uint nmol, float L, string filename)
+{
+  ofstream outfile(filename);
+  for(uint t = 0; t < nsteps; ++t )
+    { 
+      outfile << nmol << endl ;
+      outfile << "BOX Length " << L << "  " << L << "  " << L << "\n";
+      for(uint i = 0;i < nmol;++i)
+        {
+          uint id = nmol*t+i; 
+          outfile << r[id].MOL <<  "  " << r[id].x << "  " << r[id].y << "  " << r[id].z << endl;
+        }
+    }
+  outfile.close();
+  outfile.clear();
+}
+
+// new trajectory after applying pbc
+void Printdipol_pol(vector<Molecular> &r, uint nsteps, uint nmol, float L, string filename)
+{
+  ofstream outfile(filename);
+  for(uint t = 0; t < nsteps; ++t )
+    { 
+      outfile << nmol << endl ;
+      outfile << "## Molecular name [string], Dipole moment [Debye] in x y z, Polarisability tensor [Angstrom] xx yy zz " << endl;
+      for(uint i = 0;i < nmol;++i)
+        {
+          uint id = nmol*t+i; 
+          outfile << r[id].MOL <<  "  " << r[id].PD_x << "  " << r[id].PD_y << "  " << r[id].PD_z << "  "<< r[id].Pol_xx << "  " << r[id].Pol_yy << "  " << r[id].Pol_zz << endl;
+        }
+    }
+  outfile.close();
+  outfile.clear();
+}
+
+void AssignAtomicMass(vector<Atom> &r, uint nsteps, uint natoms)
+{
+  for(uint t = 0; t < nsteps; ++t )
+    { 
+      for(uint i = 0;i < natoms;++i)
+        {
+          uint id = natoms*t+i; 
+          if((r[id].symbol[0] == 'N' || r[id].symbol[0] == 'n' ) && ( r[id].symbol[1] == 'A' || r[id].symbol[1] == 'a'))
+            {
+              r[id].atomicmass = 22.9897;
+            }
+          else if((r[id].symbol[0] == 'M' || r[id].symbol[0] == 'm' ) && ( r[id].symbol[1] == 'G' || r[id].symbol[1] == 'g'))
+            {
+              r[id].atomicmass = 24.305;
+            }
+          else if(r[id].symbol[0] == 'O' || r[id].symbol[0] == 'o' )
+            {
+              r[id].atomicmass = 15.999;
+            }
+          else if(r[id].symbol[0] == 'S' || r[id].symbol[0] == 's' )
+            {
+              r[id].atomicmass = 32.065;
+            }
+          else if(r[id].symbol[0] == 'H' || r[id].symbol[0] == 'h' )
+            {
+              r[id].atomicmass = 1.00784;
+            }
+        }
+    }
+}
 
 //Broken bonds due to PBC are solved here
 void BringintoBox(vector<Atom> &r, uint nsteps,  uint natoms, float L)
@@ -213,42 +268,6 @@ void BringintoBox(vector<Atom> &r, uint nsteps,  uint natoms, float L)
             }
         }
     }
-}
-
-// new trajectory after applying pbc
-void Print(vector<Atom> &r, uint nsteps, uint natoms, float L, string filename)
-{
-  ofstream outfile(filename);
-  for(uint t = 0; t < nsteps; ++t )
-    { 
-      outfile << natoms << endl ;
-      outfile << "BOX Length " << L << "  " << L << "  " << L << "\n";
-      for(uint i = 0;i < natoms;++i)
-        {
-          uint id = natoms*t+i; 
-          outfile << r[id].symbol <<  "  " << r[id].x << "  " << r[id].y << "  " << r[id].z << "  " << r[id].atomicmass << endl;
-        }
-    }
-  outfile.close();
-  outfile.clear();
-}
-
-// new trajectory after applying pbc
-void Printmol(vector<Molecular> &r, uint nsteps, uint nmol, float L, string filename)
-{
-  ofstream outfile(filename);
-  for(uint t = 0; t < nsteps; ++t )
-    { 
-      outfile << nmol << endl ;
-      outfile << "BOX Length " << L << "  " << L << "  " << L << "\n";
-      for(uint i = 0;i < nmol;++i)
-        {
-          uint id = nmol*t+i; 
-          outfile << r[id].MOL <<  "  " << r[id].x << "  " << r[id].y << "  " << r[id].z << endl;
-        }
-    }
-  outfile.close();
-  outfile.clear();
 }
 
 
