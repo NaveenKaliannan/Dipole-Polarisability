@@ -48,9 +48,7 @@ void AssignAtomicMass(vector<Atom> &r, uint nsteps, uint natoms);
 void BringintoBox(vector<Atom> &r, uint nsteps,  uint natoms, float L);
 void readtrajectory(vector<Atom> &r, uint nsteps, uint natoms, string xyzfilename, float L);
 void readpsf(vector<Atom> &r, uint nsteps,  uint natoms, string psffilename);
-void Print(vector<Atom> &r, uint nsteps, uint natoms, float L, string filename);
-void Printmol(vector<Molecular> &r, uint nsteps, uint nmol, float L, string filename);
-void Printdipol_pol(vector<Molecular> &r, uint nsteps, uint nmol, float L, string filename);
+void Print(vector<Atom> &r, uint nsteps, uint natoms, float L, vector<Molecular> &mol, uint nmol, string filename, string TYPE);
 void parameters(Molecular &mol);
 void TransformAtomictoMolecular(vector<Atom> &r, uint nsteps,  uint natoms, float L, vector<Molecular> &mol, uint nmol);
 

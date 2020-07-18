@@ -76,58 +76,46 @@ void readpsf(vector<Atom> &r, uint nsteps,  uint natoms, string psffilename)
 
 
 // new trajectory after applying pbc
-void Print(vector<Atom> &r, uint nsteps, uint natoms, float L, string filename)
+void Print(vector<Atom> &r, uint nsteps, uint natoms, float L, vector<Molecular> &mol, uint nmol, string filename, string TYPE)
 {
   ofstream outfile(filename);
-  for(uint t = 0; t < nsteps; ++t )
-    { 
-      outfile << natoms << endl ;
-      outfile << "BOX Length " << L << "  " << L << "  " << L << "\n";
-      for(uint i = 0;i < natoms;++i)
-        {
-          uint id = natoms*t+i; 
-          outfile << r[id].symbol <<  "  " << r[id].x << "  " << r[id].y << "  " << r[id].z << endl;
-        }
-    }
+  if(TYPE[0] == 'A' && TYPE[1] == 'T' && TYPE[2] == 'M')
+    for(uint t = 0; t < nsteps; ++t )
+      { 
+        outfile << natoms << endl ;
+        outfile << "BOX Length " << L << "  " << L << "  " << L << "\n";
+        for(uint i = 0;i < natoms;++i)
+          {
+            uint id = natoms*t+i; 
+            outfile << r[id].symbol <<  "  " << r[id].x << "  " << r[id].y << "  " << r[id].z << endl;
+          }
+      }
+  else if(TYPE[0] == 'M' && TYPE[1] == 'O' && TYPE[2] == 'L')
+    for(uint t = 0; t < nsteps; ++t )
+      { 
+        outfile << nmol << endl ;
+        outfile << "BOX Length " << L << "  " << L << "  " << L << "\n";
+        for(uint i = 0;i < nmol;++i)
+          {
+            uint id = nmol*t+i; 
+            outfile << mol[id].MOL <<  "  " << mol[id].x << "  " << mol[id].y << "  " << mol[id].z << endl;
+          }
+      }
+  else if(TYPE[0] == 'D' && TYPE[1] == 'I' && TYPE[2] == 'P')
+    for(uint t = 0; t < nsteps; ++t )
+      { 
+        outfile << nmol << endl ;
+        outfile << "## Molecular name [string], Dipole moment [Debye] in x y z, Polarisability tensor [Angstrom] xx yy zz " << endl;
+        for(uint i = 0;i < nmol;++i)
+          {
+            uint id = nmol*t+i; 
+            outfile << mol[id].MOL <<  "  " << mol[id].PD_x << "  " << mol[id].PD_y << "  " << mol[id].PD_z << "  "<< mol[id].Pol_xx << "  " << mol[id].Pol_yy << "  " << mol[id].Pol_zz << endl;
+          }
+      }
   outfile.close();
   outfile.clear();
 }
 
-// new trajectory after applying pbc
-void Printmol(vector<Molecular> &r, uint nsteps, uint nmol, float L, string filename)
-{
-  ofstream outfile(filename);
-  for(uint t = 0; t < nsteps; ++t )
-    { 
-      outfile << nmol << endl ;
-      outfile << "BOX Length " << L << "  " << L << "  " << L << "\n";
-      for(uint i = 0;i < nmol;++i)
-        {
-          uint id = nmol*t+i; 
-          outfile << r[id].MOL <<  "  " << r[id].x << "  " << r[id].y << "  " << r[id].z << endl;
-        }
-    }
-  outfile.close();
-  outfile.clear();
-}
-
-// new trajectory after applying pbc
-void Printdipol_pol(vector<Molecular> &r, uint nsteps, uint nmol, float L, string filename)
-{
-  ofstream outfile(filename);
-  for(uint t = 0; t < nsteps; ++t )
-    { 
-      outfile << nmol << endl ;
-      outfile << "## Molecular name [string], Dipole moment [Debye] in x y z, Polarisability tensor [Angstrom] xx yy zz " << endl;
-      for(uint i = 0;i < nmol;++i)
-        {
-          uint id = nmol*t+i; 
-          outfile << r[id].MOL <<  "  " << r[id].PD_x << "  " << r[id].PD_y << "  " << r[id].PD_z << "  "<< r[id].Pol_xx << "  " << r[id].Pol_yy << "  " << r[id].Pol_zz << endl;
-        }
-    }
-  outfile.close();
-  outfile.clear();
-}
 
 void AssignAtomicMass(vector<Atom> &r, uint nsteps, uint natoms)
 {
@@ -389,12 +377,11 @@ void TransformAtomictoMolecular(vector<Atom> &r, uint nsteps,  uint natoms, floa
             {
               const float am_H = 1.00784 * amu, am_O = 15.999 * amu, am_H2O = 18.015 * amu ;
               float wb_x = 0,wb_y = 0,wb_z = 0;           // bisector vector
-              float com_x = 0,com_y = 0,com_z = 0;        // center of mass
               float HH_x = 0,HH_y = 0,HH_z = 0 ;           // H-H vector
               float Pv_x = 0,Pv_y = 0,Pv_z = 0;           // vector Perpendicular to bisector and H-H vector
-              com_x = ( r[id].x * am_O + r[id+1].x * am_H + r[id+2].x * am_H ) / am_H2O ;
-              com_y = ( r[id].y * am_O + r[id+1].y * am_H + r[id+2].y * am_H ) / am_H2O ;
-              com_z = ( r[id].z * am_O + r[id+1].z * am_H + r[id+2].z * am_H ) / am_H2O ; 
+              mols.x = ( r[id].x * am_O + r[id+1].x * am_H + r[id+2].x * am_H ) / am_H2O ;
+              mols.y = ( r[id].y * am_O + r[id+1].y * am_H + r[id+2].y * am_H ) / am_H2O ;
+              mols.z = ( r[id].z * am_O + r[id+1].z * am_H + r[id+2].z * am_H ) / am_H2O ;
 
               // water bisector vector, Minimum image convention was applied
               wb_x = min_distance(r[id+1].x - r[id].x, L) + min_distance(r[id+2].x - r[id].x, L) ;
@@ -429,13 +416,23 @@ void TransformAtomictoMolecular(vector<Atom> &r, uint nsteps,  uint natoms, floa
               HH_y = HH_y / sum ;
               HH_z = HH_z / sum ;
     
-              mols.x = com_x;
-              mols.y = com_y;
-              mols.z = com_z;
               mols.MOL = "H2O";
               mols.m = 18; 
         
-              // converting the water bisector into permanent dipole [debye]
+              /* converting the water bisector into permanent dipole [debye]
+                  3
+               i =     9941, time =     3976.400, E =       -17.1856249667
+               O        13.4624293660       17.2132760672        4.3695246899
+               H        12.6258911614       16.7156767906        4.4333223805
+               H        13.6991295972       17.4314209339        5.2307556387
+
+               Dipole moment [Debye]
+               X=   -1.02713357 Y=   -0.46771379 Z=    1.63613604     Total=      1.98763697
+              // projecting the water dipole [debye] in water bisector direction using projection matrix
+              float d_x = -1.0271, d_y = -0.467, d_z = 1.636;
+              mols.PD_x = wb_x * wb_x * d_x + wb_x * wb_y * d_y + wb_x * wb_z * d_z;
+              mols.PD_y = wb_y * wb_x * d_x + wb_y * wb_y * d_y + wb_y * wb_z * d_z ;
+              mols.PD_z = wb_z * wb_x * d_x + wb_z * wb_y * d_y + wb_z * wb_z * d_z; */
               mols.PD_x = wb_x * Unitvectortodebye ;
               mols.PD_y = wb_y * Unitvectortodebye ;
               mols.PD_z = wb_z * Unitvectortodebye ;
