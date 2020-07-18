@@ -1,4 +1,4 @@
-#include "io.h"
+#include "../include/io.h"
 #include <string>
 #include <iostream>
 #include <iomanip>
@@ -9,7 +9,7 @@
 #include <numeric>
 #include <sstream>  
 #include <cmath>
-#include "numerics.h" 
+#include "../include/numerics.h" 
 
 
 

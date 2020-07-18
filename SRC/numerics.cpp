@@ -1,4 +1,4 @@
-#include "numerics.h"
+#include "../include/numerics.h"
 #include <string>
 #include <iostream>
 #include <iomanip>
