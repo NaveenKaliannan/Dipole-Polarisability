@@ -148,7 +148,7 @@ void AssignAtomicMass(vector<Atom> &r, uint nsteps, uint natoms)
     }
 }
 
-//Broken bonds due to PBC are solved here
+//Broken bonds due to PBC are solved here, Minimum image convention was applied
 void BringintoBox(vector<Atom> &r, uint nsteps,  uint natoms, float L)
 {
   for(uint t = 0; t < nsteps; ++t )
