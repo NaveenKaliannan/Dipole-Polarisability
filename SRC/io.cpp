@@ -98,7 +98,7 @@ void Print(vector<Atom> &r, uint nsteps, uint natoms, float L, vector<Molecular>
         for(uint i = 0;i < nmol;++i)
           {
             uint id = nmol*t+i; 
-            outfile << mol[id].MOL <<  "  " << mol[id].x << "  " << mol[id].y << "  " << mol[id].z << endl;
+            outfile << mol[id].MOL << " " << mol[id].x << "  " << mol[id].y << "  " << mol[id].z << endl;
           }
       }
   else if(TYPE[0] == 'D' && TYPE[1] == 'I' && TYPE[2] == 'P')
@@ -281,7 +281,7 @@ void parameters(Molecular &mol)
    Here the alpha paramters are modified to accurately reproduce the polarisabilites, computed
    using the CP2K program with the same configuration  
 
-   The mulliken charges were calculated with the CP2K program
+   The mulliken charges were used and parameterized with the help of CP2K program
 */
 
   if(mol.MOL[0] == 'H' && mol.MOL[1] == '2' && mol.MOL[2] == 'O')
@@ -433,6 +433,7 @@ void TransformAtomictoMolecular(vector<Atom> &r, uint nsteps,  uint natoms, floa
               //mols.PD_x = wb_x * wb_x * d_x + wb_x * wb_y * d_y + wb_x * wb_z * d_z;
               //mols.PD_y = wb_y * wb_x * d_x + wb_y * wb_y * d_y + wb_y * wb_z * d_z ;
               //mols.PD_z = wb_z * wb_x * d_x + wb_z * wb_y * d_y + wb_z * wb_z * d_z;
+              //Dipole moment [Debye]
               mols.PD_x = wb_x * Unitvectortodebye ;
               mols.PD_y = wb_y * Unitvectortodebye ;
               mols.PD_z = wb_z * Unitvectortodebye ;

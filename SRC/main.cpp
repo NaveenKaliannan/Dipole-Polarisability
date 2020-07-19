@@ -45,8 +45,8 @@ int main ( int argc, char** argv )
   //readpsf(r, nsteps,  natoms, psffilename);
   Print(r, nsteps, natoms, L, mol, nmol,  "new-traj1.xyz", "ATM");
   TransformAtomictoMolecular(r, nsteps, natoms, L, mol, nmol);
-  Print(r, nsteps, natoms, L, mol, nmol,  "new-traj.xyz", "MOL");
-  Print(r, nsteps, natoms, L, mol, nmol, "new-traj.xyz", "DIP");
+  Print(r, nsteps, natoms, L, mol, nmol,  "new-traj2.xyz", "MOL");
+  Print(r, nsteps, natoms, L, mol, nmol, "new-traj3.xyz", "DIP");
 
   return 0;
 }
