@@ -428,11 +428,11 @@ void TransformAtomictoMolecular(vector<Atom> &r, uint nsteps,  uint natoms, floa
 
                Dipole moment [Debye]
                X=   -1.02713357 Y=   -0.46771379 Z=    1.63613604     Total=      1.98763697
-              // projecting the water dipole [debye] in water bisector direction using projection matrix
-              float d_x = -1.0271, d_y = -0.467, d_z = 1.636;
-              mols.PD_x = wb_x * wb_x * d_x + wb_x * wb_y * d_y + wb_x * wb_z * d_z;
-              mols.PD_y = wb_y * wb_x * d_x + wb_y * wb_y * d_y + wb_y * wb_z * d_z ;
-              mols.PD_z = wb_z * wb_x * d_x + wb_z * wb_y * d_y + wb_z * wb_z * d_z; */
+              // projecting the water dipole [debye] in water bisector direction using projection matrix*/
+              //float d_x = -1.0271, d_y = -0.467, d_z = 1.636;
+              //mols.PD_x = wb_x * wb_x * d_x + wb_x * wb_y * d_y + wb_x * wb_z * d_z;
+              //mols.PD_y = wb_y * wb_x * d_x + wb_y * wb_y * d_y + wb_y * wb_z * d_z ;
+              //mols.PD_z = wb_z * wb_x * d_x + wb_z * wb_y * d_y + wb_z * wb_z * d_z;
               mols.PD_x = wb_x * Unitvectortodebye ;
               mols.PD_y = wb_y * Unitvectortodebye ;
               mols.PD_z = wb_z * Unitvectortodebye ;
