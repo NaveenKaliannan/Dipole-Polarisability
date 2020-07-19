@@ -160,13 +160,13 @@ void BringintoBox(vector<Atom> &r, uint nsteps,  uint natoms, float L)
           if(r[id].y > L || r[id].y < 0 ) { r[id].y  = min_distance(r[id].y, L); }
           if(r[id].z > L || r[id].z < 0 ) { r[id].z  = min_distance(r[id].z, L); }
 
-          if(r[id].x > L ) { r[id].x  = L - r[id].x; }
-          if(r[id].y > L ) { r[id].y  = L - r[id].y; }
-          if(r[id].z > L ) { r[id].z  = L - r[id].z; }
+          if(r[id].x > L ) { r[id].x  -= L ; }
+          if(r[id].y > L ) { r[id].y  -= L ; }
+          if(r[id].z > L ) { r[id].z  -= L ; }
 
-          if(r[id].x < 0 ) { r[id].x  = L + r[id].x; }
-          if(r[id].y < 0 ) { r[id].y  = L + r[id].y; }
-          if(r[id].z < 0 ) { r[id].z  = L + r[id].z; }
+          if(r[id].x < 0 ) { r[id].x += L ; }
+          if(r[id].y < 0 ) { r[id].y += L ; }
+          if(r[id].z < 0 ) { r[id].z += L ; }
         }
     }
 
@@ -194,20 +194,20 @@ void BringintoBox(vector<Atom> &r, uint nsteps,  uint natoms, float L)
                              float rij3 = norm(r[id].x - r[id2].x, 0, 0);
                              if(abs(rij3) > 2.5)
                                {   
-                                 if(r[id].x > r[id2].x ) { r[id2].x  = L + r[id2].x; }    
-                                 else if(r[id].x < r[id2].x ) { r[id2].x  = L - r[id2].x; }                                                                  
+                                 if(r[id].x > r[id2].x ) { r[id2].x += L; }    
+                                 else if(r[id].x < r[id2].x ) { r[id2].x -= L; }                                                                  
                                }
                              rij3 = norm(0, r[id].y - r[id2].y, 0);
                              if(abs(rij3) > 2.5)
                                {    
-                                 if(r[id].y > r[id2].y ) { r[id2].y  = L + r[id2].y; }    
-                                 else if(r[id].y < r[id2].y ) { r[id2].y  = L - r[id2].y; }                                                                                                    
+                                 if(r[id].y > r[id2].y ) { r[id2].y += L; }    
+                                 else if(r[id].y < r[id2].y ) { r[id2].y -= L; }                                                                                                    
                                }  
                              rij3 = norm(0, 0, r[id].z - r[id2].z);
                              if(abs(rij3) > 2.5)
                                {                           
-                                 if(r[id].z > r[id2].z ) { r[id2].z  = L + r[id2].z; }    
-                                 else if(r[id].z < r[id2].z ) { r[id2].z  = L - r[id2].z; }                                                                                                        
+                                 if(r[id].z > r[id2].z ) { r[id2].z += L; }    
+                                 else if(r[id].z < r[id2].z ) { r[id2].z -= L; }                                                                                                        
                                }                                      
                             }
                         }
@@ -234,20 +234,20 @@ void BringintoBox(vector<Atom> &r, uint nsteps,  uint natoms, float L)
                              float rij3 = norm(r[id].x - r[id2].x, 0, 0);
                              if(abs(rij3) > 2.5)
                                {   
-                                 if(r[id].x > r[id2].x ) { r[id2].x  = L + r[id2].x; }    
-                                 else if(r[id].x < r[id2].x ) { r[id2].x  = L - r[id2].x; }                                                                  
+                                 if(r[id].x > r[id2].x ) { r[id2].x += L; }    
+                                 else if(r[id].x < r[id2].x ) { r[id2].x -= L; }                                                                  
                                }
                              rij3 = norm(0, r[id].y - r[id2].y, 0);
                              if(abs(rij3) > 2.5)
                                {    
-                                 if(r[id].y > r[id2].y ) { r[id2].y  = L + r[id2].y; }    
-                                 else if(r[id].y < r[id2].y ) { r[id2].y  = L - r[id2].y; }                                                                                                    
+                                 if(r[id].y > r[id2].y ) { r[id2].y  =  r[id2].y += L; }    
+                                 else if(r[id].y < r[id2].y ) { r[id2].y -= L; }                                                                                                    
                                }  
                              rij3 = norm(0, 0, r[id].z - r[id2].z);
                              if(abs(rij3) > 2.5)
                                {                           
-                                 if(r[id].z > r[id2].z ) { r[id2].z  = L + r[id2].z; }    
-                                 else if(r[id].z < r[id2].z ) { r[id2].z  = L - r[id2].z; }                                                                                                        
+                                 if(r[id].z > r[id2].z ) { r[id2].z += L; }    
+                                 else if(r[id].z < r[id2].z ) { r[id2].z -= L; }                                                                                                        
                                }                                      
                             }
                         }
@@ -279,9 +279,9 @@ void parameters(Molecular &mol)
    from the Triple Point to the Critical Point https://doi.org/10.1007/978-94-011-0183-7_10
 
    Here the alpha paramters are modified to accurately reproduce the polarisabilites, computed
-   from the CP2K program with the same configuration  
+   using the CP2K program with the same configuration  
 
-   The mulliken charges were calculated from the CP2K program
+   The mulliken charges were calculated with the CP2K program
 */
 
   if(mol.MOL[0] == 'H' && mol.MOL[1] == '2' && mol.MOL[2] == 'O')

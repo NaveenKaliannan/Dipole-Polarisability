@@ -43,7 +43,7 @@ int main ( int argc, char** argv )
 
   readtrajectory(r, nsteps, natoms, xyzfilename, L);
   //readpsf(r, nsteps,  natoms, psffilename);
-  Print(r, nsteps, natoms, L, mol, nmol,  "new-traj.xyz", "ATM");
+  Print(r, nsteps, natoms, L, mol, nmol,  "new-traj1.xyz", "ATM");
   TransformAtomictoMolecular(r, nsteps, natoms, L, mol, nmol);
   Print(r, nsteps, natoms, L, mol, nmol,  "new-traj.xyz", "MOL");
   Print(r, nsteps, natoms, L, mol, nmol, "new-traj.xyz", "DIP");
