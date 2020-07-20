@@ -6,8 +6,6 @@ cp CMakeLists.txt build/CMakeLists.txt
 cd build
 cmake . 
 make
-##./exe ../traj.xyz traj.psf 1 0.4 15.6404 3 1
-#./exe ../test.xyz traj.psf 1 0.4 15.56 3 1
-./exe ../traj.xyz traj.psf 1 0.4 15.56 389 131
+./exe ../../NVE-pos-1.xyz traj.psf 5000 0.5 15.72 405 135
 
 

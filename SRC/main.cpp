@@ -16,6 +16,7 @@
 #include <sstream>  
 #include <cmath> 
 #include "../include/io.h"
+#include "../include/numerics.h"
 
 
 using namespace std;
