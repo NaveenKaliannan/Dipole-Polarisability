@@ -33,9 +33,6 @@ void readtrajectory(vector<Atom> &r, uint nsteps, uint natoms, string xyzfilenam
           //cout << r[id].symbol <<  "  " << r[id].x << "  " << r[id].y << "  " << r[id].z << endl;
         }
     }
-  AssignAtomicMass(r, nsteps, natoms);
-  BringintoBox(r, nsteps, natoms, L);
-  //computevelocity(r, nsteps, natoms, L, dt);
   xyzfile.close();
   xyzfile.clear();
 }
@@ -97,7 +94,6 @@ void readpsf(vector<Atom> &r, uint nsteps,  uint natoms, string psffilename)
 }
 
 
-// new trajectory after applying pbc
 void Print(vector<Atom> &r, uint nsteps, uint natoms, float L, vector<Molecular> &mol, uint nmol, string filename, string TYPE)
 {
   ofstream outfile(filename);
@@ -137,6 +133,7 @@ void Print(vector<Atom> &r, uint nsteps, uint natoms, float L, vector<Molecular>
   outfile.close();
   outfile.clear();
 }
+
 
 
 void AssignAtomicMass(vector<Atom> &r, uint nsteps, uint natoms)

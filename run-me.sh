@@ -3,9 +3,16 @@
 
 rm -rf build/*
 cp CMakeLists.txt build/CMakeLists.txt
+mkdir build
 cd build
 cmake . 
 make
-./exe ../../NVE-pos-1.xyz traj.psf 5000 0.5 15.72 405 135
 
+declare -i n
+for i in {1000..183000..400}
+do
+n+=1
+echo $n
+./exe /home/naveenk/temp/water/blyp-d3-$i/OHH.xyz traj.psf 11400 0.4 15.6404 384 128 dipol-pol$n
+done
 

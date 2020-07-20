@@ -43,12 +43,17 @@ int main ( int argc, char** argv )
   vector<Molecular> mol ;
 
   readtrajectory(r, nsteps, natoms, xyzfilename, L);
-  //readpsf(r, nsteps,  natoms, psffilename);
-  Print(r, nsteps, natoms, L, mol, nmol,  "new-traj1.xyz", "ATM");
+  AssignAtomicMass(r, nsteps, natoms);
+  //BringintoBox(r, nsteps, natoms, L);
   TransformAtomictoMolecular(r, nsteps, natoms, L, mol, nmol);
-  Print(r, nsteps, natoms, L, mol, nmol,  "new-traj2.xyz", "MOL");
-  Print(r, nsteps, natoms, L, mol, nmol, "new-traj3.xyz", "DIP");
+  //computevelocity(r, nsteps, natoms, L, dt);
+  //readpsf(r, nsteps,  natoms, psffilename);
+  //Print(r, nsteps, natoms, L, mol, nmol,  "new-traj1.xyz", "ATM");
+  //Print(r, nsteps, natoms, L, mol, nmol,  "new-traj2.xyz", "MOL");
+  //Print(r, nsteps, natoms, L, mol, nmol, "new-traj3.xyz", "DIP");
 
+  outfile.close();
+  outfile.clear();
   return 0;
 }
 
