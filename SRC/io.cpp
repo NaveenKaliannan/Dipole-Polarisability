@@ -17,7 +17,7 @@ using namespace std;
 
 
 //Reading the xyz trajectory
-void readtrajectory(vector<Atom> &r, uint nsteps, uint natoms, string xyzfilename, float L)
+void readtrajectory(vector<Atom> &r, uint nsteps, uint natoms, string xyzfilename, const vector<float> & L)
 {
   string temp;
   ifstream xyzfile(xyzfilename);
@@ -39,7 +39,7 @@ void readtrajectory(vector<Atom> &r, uint nsteps, uint natoms, string xyzfilenam
 
 
 // computes velocity with central difference scheme as CP2K (multiply with vAperfmstoamu converts to atomic unit )
-void computevelocity(vector<Atom> &r, uint nsteps, uint natoms, float L, float dt)
+void computevelocity(vector<Atom> &r, uint nsteps, uint natoms, const vector<float> & L, float dt)
 {
   for(uint t = 1; t < nsteps-1; ++t )
     { 
@@ -48,9 +48,9 @@ void computevelocity(vector<Atom> &r, uint nsteps, uint natoms, float L, float d
           uint id = natoms*(t)+i; 
           uint id1 = natoms*(t-1)+i; 
           uint id2 = natoms*(t+1)+i; 
-          r[id].vx = min_distance((r[id2].x - r[id1].x), L)/(2*dt) ;
-          r[id].vy = min_distance((r[id2].y - r[id1].y), L)/(2*dt) ;
-          r[id].vz = min_distance((r[id2].z - r[id1].z), L)/(2*dt) ;
+          r[id].vx = min_distance((r[id2].x - r[id1].x), L[0])/(2*dt) ;
+          r[id].vy = min_distance((r[id2].y - r[id1].y), L[1])/(2*dt) ;
+          r[id].vz = min_distance((r[id2].z - r[id1].z), L[2])/(2*dt) ;
         }
     }
     //if(abs(r[id].vx * vAperfmstoamu  - v[id].x) > 1.E-4 ) checking condition 
@@ -94,14 +94,14 @@ void readpsf(vector<Atom> &r, uint nsteps,  uint natoms, string psffilename)
 }
 
 
-void Print(vector<Atom> &r, uint nsteps, uint natoms, float L, vector<Molecular> &mol, uint nmol, string filename, string TYPE)
+void Print(vector<Atom> &r, uint nsteps, uint natoms, const vector<float> & L, vector<Molecular> &mol, uint nmol, string filename, string TYPE)
 {
   ofstream outfile(filename);
   if(TYPE[0] == 'A' && TYPE[1] == 'T' && TYPE[2] == 'M')
     for(uint t = 0; t < nsteps; ++t )
       { 
         outfile << natoms << endl ;
-        outfile << "BOX Length " << L << "  " << L << "  " << L << "\n";
+        outfile << "BOX Length " << L[0] << "  " << L[1] << "  " << L[2] << "\n";
         for(uint i = 0;i < natoms;++i)
           {
             uint id = natoms*t+i; 
@@ -112,7 +112,7 @@ void Print(vector<Atom> &r, uint nsteps, uint natoms, float L, vector<Molecular>
     for(uint t = 0; t < nsteps; ++t )
       { 
         outfile << nmol << endl ;
-        outfile << "BOX Length " << L << "  " << L << "  " << L << "\n";
+        outfile << "BOX Length " << L[0] << "  " << L[1] << "  " << L[2] << "\n";
         for(uint i = 0;i < nmol;++i)
           {
             uint id = nmol*t+i; 
@@ -168,24 +168,24 @@ void AssignAtomicMass(vector<Atom> &r, uint nsteps, uint natoms)
 }
 
 //Broken bonds due to PBC are solved here, Minimum image convention was applied
-void BringintoBox(vector<Atom> &r, uint nsteps,  uint natoms, float L)
+void BringintoBox(vector<Atom> &r, uint nsteps,  uint natoms, const vector<float> & L)
 {
   for(uint t = 0; t < nsteps; ++t )
     { 
       for(uint i = 0;i < natoms;++i)
         {
           uint id = natoms*t+i; 
-          if(r[id].x > L || r[id].x < 0 ) { r[id].x  = min_distance(r[id].x, L); }
-          if(r[id].y > L || r[id].y < 0 ) { r[id].y  = min_distance(r[id].y, L); }
-          if(r[id].z > L || r[id].z < 0 ) { r[id].z  = min_distance(r[id].z, L); }
+          if(r[id].x > L[0] || r[id].x < 0 ) { r[id].x  = min_distance(r[id].x, L[0]); }
+          if(r[id].y > L[1] || r[id].y < 0 ) { r[id].y  = min_distance(r[id].y, L[1]); }
+          if(r[id].z > L[2] || r[id].z < 0 ) { r[id].z  = min_distance(r[id].z, L[2]); }
 
-          if(r[id].x > L ) { r[id].x  -= L ; }
-          if(r[id].y > L ) { r[id].y  -= L ; }
-          if(r[id].z > L ) { r[id].z  -= L ; }
+          if(r[id].x > L[0] ) { r[id].x  -= L[0] ; }
+          if(r[id].y > L[1] ) { r[id].y  -= L[1] ; }
+          if(r[id].z > L[2] ) { r[id].z  -= L[2] ; }
 
-          if(r[id].x < 0 ) { r[id].x += L ; }
-          if(r[id].y < 0 ) { r[id].y += L ; }
-          if(r[id].z < 0 ) { r[id].z += L ; }
+          if(r[id].x < 0 ) { r[id].x += L[0] ; }
+          if(r[id].y < 0 ) { r[id].y += L[1] ; }
+          if(r[id].z < 0 ) { r[id].z += L[2] ; }
         }
     }
 
@@ -213,20 +213,20 @@ void BringintoBox(vector<Atom> &r, uint nsteps,  uint natoms, float L)
                              float rij3 = norm(r[id].x - r[id2].x, 0, 0);
                              if(abs(rij3) > 2.5)
                                {   
-                                 if(r[id].x > r[id2].x ) { r[id2].x += L; }    
-                                 else if(r[id].x < r[id2].x ) { r[id2].x -= L; }                                                                  
+                                 if(r[id].x > r[id2].x ) { r[id2].x += L[0]; }    
+                                 else if(r[id].x < r[id2].x ) { r[id2].x -= L[0]; }                                                                  
                                }
                              rij3 = norm(0, r[id].y - r[id2].y, 0);
                              if(abs(rij3) > 2.5)
                                {    
-                                 if(r[id].y > r[id2].y ) { r[id2].y += L; }    
-                                 else if(r[id].y < r[id2].y ) { r[id2].y -= L; }                                                                                                    
+                                 if(r[id].y > r[id2].y ) { r[id2].y += L[1]; }    
+                                 else if(r[id].y < r[id2].y ) { r[id2].y -= L[1]; }                                                                                                    
                                }  
                              rij3 = norm(0, 0, r[id].z - r[id2].z);
                              if(abs(rij3) > 2.5)
                                {                           
-                                 if(r[id].z > r[id2].z ) { r[id2].z += L; }    
-                                 else if(r[id].z < r[id2].z ) { r[id2].z -= L; }                                                                                                        
+                                 if(r[id].z > r[id2].z ) { r[id2].z += L[2]; }    
+                                 else if(r[id].z < r[id2].z ) { r[id2].z -= L[2]; }                                                                                                        
                                }                                      
                             }
                         }
@@ -253,20 +253,20 @@ void BringintoBox(vector<Atom> &r, uint nsteps,  uint natoms, float L)
                              float rij3 = norm(r[id].x - r[id2].x, 0, 0);
                              if(abs(rij3) > 2.5)
                                {   
-                                 if(r[id].x > r[id2].x ) { r[id2].x += L; }    
-                                 else if(r[id].x < r[id2].x ) { r[id2].x -= L; }                                                                  
+                                 if(r[id].x > r[id2].x ) { r[id2].x += L[0]; }    
+                                 else if(r[id].x < r[id2].x ) { r[id2].x -= L[0]; }                                                                  
                                }
                              rij3 = norm(0, r[id].y - r[id2].y, 0);
                              if(abs(rij3) > 2.5)
                                {    
-                                 if(r[id].y > r[id2].y ) { r[id2].y  =  r[id2].y += L; }    
-                                 else if(r[id].y < r[id2].y ) { r[id2].y -= L; }                                                                                                    
+                                 if(r[id].y > r[id2].y ) { r[id2].y  =  r[id2].y += L[1]; }    
+                                 else if(r[id].y < r[id2].y ) { r[id2].y -= L[1]; }                                                                                                    
                                }  
                              rij3 = norm(0, 0, r[id].z - r[id2].z);
                              if(abs(rij3) > 2.5)
                                {                           
-                                 if(r[id].z > r[id2].z ) { r[id2].z += L; }    
-                                 else if(r[id].z < r[id2].z ) { r[id2].z -= L; }                                                                                                        
+                                 if(r[id].z > r[id2].z ) { r[id2].z += L[2]; }    
+                                 else if(r[id].z < r[id2].z ) { r[id2].z -= L[2]; }                                                                                                        
                                }                                      
                             }
                         }
@@ -340,7 +340,7 @@ void parameters(Molecular &mol)
     }
 }
 
-void TransformAtomictoMolecular(vector<Atom> &r, uint nsteps,  uint natoms, float L, vector<Molecular> &mol, uint nmol)
+void TransformAtomictoMolecular(vector<Atom> &r, uint nsteps,  uint natoms, const vector<float> & L, vector<Molecular> &mol, uint nmol)
 {
   Molecular mols;
   for(uint t = 0; t < nsteps; ++t )
@@ -403,9 +403,9 @@ void TransformAtomictoMolecular(vector<Atom> &r, uint nsteps,  uint natoms, floa
               mols.z = ( r[id].z * am_O + r[id+1].z * am_H + r[id+2].z * am_H ) / am_H2O ;
 
               // water bisector vector, Minimum image convention was applied
-              wb_x = min_distance(r[id+1].x - r[id].x, L) + min_distance(r[id+2].x - r[id].x, L) ;
-              wb_y = min_distance(r[id+1].y - r[id].y, L) + min_distance(r[id+2].y - r[id].y, L) ;
-              wb_z = min_distance(r[id+1].z - r[id].z, L) + min_distance(r[id+2].z - r[id].z, L) ;
+              wb_x = min_distance(r[id+1].x - r[id].x, L[0]) + min_distance(r[id+2].x - r[id].x, L[0]) ;
+              wb_y = min_distance(r[id+1].y - r[id].y, L[1]) + min_distance(r[id+2].y - r[id].y, L[1]) ;
+              wb_z = min_distance(r[id+1].z - r[id].z, L[2]) + min_distance(r[id+2].z - r[id].z, L[2]) ;
               float sum  =  pow(wb_x * wb_x  + wb_y * wb_y + wb_z * wb_z, 0.5);
               wb_x = wb_x / sum ;
               wb_y = wb_y / sum ;

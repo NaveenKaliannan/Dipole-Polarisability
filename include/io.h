@@ -47,12 +47,12 @@ struct Molecular
 };
 
 void AssignAtomicMass(vector<Atom> &r, uint nsteps, uint natoms);
-void BringintoBox(vector<Atom> &r, uint nsteps,  uint natoms, float L);
-void readtrajectory(vector<Atom> &r, uint nsteps, uint natoms, string xyzfilename, float L);
-void computevelocity(vector<Atom> &r, uint nsteps, uint natoms, float L, float dt);
+void BringintoBox(vector<Atom> &r, uint nsteps,  uint natoms, const vector<float> & L);
+void readtrajectory(vector<Atom> &r, uint nsteps, uint natoms, string xyzfilename, const vector<float> & L);
+void computevelocity(vector<Atom> &r, uint nsteps, uint natoms, const vector<float> & L, float dt);
 void readpsf(vector<Atom> &r, uint nsteps,  uint natoms, string psffilename);
-void Print(vector<Atom> &r, uint nsteps, uint natoms, float L, vector<Molecular> &mol, uint nmol, string filename, string TYPE);
+void Print(vector<Atom> &r, uint nsteps, uint natoms, const vector<float> & L, vector<Molecular> &mol, uint nmol, string filename, string TYPE);
 void parameters(Molecular &mol);
-void TransformAtomictoMolecular(vector<Atom> &r, uint nsteps,  uint natoms, float L, vector<Molecular> &mol, uint nmol);
+void TransformAtomictoMolecular(vector<Atom> &r, uint nsteps,  uint natoms, const vector<float> & L, vector<Molecular> &mol, uint nmol);
 
 #endif

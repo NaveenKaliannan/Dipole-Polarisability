@@ -15,7 +15,7 @@
 using namespace std;
 
 float min_distance(float r, float l);
-float mindis(float dx,float dy,float dz,float L);
+float mindis(float dx,float dy,float dz, const vector<float> & L);
 float norm(float x,float y,float z);
 
 #endif

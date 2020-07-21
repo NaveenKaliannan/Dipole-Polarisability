@@ -8,11 +8,6 @@ cd build
 cmake . 
 make
 
-declare -i n
-for i in {1000..183000..400}
-do
-n+=1
-echo $n
-./exe /home/naveenk/temp/water/blyp-d3-$i/OHH.xyz traj.psf 11400 0.4 15.6404 384 128 dipol-pol$n
-done
+./exe ../traj.xyz traj.psf 1 0.4 15.56 389 131 dipol-pol
+
 
