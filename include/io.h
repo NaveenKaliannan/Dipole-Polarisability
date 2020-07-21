@@ -52,7 +52,5 @@ void readtrajectory(vector<Atom> &r, uint nsteps, uint natoms, string xyzfilenam
 void computevelocity(vector<Atom> &r, uint nsteps, uint natoms, const vector<float> & L, float dt);
 void readpsf(vector<Atom> &r, uint nsteps,  uint natoms, string psffilename);
 void Print(vector<Atom> &r, uint nsteps, uint natoms, const vector<float> & L, vector<Molecular> &mol, uint nmol, string filename, string TYPE);
-void parameters(Molecular &mol);
-void TransformAtomictoMolecular(vector<Atom> &r, uint nsteps,  uint natoms, const vector<float> & L, vector<Molecular> &mol, uint nmol);
 
 #endif

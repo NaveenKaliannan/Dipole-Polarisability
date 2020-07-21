@@ -17,7 +17,7 @@
 #include <cmath> 
 #include "../include/io.h"
 #include "../include/numerics.h"
-
+#include "../include/dipol.h"
 
 using namespace std;
 
