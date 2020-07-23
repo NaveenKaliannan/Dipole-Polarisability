@@ -127,7 +127,7 @@ void Print(vector<Atom> &r, uint nsteps, uint natoms, const vector<float> & L, v
         for(uint i = 0;i < nmol;++i)
           {
             uint id = nmol*t+i; 
-            outfile << mol[id].MOL <<  "  " << mol[id].PD_x << "  " << mol[id].PD_y << "  " << mol[id].PD_z << "  "<< mol[id].Pol_xx << "  " << mol[id].Pol_yy << "  " << mol[id].Pol_zz << endl;
+            outfile << mol[id].MOL <<  "  " << mol[id].PD.x << "  " << mol[id].PD.y << "  " << mol[id].PD.z << "  "<< mol[id].PPol.xx << "  " << mol[id].PPol.yy << "  " << mol[id].PPol.zz << endl;
           }
       }
   outfile.close();
@@ -277,7 +277,59 @@ void BringintoBox(vector<Atom> &r, uint nsteps,  uint natoms, const vector<float
     }
 }
 
+void init_Matrix_zero(vector<Matrix> & Tij, uint nsteps, uint nmol)
+{
+  for(uint t = 0; t < nsteps; ++t )
+    {        
+      for(uint i = 0;i < nmol;++i)
+        {
+          uint id = nmol*t+i; 
+          Tij[id].xx= 0;Tij[id].yy= 0;Tij[id].zz= 0;
+          Tij[id].xy= 0;Tij[id].xz= 0;Tij[id].yz= 0;
+          Tij[id].yx= 0;Tij[id].zx= 0;Tij[id].zy= 0;
+        }
+    }
+}
 
 
+void init_Vector_zero(vector<Vector> & dipole, uint nsteps, uint nmol)
+{
+  for(uint t = 0; t < nsteps; ++t )
+    {        
+      for(uint i = 0;i < nmol;++i)
+        {
+          uint id = nmol*t+i; 
+          dipole[id].x = 0 ;
+          dipole[id].y = 0 ;
+          dipole[id].z = 0 ;
+        }
+    }
+}
+
+
+void Mat_vec(const Matrix & A, const Vector & b, Vector & dummy)
+{  
+  dummy.x = A.xx * b.x + A.xy * b.y + A.xz * b.z;
+  dummy.y = A.yx * b.x + A.yy * b.y + A.yz * b.z;
+  dummy.z = A.zx * b.x + A.zy * b.y + A.zz * b.z;
+}
+
+
+void Mat_Mat(const Matrix & A, const Matrix & B, Matrix & C)
+{
+  C.xx = A.xx * B.xx + A.xy * B.yx + A.xz * B.zx;
+  C.xy = A.xx * B.xy + A.xy * B.yy + A.xz * B.zy;
+  C.xz = A.xx * B.xz + A.xy * B.yz + A.xz * B.zz;
+
+  C.yx = A.yx * B.xx + A.yy * B.yx + A.yz * B.zx;
+  C.yy = A.yx * B.xy + A.yy * B.yy + A.yz * B.zy;
+  C.yz = A.yx * B.xz + A.yy * B.yz + A.yz * B.zz;
+
+  C.zx = A.zx * B.xx + A.zy * B.yx + A.zz * B.zx;
+  C.zy = A.zx * B.xy + A.zy * B.yy + A.zz * B.zy;
+  C.zz = A.zx * B.xz + A.zy * B.yz + A.zz * B.zz;
+
+//cout << "mat  "<< C.xx << "  " << C.yy << "  " << C.zz << endl;
+}
 
 

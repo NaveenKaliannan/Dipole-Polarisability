@@ -17,6 +17,84 @@
 using namespace std;
 
 
+void Tij_dipole(const Matrix & Tij, const Vector & dipole, Vector & dummy)
+{  
+  dummy.x -= Tij.xx * dipole.x + Tij.xy * dipole.y + Tij.xz * dipole.z;
+  dummy.y -= Tij.yx * dipole.x + Tij.yy * dipole.y + Tij.yz * dipole.z;
+  dummy.z -= Tij.zx * dipole.x + Tij.zy * dipole.y + Tij.zz * dipole.z;
+}
+
+
+void Tij_Pol(const Matrix & Tij, const Matrix & Pol, Matrix & dummy)
+{
+  dummy.xx -= Tij.xx * Pol.xx + Tij.xy * Pol.yx + Tij.xz * Pol.zx;
+  dummy.xy -= Tij.xx * Pol.xy + Tij.xy * Pol.yy + Tij.xz * Pol.zy;
+  dummy.xz -= Tij.xx * Pol.xz + Tij.xy * Pol.yz + Tij.xz * Pol.zz;
+
+  dummy.yx -= Tij.yx * Pol.xx + Tij.yy * Pol.yx + Tij.yz * Pol.zx;
+  dummy.yy -= Tij.yx * Pol.xy + Tij.yy * Pol.yy + Tij.yz * Pol.zy;
+  dummy.yz -= Tij.yx * Pol.xz + Tij.yy * Pol.yz + Tij.yz * Pol.zz;
+
+  dummy.zx -= Tij.zx * Pol.xx + Tij.zy * Pol.yx + Tij.zz * Pol.zx;
+  dummy.zy -= Tij.zx * Pol.xy + Tij.zy * Pol.yy + Tij.zz * Pol.zy;
+  dummy.zz -= Tij.zx * Pol.xz + Tij.zy * Pol.yz + Tij.zz * Pol.zz;
+}
+
+
+
+
+void Induced_dipole_pol(vector<Molecular> &mol, uint nsteps, uint nmol, const vector<float> & L, uint niter)
+{
+  float x = 0, y = 0, z = 0, rij = 0;
+  float rcut = 10;
+  Matrix Tij;
+  vector<Vector> TD (nmol), dummyTD (nmol) ; 
+  vector<Matrix> TP (nmol), dummyTP (nmol) ; 
+  copydata(mol, nsteps, nmol, TP, TD );  
+  for(uint t = 0; t < nsteps; ++t )
+    {   
+      for(uint iter = 0; iter < niter ; ++iter)
+        {          
+          init_Matrix_zero(dummyTP, nsteps, nmol);
+          init_Vector_zero(dummyTD, nsteps, nmol);     
+          for(uint i = 0;i < nmol;++i)
+            {
+              uint idi = nmol*t+i; 
+              for(uint j = 0;j < nmol;++j)
+                {
+                  uint idj = nmol*t+j; 
+                  x = mol[idi].x - mol[idj].x; y = mol[idi].y - mol[idj].y; z = mol[idi].z - mol[idj].z;
+                  rij = mindis(x,y,z,L);
+                  if(i == j){}
+                  else if (i != j && rij < rcut)
+                  {
+                    dipoletensorfield(Tij, rij, x, y, z);
+                    Tij_dipole(Tij, TD[j], dummyTD[i]);
+                    Tij_Pol(Tij, TP[j], dummyTP[i]);   
+                    //cout << idi << " start  " << TP[idi].xx << "  " << TP[idi].yy << "  " << TP[idi].zz << endl;
+                  }
+
+                }
+            }
+          for(uint i = 0;i < nmol;++i)
+            {
+              uint idi = nmol*t+i; 
+              Mat_vec(mol[idi].PPol, dummyTD[i], TD[i]);
+              Mat_Mat(mol[idi].PPol, dummyTP[i], TP[i]);
+
+              mol[idi].ID.x += TD[i].x ;
+              mol[idi].ID.y += TD[i].y ;
+              mol[idi].ID.z += TD[i].z ;
+
+              mol[idi].IPol.xx += TP[i].xx;mol[idi].IPol.yy += TP[i].yy;mol[idi].IPol.zz += TP[i].zz;
+              mol[idi].IPol.xy += TP[i].xy;mol[idi].IPol.xz += TP[i].xz;mol[idi].IPol.yz += TP[i].yz;
+              mol[idi].IPol.yx += TP[i].yx;mol[idi].IPol.zx += TP[i].zx;mol[idi].IPol.zy += TP[i].zy;
+            }
+        }
+    }
+}
+
+
 
 void parameters(Molecular &mol)
 {  
@@ -46,48 +124,73 @@ void parameters(Molecular &mol)
   if(mol.MOL[0] == 'H' && mol.MOL[1] == '2' && mol.MOL[2] == 'O')
     {
       mol.q = 0;
-      mol.Pol_xx = 1.3227;mol.Pol_yy =  1.1191;mol.Pol_zz = 0.8808;
-      mol.Pol_xy = 0.0018;mol.Pol_xz = -0.0003;mol.Pol_yz = 0.0006;
-      mol.Pol_yx = 0.0016;mol.Pol_zx = -0.0002;mol.Pol_zy = 0.0006; 
+      mol.PPol.xx = 1.3227;mol.PPol.yy =  1.1191;mol.PPol.zz = 0.8808;
+      mol.PPol.xy = 0.0018;mol.PPol.xz = -0.0003;mol.PPol.yz = 0.0006;
+      mol.PPol.yx = 0.0016;mol.PPol.zx = -0.0002;mol.PPol.zy = 0.0006; 
+
+      mol.PPol.xy = 0.0000;mol.PPol.xz = -0.0000;mol.PPol.yz = 0.0000;
+      mol.PPol.yx = 0.0000;mol.PPol.zx = -0.0000;mol.PPol.zy = 0.0000; 
+
+      mol.IPol.xx = 0.0000;mol.IPol.yy = 0.0000;mol.IPol.zz = 0.0000;
+      mol.IPol.xy = 0.0000;mol.IPol.xz = 0.0000;mol.IPol.yz = 0.0000;
+      mol.IPol.yx = 0.0000;mol.IPol.zx = 0.0000;mol.IPol.zy = 0.0000; 
     }
   else if( ( mol.MOL[0] == 'M' || mol.MOL[0] == 'm' ) && ( mol.MOL[1] == 'G' || mol.MOL[1] == 'g' ))
     {
       mol.q = 0;
-      mol.Pol_xx = 10.090;mol.Pol_yy = 10.090;mol.Pol_zz = 10.090;
-      mol.Pol_xy = 0.0000;mol.Pol_xz = 0.0000;mol.Pol_yz = 0.0000;
-      mol.Pol_yx = 0.0000;mol.Pol_zx = 0.0000;mol.Pol_zy = 0.0000;
+      mol.PPol.xx = 10.090;mol.PPol.yy = 10.090;mol.PPol.zz = 10.090;
+      mol.PPol.xy = 0.0000;mol.PPol.xz = 0.0000;mol.PPol.yz = 0.0000;
+      mol.PPol.yx = 0.0000;mol.PPol.zx = 0.0000;mol.PPol.zy = 0.0000;
+
+      mol.IPol.xx = 0.0000;mol.IPol.yy = 0.0000;mol.IPol.zz = 0.0000;
+      mol.IPol.xy = 0.0000;mol.IPol.xz = 0.0000;mol.IPol.yz = 0.0000;
+      mol.IPol.yx = 0.0000;mol.IPol.zx = 0.0000;mol.IPol.zy = 0.0000; 
     }
   else if( ( mol.MOL[0] == 'C' || mol.MOL[0] == 'c' ) && ( mol.MOL[1] == 'L' || mol.MOL[1] == 'l' ))
     {
       mol.q = 0;
-      mol.Pol_xx = 1.4300;mol.Pol_yy = 1.4300;mol.Pol_zz = 1.4300;
-      mol.Pol_xy = 0.0087;mol.Pol_xz =-0.0080;mol.Pol_yz = 0.0083;
-      mol.Pol_yx = 0.0087;mol.Pol_zx =-0.0080;mol.Pol_zy = 0.0083;
+      mol.PPol.xx = 1.4300;mol.PPol.yy = 1.4300;mol.PPol.zz = 1.4300;
+      mol.PPol.xy = 0.0087;mol.PPol.xz =-0.0080;mol.PPol.yz = 0.0083;
+      mol.PPol.yx = 0.0087;mol.PPol.zx =-0.0080;mol.PPol.zy = 0.0083;
+
+      mol.IPol.xx = 0.0000;mol.IPol.yy = 0.0000;mol.IPol.zz = 0.0000;
+      mol.IPol.xy = 0.0000;mol.IPol.xz = 0.0000;mol.IPol.yz = 0.0000;
+      mol.IPol.yx = 0.0000;mol.IPol.zx = 0.0000;mol.IPol.zy = 0.0000; 
     }
   else if( ( mol.MOL[0] == 'N' || mol.MOL[0] == 'n' ) && ( mol.MOL[1] == 'A' || mol.MOL[1] == 'a' ))
     {
       mol.q = 0;
-      mol.Pol_xx = 22.050;mol.Pol_yy = 22.050;mol.Pol_zz = 22.050;
-      mol.Pol_xy = 0.0000;mol.Pol_xz = 0.0000;mol.Pol_yz = 0.0000;
-      mol.Pol_yx = 0.0000;mol.Pol_zx = 0.0000;mol.Pol_zy = 0.0000;
+      mol.PPol.xx = 22.050;mol.PPol.yy = 22.050;mol.PPol.zz = 22.050;
+      mol.PPol.xy = 0.0000;mol.PPol.xz = 0.0000;mol.PPol.yz = 0.0000;
+      mol.PPol.yx = 0.0000;mol.PPol.zx = 0.0000;mol.PPol.zy = 0.0000;
+
+      mol.IPol.xx = 0.0000;mol.IPol.yy = 0.0000;mol.IPol.zz = 0.0000;
+      mol.IPol.xy = 0.0000;mol.IPol.xz = 0.0000;mol.IPol.yz = 0.0000;
+      mol.IPol.yx = 0.0000;mol.IPol.zx = 0.0000;mol.IPol.zy = 0.0000; 
     }
   else if(mol.MOL[0] == 'S' && mol.MOL[1] == 'O' && mol.MOL[2] == '4')
     {
       mol.q = 0;
-      mol.Pol_xx = 6.104;mol.Pol_yy = 6.0861;mol.Pol_zz = 6.1769;
-      mol.Pol_xy =-0.013;mol.Pol_xz = 0.0011;mol.Pol_yz = 0.0808;
-      mol.Pol_yx =-0.014;mol.Pol_zx = 0.0006;mol.Pol_zy = 0.0806; 
+      mol.PPol.xx = 6.104;mol.PPol.yy = 6.0861;mol.PPol.zz = 6.1769;
+      mol.PPol.xy =-0.013;mol.PPol.xz = 0.0011;mol.PPol.yz = 0.0808;
+      mol.PPol.yx =-0.014;mol.PPol.zx = 0.0006;mol.PPol.zy = 0.0806; 
+
+      mol.IPol.xx = 0.0000;mol.IPol.yy = 0.0000;mol.IPol.zz = 0.0000;
+      mol.IPol.xy = 0.0000;mol.IPol.xz = 0.0000;mol.IPol.yz = 0.0000;
+      mol.IPol.yx = 0.0000;mol.IPol.zx = 0.0000;mol.IPol.zy = 0.0000; 
     }
 }
 
+
+// Transforming atomic to molecular assigns dipole moment, center of mass and permanent polarisabilites to the variables
 void TransformAtomictoMolecular(vector<Atom> &r, uint nsteps,  uint natoms, const vector<float> & L, vector<Molecular> &mol, uint nmol)
 {
-  Molecular mols;
+  Molecular mols; 
   for(uint t = 0; t < nsteps; ++t )
     { 
       for(uint i = 0;i < natoms;++i)
         {
-          uint id = natoms*t+i;
+          uint id = natoms*t+i;          
           // NA
           if((r[id].symbol[0] == 'N' || r[id].symbol[0] == 'n' ) && ( r[id].symbol[1] == 'A' || r[id].symbol[1] == 'a'))
             {
@@ -96,9 +199,12 @@ void TransformAtomictoMolecular(vector<Atom> &r, uint nsteps,  uint natoms, cons
               mols.z = r[id].z;
               mols.MOL = r[id].symbol;
               mols.m = r[id].atomicmass; 
-              mols.PD_x = 0 ;
-              mols.PD_y = 0 ;
-              mols.PD_z = 0 ;
+              mols.PD.x = 0 ;
+              mols.PD.y = 0 ;
+              mols.PD.z = 0 ;
+              mols.ID.x = 0 ;
+              mols.ID.y = 0 ;
+              mols.ID.z = 0 ;
               parameters(mols);
               mol.push_back(mols); 
             }
@@ -110,32 +216,48 @@ void TransformAtomictoMolecular(vector<Atom> &r, uint nsteps,  uint natoms, cons
               mols.z = r[id].z;
               mols.MOL = r[id].symbol;
               mols.m = r[id].atomicmass; 
-              mols.PD_x = 0 ;
-              mols.PD_y = 0 ;
-              mols.PD_z = 0 ;
+              mols.PD.x = 0 ;
+              mols.PD.y = 0 ;
+              mols.PD.z = 0 ;
+              mols.ID.x = 0 ;
+              mols.ID.y = 0 ;
+              mols.ID.z = 0 ;
               parameters(mols);
               mol.push_back(mols); 
             }
           // SO4
           if(r[id].symbol[0] == 'S' && r[id+1].symbol[0] == 'O' && r[id+2].symbol[0] == 'O' && r[id+3].symbol[0] == 'O')
-            {
+            { 
               const float am_S = 32.065 * amu, am_O = 16 * amu, am_SO4 = 96.06 * amu ;
               mols.x = ( r[id-1].x * am_O + r[id].x * am_S + r[id+1].x * am_O + r[id+2].x * am_O + r[id+3].x * am_O ) / am_SO4 ;
               mols.y = ( r[id-1].y * am_O + r[id].y * am_S + r[id+1].y * am_O + r[id+2].y * am_O + r[id+3].y * am_O ) / am_SO4 ;
               mols.z = ( r[id-1].z * am_O + r[id].z * am_S + r[id+1].z * am_O + r[id+2].z * am_O + r[id+3].z * am_O ) / am_SO4 ;               
               mols.MOL = "SO4";
-              mols.m = 96.06; 
-              mols.PD_x = 0 ;
-              mols.PD_y = 0 ;
-              mols.PD_z = 0 ;
+              mols.m = 96.06;  
+              float wb_x = 0,wb_y = 0,wb_z = 0;           // bisector vector
+              wb_x = min_distance(r[id-1].x - r[id].x, L[0]) + min_distance(r[id+1].x - r[id].x, L[0]) + min_distance(r[id+2].x - r[id].x, L[0]) + min_distance(r[id+3].x - r[id].x, L[0]) ;
+              wb_y = min_distance(r[id-1].y - r[id].y, L[1]) + min_distance(r[id+1].y - r[id].y, L[1]) + min_distance(r[id+2].y - r[id].y, L[1]) + min_distance(r[id+3].y - r[id].y, L[1]) ;
+              wb_z = min_distance(r[id-1].z - r[id].z, L[2]) + min_distance(r[id+1].z - r[id].z, L[2]) + min_distance(r[id+2].z - r[id].z, L[2]) + min_distance(r[id+3].z - r[id].z, L[2]) ;
+              float sum  =  pow(wb_x * wb_x  + wb_y * wb_y + wb_z * wb_z, 0.5);
+              wb_x = wb_x / sum ;
+              wb_y = wb_y / sum ;
+              wb_z = wb_z / sum ;
+              mols.PD.x = 0  ;
+              mols.PD.y = 0  ;
+              mols.PD.z = 0  ;
+              mols.ID.x = 0 ;
+              mols.ID.y = 0 ;
+              mols.ID.z = 0 ;
               parameters(mols);
               mol.push_back(mols);
-            }
+            } 
           // H2O
           if(r[id].symbol[0] == 'O' && r[id+1].symbol[0] == 'H' && r[id+2].symbol[0] == 'H')
-            {
+            { 
               const float am_H = 1.00784 * amu, am_O = 15.999 * amu, am_H2O = 18.015 * amu ;
               float wb_x = 0,wb_y = 0,wb_z = 0;           // bisector vector
+              float wb1_x = 0,wb1_y = 0,wb1_z = 0;           // bisector vector
+              float wb2_x = 0,wb2_y = 0,wb2_z = 0;           // bisector vector
               float HH_x = 0,HH_y = 0,HH_z = 0 ;           // H-H vector
               float Pv_x = 0,Pv_y = 0,Pv_z = 0;           // vector Perpendicular to bisector and H-H vector
               mols.x = ( r[id].x * am_O + r[id+1].x * am_H + r[id+2].x * am_H ) / am_H2O ;
@@ -143,13 +265,30 @@ void TransformAtomictoMolecular(vector<Atom> &r, uint nsteps,  uint natoms, cons
               mols.z = ( r[id].z * am_O + r[id+1].z * am_H + r[id+2].z * am_H ) / am_H2O ;
 
               // water bisector vector, Minimum image convention was applied
-              wb_x = min_distance(r[id+1].x - r[id].x, L[0]) + min_distance(r[id+2].x - r[id].x, L[0]) ;
-              wb_y = min_distance(r[id+1].y - r[id].y, L[1]) + min_distance(r[id+2].y - r[id].y, L[1]) ;
-              wb_z = min_distance(r[id+1].z - r[id].z, L[2]) + min_distance(r[id+2].z - r[id].z, L[2]) ;
-              float sum  =  pow(wb_x * wb_x  + wb_y * wb_y + wb_z * wb_z, 0.5);
+              wb1_x = min_distance(r[id+1].x - r[id].x, L[0]) ;
+              wb1_y = min_distance(r[id+1].y - r[id].y, L[1]) ;
+              wb1_z = min_distance(r[id+1].z - r[id].z, L[2]) ;
+              wb2_x = min_distance(r[id+2].x - r[id].x, L[0]) ;
+              wb2_y = min_distance(r[id+2].y - r[id].y, L[1]) ;
+              wb2_z = min_distance(r[id+2].z - r[id].z, L[2]) ;
+              float sum  =  pow(wb1_x * wb1_x  + wb1_y * wb1_y + wb1_z * wb1_z, 0.5);
+              wb1_x = wb1_x / sum ;
+              wb1_y = wb1_y / sum ;
+              wb1_z = wb1_z / sum ;
+              sum  =  pow(wb2_x * wb2_x  + wb2_y * wb2_y + wb2_z * wb2_z, 0.5);
+              wb2_x = wb2_x / sum ;
+              wb2_y = wb2_y / sum ;
+              wb2_z = wb2_z / sum ;
+
+              //water bisector [unit vector]
+              wb_x = wb1_x + wb2_x ;
+              wb_y = wb1_y + wb2_y ;
+              wb_z = wb1_z + wb2_z ;
+              sum  =  pow(wb_x * wb_x  + wb_y * wb_y + wb_z * wb_z, 0.5);
               wb_x = wb_x / sum ;
               wb_y = wb_y / sum ;
               wb_z = wb_z / sum ;
+
               // H-H vector
               HH_x = (r[id+1].x - r[id+2].x) ;
               HH_y = (r[id+1].y - r[id+2].y) ;
@@ -178,64 +317,92 @@ void TransformAtomictoMolecular(vector<Atom> &r, uint nsteps,  uint natoms, cons
               mols.MOL = "H2O";
               mols.m = 18; 
         
-              /* converting the water bisector into permanent dipole [debye]
-                  3
-               i =     9941, time =     3976.400, E =       -17.1856249667
-               O        13.4624293660       17.2132760672        4.3695246899
-               H        12.6258911614       16.7156767906        4.4333223805
-               H        13.6991295972       17.4314209339        5.2307556387
-
-               Dipole moment [Debye]
-               X=   -1.02713357 Y=   -0.46771379 Z=    1.63613604     Total=      1.98763697
-              // projecting the water dipole [debye] in water bisector direction using projection matrix*/
-              //float d_x = -1.0271, d_y = -0.467, d_z = 1.636;
-              //mols.PD_x = wb_x * wb_x * d_x + wb_x * wb_y * d_y + wb_x * wb_z * d_z;
-              //mols.PD_y = wb_y * wb_x * d_x + wb_y * wb_y * d_y + wb_y * wb_z * d_z ;
-              //mols.PD_z = wb_z * wb_x * d_x + wb_z * wb_y * d_y + wb_z * wb_z * d_z;
               //Dipole moment [Debye]
-              mols.PD_x = wb_x * Unitvectortodebye ;
-              mols.PD_y = wb_y * Unitvectortodebye ;
-              mols.PD_z = wb_z * Unitvectortodebye ;
+              mols.PD.x = wb_x * Unitvectortodebye ;
+              mols.PD.y = wb_y * Unitvectortodebye ;
+              mols.PD.z = wb_z * Unitvectortodebye ;
+              mols.ID.x = 0 ;
+              mols.ID.y = 0 ;
+              mols.ID.z = 0 ;
 
               // Permanent polarisability [Angstrom]
               parameters(mols);
-              float A_xx = mols.Pol_xx, A_yy = mols.Pol_yy, A_zz = mols.Pol_zz,
-                    A_xy = mols.Pol_xy, A_xz = mols.Pol_xz, A_yz = mols.Pol_yz,
-                    A_yx = mols.Pol_yx, A_zx = mols.Pol_zx, A_zy = mols.Pol_zy;     
+              float A_xx = mols.PPol.xx, A_yy = mols.PPol.yy, A_zz = mols.PPol.zz,
+                    A_xy = mols.PPol.xy, A_xz = mols.PPol.xz, A_yz = mols.PPol.yz,
+                    A_yx = mols.PPol.yx, A_zx = mols.PPol.zx, A_zy = mols.PPol.zy;     
 
-              mols.Pol_xx =  HH_x * HH_x * A_xx + wb_x * wb_x * A_yy + Pv_x * Pv_x * A_zz
+              mols.PPol.xx =  HH_x * HH_x * A_xx + wb_x * wb_x * A_yy + Pv_x * Pv_x * A_zz
                            + HH_x * wb_x * A_xy + HH_x * Pv_x * A_xz + wb_x * Pv_x * A_yz 
                            + wb_x * HH_x * A_yx + Pv_x * HH_x * A_zx + Pv_x * wb_x * A_zy ;
-              mols.Pol_yy =  HH_y * HH_y * A_xx + wb_y * wb_y * A_yy + Pv_y * Pv_y * A_zz
+              mols.PPol.yy =  HH_y * HH_y * A_xx + wb_y * wb_y * A_yy + Pv_y * Pv_y * A_zz
                            + HH_y * wb_y * A_xy + HH_y * Pv_y * A_xz + wb_y * Pv_y * A_yz 
                            + wb_y * HH_y * A_yx + Pv_y * HH_y * A_zx + Pv_y * wb_y * A_zy ;
-              mols.Pol_zz =  HH_z * HH_z * A_xx + wb_z * wb_z * A_yy + Pv_z * Pv_z * A_zz
+              mols.PPol.zz =  HH_z * HH_z * A_xx + wb_z * wb_z * A_yy + Pv_z * Pv_z * A_zz
                            + HH_z * wb_z * A_xy + HH_z * Pv_z * A_xz + wb_z * Pv_z * A_yz 
                            + wb_z * HH_z * A_yx + Pv_z * HH_z * A_zx + Pv_z * wb_z * A_zy ;
-              mols.Pol_xy =  HH_x * HH_y * A_xx + wb_x * wb_y * A_yy + Pv_x * Pv_y * A_zz
+              mols.PPol.xy =  HH_x * HH_y * A_xx + wb_x * wb_y * A_yy + Pv_x * Pv_y * A_zz
                            + HH_x * wb_y * A_xy + HH_x * Pv_y * A_xz + wb_x * Pv_y * A_yz 
                            + wb_x * HH_y * A_yx + Pv_x * HH_y * A_zx + Pv_x * wb_y * A_zy ;
-              mols.Pol_xz =  HH_x * HH_z * A_xx + wb_x * wb_z * A_yy + Pv_x * Pv_z * A_zz
+              mols.PPol.xz =  HH_x * HH_z * A_xx + wb_x * wb_z * A_yy + Pv_x * Pv_z * A_zz
                            + HH_x * wb_z * A_xy + HH_x * Pv_z * A_xz + wb_x * Pv_z * A_yz 
                            + wb_x * HH_z * A_yx + Pv_x * HH_z * A_zx + Pv_x * wb_z * A_zy ;
-              mols.Pol_yz =  HH_y * HH_z * A_xx + wb_y * wb_z * A_yy + Pv_y * Pv_z * A_zz
+              mols.PPol.yz =  HH_y * HH_z * A_xx + wb_y * wb_z * A_yy + Pv_y * Pv_z * A_zz
                            + HH_y * wb_z * A_xy + HH_y * Pv_z * A_xz + wb_y * Pv_z * A_yz 
                            + wb_y * HH_z * A_yx + Pv_y * HH_z * A_zx + Pv_y * wb_z * A_zy ;
-              mols.Pol_yx =  HH_y * HH_x * A_xx + wb_y * wb_x * A_yy + Pv_y * Pv_x * A_zz
+              mols.PPol.yx =  HH_y * HH_x * A_xx + wb_y * wb_x * A_yy + Pv_y * Pv_x * A_zz
                            + HH_y * wb_x * A_xy + HH_y * Pv_x * A_xz + wb_y * Pv_x * A_yz 
                            + wb_y * HH_x * A_yx + Pv_y * HH_x * A_zx + Pv_y * wb_x * A_zy ;
-              mols.Pol_zx =  HH_z * HH_x * A_xx + wb_z * wb_x * A_yy + Pv_z * Pv_x * A_zz
+              mols.PPol.zx =  HH_z * HH_x * A_xx + wb_z * wb_x * A_yy + Pv_z * Pv_x * A_zz
                            + HH_z * wb_x * A_xy + HH_z * Pv_x * A_xz + wb_z * Pv_x * A_yz 
                            + wb_z * HH_x * A_yx + Pv_z * HH_x * A_zx + Pv_z * wb_x * A_zy ;
-              mols.Pol_zy =  HH_z * HH_y * A_xx + wb_z * wb_y * A_yy + Pv_z * Pv_y * A_zz
+              mols.PPol.zy =  HH_z * HH_y * A_xx + wb_z * wb_y * A_yy + Pv_z * Pv_y * A_zz
                            + HH_z * wb_y * A_xy + HH_z * Pv_y * A_xz + wb_z * Pv_y * A_yz 
                            + wb_z * HH_y * A_yx + Pv_z * HH_y * A_zx + Pv_z * wb_y * A_zy ;
               mol.push_back(mols);
             }
         }
-    }
+    } 
 }
 
 
 
+void dipoletensorfield(Matrix &Tij, float rij, float x, float y, float z)
+{
+  float ar  = sl * rij;
+  float st1 = 1.0 - (1.0 + ar + (ar*ar/2.0)) * exp(-ar);     
+  float st2 = 1.0 - (1.0 + ar + (ar*ar/2.0) + (pow(ar,3.0)/6.0)) * exp(-ar); 
+  float r3  = pow(rij, -3.0) * st1 ; 
+  float r5  = 3 * pow(rij, -5.0) * st2;
+
+  Tij.xx = r3 - r5 * x * x;
+  Tij.yy = r3 - r5 * y * y;
+  Tij.zz = r3 - r5 * z * z;
+  Tij.xy = 0  - r5 * x * y;  
+  Tij.xz = 0  - r5 * x * z;
+  Tij.yz = 0  - r5 * y * z; 
+  Tij.yx = 0  - r5 * y * x;  
+  Tij.zx = 0  - r5 * z * x;
+  Tij.zy = 0  - r5 * z * y; 
+}
+
+
+
+void copydata(const vector<Molecular> &mol, uint nsteps, uint nmol,  vector<Matrix> & TP,  vector<Vector> & TD )
+{
+  //copying the permanent dipole and polarisability
+  for(uint t = 0; t < nsteps; ++t )
+    {        
+      for(uint i = 0;i < nmol;++i)
+        {
+          uint id = nmol*t+i; 
+          TD[id].x = mol[id].PD.x ;
+          TD[id].y = mol[id].PD.y ;
+          TD[id].z = mol[id].PD.z ;
+
+          TP[id].xx= mol[id].PPol.xx;TP[id].yy= mol[id].PPol.yy;TP[id].zz= mol[id].PPol.zz;
+          TP[id].xy= mol[id].PPol.xy;TP[id].xz= mol[id].PPol.xz;TP[id].yz= mol[id].PPol.yz;
+          TP[id].yx= mol[id].PPol.yx;TP[id].zx= mol[id].PPol.zx;TP[id].zy= mol[id].PPol.zy;
+        }
+    }
+}
 

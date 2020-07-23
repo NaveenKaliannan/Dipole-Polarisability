@@ -12,10 +12,16 @@
 #include <sstream>  
 #include <cmath>
 
+#include "../include/io.h"
+
 using namespace std;
+
+
 
 float min_distance(float r, float l);
 float mindis(float dx,float dy,float dz, const vector<float> & L);
 float norm(float x,float y,float z);
+
+
 
 #endif
