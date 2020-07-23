@@ -17,18 +17,13 @@
 using namespace std;
 
 
-
-
-
-
-
 void Induced_dipole_pol(vector<Molecular> &mol, uint nsteps, uint nmol, const vector<float> & L, uint niter)
 {
   float x = 0, y = 0, z = 0, rij = 0;
-  float rcut = 10;
+  float rcut = 20;
   Matrix Tij;
-  vector<Vector> TD (nmol), dummyTD (nmol) ; 
-  vector<Matrix> TP (nmol), dummyTP (nmol) ; 
+  vector<Vector> TD (nmol*nsteps), dummyTD (nmol) ; 
+  vector<Matrix> TP (nmol*nsteps), dummyTP (nmol) ; 
   copydata(mol, nsteps, nmol, TP, TD );  
   for(uint t = 0; t < nsteps; ++t )
     {   
@@ -43,20 +38,23 @@ void Induced_dipole_pol(vector<Molecular> &mol, uint nsteps, uint nmol, const ve
                 {
                   uint idj = nmol*t+j; 
                   x = mol[idi].x - mol[idj].x; y = mol[idi].y - mol[idj].y; z = mol[idi].z - mol[idj].z;
-                  rij = mindis(x,y,z,L);
+                  rij = mindis(x,y,z,L); 
                   if(i == j){}
-                  else if (i != j && rij < rcut)
+                  else if (i != j && rij < rcut )
                   {
-                    dipoletensorfield(Tij, rij, x, y, z);
+                    dipoletensorfield(Tij, rij, x, y, z); 
                     Tij_dipole(Tij, TD[j], dummyTD[i]);
                     Tij_Pol(Tij, TP[j], dummyTP[i]);   
                   }
-
                 }
             }
           for(uint i = 0;i < nmol;++i)
             {
               uint idi = nmol*t+i; 
+if(i == 0)
+{
+cout << mol[idi].PPol.xx << "  " <<  TP[i].xx << "  " << dummyTD[i].x << "  " << TD[i].x << "  " <<  endl;
+}
               Mat_vec(mol[idi].PPol, dummyTD[i], TD[i]);
               Mat_Mat(mol[idi].PPol, dummyTP[i], TP[i]);
 
@@ -67,6 +65,12 @@ void Induced_dipole_pol(vector<Molecular> &mol, uint nsteps, uint nmol, const ve
               mol[idi].IPol.xx += TP[i].xx;mol[idi].IPol.yy += TP[i].yy;mol[idi].IPol.zz += TP[i].zz;
               mol[idi].IPol.xy += TP[i].xy;mol[idi].IPol.xz += TP[i].xz;mol[idi].IPol.yz += TP[i].yz;
               mol[idi].IPol.yx += TP[i].yx;mol[idi].IPol.zx += TP[i].zx;mol[idi].IPol.zy += TP[i].zy;
+
+if(i == 0)
+{
+cout << mol[idi].PPol.xx << "  " <<  TP[i].xx << "  " << TD[i].x << "  " <<  endl;
+}
+
             }
         }
     }
@@ -298,7 +302,7 @@ void TransformAtomictoMolecular(vector<Atom> &r, uint nsteps,  uint natoms, cons
               //Dipole moment [Debye]
               mols.PD.x = wb_x * Unitvectortodebye ;
               mols.PD.y = wb_y * Unitvectortodebye ;
-              mols.PD.z = wb_z * Unitvectortodebye ;
+              mols.PD.z = wb_z * Unitvectortodebye ;  
               mols.ID.x = 0 ;
               mols.ID.y = 0 ;
               mols.ID.z = 0 ;
