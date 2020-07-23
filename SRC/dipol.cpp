@@ -17,28 +17,7 @@
 using namespace std;
 
 
-void Tij_dipole(const Matrix & Tij, const Vector & dipole, Vector & dummy)
-{  
-  dummy.x -= Tij.xx * dipole.x + Tij.xy * dipole.y + Tij.xz * dipole.z;
-  dummy.y -= Tij.yx * dipole.x + Tij.yy * dipole.y + Tij.yz * dipole.z;
-  dummy.z -= Tij.zx * dipole.x + Tij.zy * dipole.y + Tij.zz * dipole.z;
-}
 
-
-void Tij_Pol(const Matrix & Tij, const Matrix & Pol, Matrix & dummy)
-{
-  dummy.xx -= Tij.xx * Pol.xx + Tij.xy * Pol.yx + Tij.xz * Pol.zx;
-  dummy.xy -= Tij.xx * Pol.xy + Tij.xy * Pol.yy + Tij.xz * Pol.zy;
-  dummy.xz -= Tij.xx * Pol.xz + Tij.xy * Pol.yz + Tij.xz * Pol.zz;
-
-  dummy.yx -= Tij.yx * Pol.xx + Tij.yy * Pol.yx + Tij.yz * Pol.zx;
-  dummy.yy -= Tij.yx * Pol.xy + Tij.yy * Pol.yy + Tij.yz * Pol.zy;
-  dummy.yz -= Tij.yx * Pol.xz + Tij.yy * Pol.yz + Tij.yz * Pol.zz;
-
-  dummy.zx -= Tij.zx * Pol.xx + Tij.zy * Pol.yx + Tij.zz * Pol.zx;
-  dummy.zy -= Tij.zx * Pol.xy + Tij.zy * Pol.yy + Tij.zz * Pol.zy;
-  dummy.zz -= Tij.zx * Pol.xz + Tij.zy * Pol.yz + Tij.zz * Pol.zz;
-}
 
 
 
@@ -71,7 +50,6 @@ void Induced_dipole_pol(vector<Molecular> &mol, uint nsteps, uint nmol, const ve
                     dipoletensorfield(Tij, rij, x, y, z);
                     Tij_dipole(Tij, TD[j], dummyTD[i]);
                     Tij_Pol(Tij, TP[j], dummyTP[i]);   
-                    //cout << idi << " start  " << TP[idi].xx << "  " << TP[idi].yy << "  " << TP[idi].zz << endl;
                   }
 
                 }
@@ -404,5 +382,29 @@ void copydata(const vector<Molecular> &mol, uint nsteps, uint nmol,  vector<Matr
           TP[id].yx= mol[id].PPol.yx;TP[id].zx= mol[id].PPol.zx;TP[id].zy= mol[id].PPol.zy;
         }
     }
+}
+
+
+void Tij_dipole(const Matrix & Tij, const Vector & dipole, Vector & dummy)
+{  
+  dummy.x -= Tij.xx * dipole.x + Tij.xy * dipole.y + Tij.xz * dipole.z;
+  dummy.y -= Tij.yx * dipole.x + Tij.yy * dipole.y + Tij.yz * dipole.z;
+  dummy.z -= Tij.zx * dipole.x + Tij.zy * dipole.y + Tij.zz * dipole.z;
+}
+
+
+void Tij_Pol(const Matrix & Tij, const Matrix & Pol, Matrix & dummy)
+{
+  dummy.xx -= Tij.xx * Pol.xx + Tij.xy * Pol.yx + Tij.xz * Pol.zx;
+  dummy.xy -= Tij.xx * Pol.xy + Tij.xy * Pol.yy + Tij.xz * Pol.zy;
+  dummy.xz -= Tij.xx * Pol.xz + Tij.xy * Pol.yz + Tij.xz * Pol.zz;
+
+  dummy.yx -= Tij.yx * Pol.xx + Tij.yy * Pol.yx + Tij.yz * Pol.zx;
+  dummy.yy -= Tij.yx * Pol.xy + Tij.yy * Pol.yy + Tij.yz * Pol.zy;
+  dummy.yz -= Tij.yx * Pol.xz + Tij.yy * Pol.yz + Tij.yz * Pol.zz;
+
+  dummy.zx -= Tij.zx * Pol.xx + Tij.zy * Pol.yx + Tij.zz * Pol.zx;
+  dummy.zy -= Tij.zx * Pol.xy + Tij.zy * Pol.yy + Tij.zz * Pol.zy;
+  dummy.zz -= Tij.zx * Pol.xz + Tij.zy * Pol.yz + Tij.zz * Pol.zz;
 }
 

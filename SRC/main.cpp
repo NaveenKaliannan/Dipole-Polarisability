@@ -50,8 +50,8 @@ int main ( int argc, char** argv )
   //readpsf(r, nsteps,  natoms, psffilename);
   Print(r, nsteps, natoms, L, mol, nmol,  "new-traj1.xyz", "ATM");
   Print(r, nsteps, natoms, L, mol, nmol,  "new-traj2.xyz", "MOL");
-  Print(r, nsteps, natoms, L, mol, nmol, "new-traj3.xyz", "DIP");
   Induced_dipole_pol(mol, nsteps, nmol, L, 4);
+  Print(r, nsteps, natoms, L, mol, nmol, "new-traj3.xyz", "DIP");
 
   return 0;
 }
