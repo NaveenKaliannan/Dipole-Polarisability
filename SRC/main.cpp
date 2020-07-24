@@ -34,9 +34,9 @@ int main ( int argc, char** argv )
   psffilename = argv[2];
   nsteps = atoi(argv[3]);
   dt = atof(argv[4]);
-  L[0] = 45;
-  L[1] = 45;
-  L[2] = 80;
+  L[0] = atof(argv[5]);
+  L[1] = atof(argv[5]);
+  L[2] = atof(argv[5]);
   natoms = atoi(argv[6]);
   nmol = atoi(argv[7]);
   fieldfilename = argv[8];

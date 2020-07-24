@@ -94,15 +94,15 @@ void readpsf(vector<Atom> &r, uint nsteps,  uint natoms, string psffilename)
 }
 
 
-//Reading the xyz trajectory
+//Reading the externally applied field over time
 void readExternalfield(vector<Vector> &E, uint nsteps, string fieldfilename)
 {
   string temp;
-  ifstream file(fieldfilename);
+  ifstream file(fieldfilename); 
   for(uint t = 0; t < nsteps; ++t )
     { 
       uint id = t; 
-      file >> temp >> E[id].x  >> E[id].y  >> E[id].z;                     
+      file >> temp >> E[id].x  >> E[id].y  >> E[id].z;       
     }
   file.close();
   file.clear();
