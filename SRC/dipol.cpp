@@ -22,18 +22,17 @@ void Induced_dipole_pol(vector<Molecular> &mol, uint nsteps, uint nmol, const ve
   float x = 0, y = 0, z = 0, rij = 0;
   float rcut = 20;
   Matrix Tij;
-  Vector Eion;
+  Vector Eion, dummyv;
   vector<Vector> TD (nmol*nsteps), dummyTD (nmol) ; 
   vector<Matrix> TP (nmol*nsteps), dummyTP (nmol) ; 
   copydata(mol, nsteps, nmol, TP, TD );  
   for(uint t = 0; t < nsteps; ++t )
     {   
-      //first induced dipole Mu_i due to External field E and ionic charges are computed: Mu_i = alpha_0 * E + alpha_0 * q * r /pow(rij,2)
-      //rhat is the unit vector describing the line between i and j molecules
+      //first induced dipole Mu_i due to External field E and ionic charges are computed: Mu_i = alpha_0 * E + alpha_0 * q * rhat /pow(rij,2)
       for(uint i = 0;i < nmol;++i)
         {
-          uint idi = nmol*t+i;  
-          Pol_Efield(mol[idi].PPol, E[t], TD[idi]);
+          uint idi = nmol*t+i; dummyv.x = 0; dummyv.y = 0; dummyv.z = 0; 
+          Pol_Efield(mol[idi].PPol, E[t], dummyv); 
           for(uint j = 0;j < nmol;++j)
             {
               uint idj = nmol*t+j; 
@@ -45,21 +44,21 @@ void Induced_dipole_pol(vector<Molecular> &mol, uint nsteps, uint nmol, const ve
               else if (i != j && rij < rcut )
                 {
                   //http://www.physics.umd.edu/courses/Phys260/agashe/S10/notes/lecture18.pdf
+                  //rhat unit vector describing the line between i and j molecules
                   float b_x = x, b_y = y, b_z = z;          
                   float sum  =  pow(b_x * b_x  + b_y * b_y + b_z * b_z, 0.5);
                   b_x = b_x / sum ;
                   b_y = b_y / sum ;
                   b_z = b_z / sum ;
-
                   Eion.x = mol[idj].q * b_x / pow(rij,2.0) ;
                   Eion.y = mol[idj].q * b_y / pow(rij,2.0) ;
                   Eion.z = mol[idj].q * b_z / pow(rij,2.0) ;
-                  Pol_Efield(mol[idi].PPol, Eion, TD[idi]);
+                  Pol_Efield(mol[idi].PPol, Eion, dummyv); 
                 }
             } 
-          mol[idi].ID.x += TD[idi].x ;
-          mol[idi].ID.y += TD[idi].y ;
-          mol[idi].ID.z += TD[idi].z ;        
+          mol[idi].ID.x += dummyv.x ; TD[idi].x += dummyv.x ;
+          mol[idi].ID.y += dummyv.y ; TD[idi].y += dummyv.y  ;
+          mol[idi].ID.z += dummyv.z ; TD[idi].z += dummyv.z ;        
         }
 
       for(uint iter = 0; iter < niter ; ++iter)

@@ -137,8 +137,19 @@ void Print(vector<Atom> &r, uint nsteps, uint natoms, const vector<float> & L, v
   else if(TYPE[0] == 'D' && TYPE[1] == 'I' && TYPE[2] == 'P')
     for(uint t = 0; t < nsteps; ++t )
       { 
-        outfile << nmol << endl ;
-        outfile << "## Molecular name [string], Dipole moment [Debye] in x y z, Polarisability tensor [Angstrom] xx yy zz " << endl;
+        float a =0, b = 0, c = 0;
+        float a1 =0, b1 = 0, c1 = 0;
+        for(uint i = 0;i < nmol;++i)
+          {
+            uint id = nmol*t+i; 
+            a += mol[id].PD.x + mol[id].ID.x;
+            b += mol[id].PD.y + mol[id].ID.y;
+            c += mol[id].PD.z + mol[id].ID.z;
+           a1 += mol[id].PPol.xx + mol[id].IPol.xx;
+           b1 += mol[id].PPol.yy + mol[id].IPol.yy;
+           c1 += mol[id].PPol.zz + mol[id].IPol.zz;
+          }
+        outfile << "## Mol [string] " << nmol << " Mu [Debye] in x y z " << a << "  " << b << "  " << c << "   "  <<  "alpha [Angstrom] xx yy zz  " << a1 << "  " <<  b1  << "  " << c1  << endl;
         for(uint i = 0;i < nmol;++i)
           {
             uint id = nmol*t+i; 
