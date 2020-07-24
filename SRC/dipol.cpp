@@ -36,9 +36,9 @@ void Induced_dipole_pol(vector<Molecular> &mol, uint nsteps, uint nmol, const ve
           for(uint j = 0;j < nmol;++j)
             {
               uint idj = nmol*t+j; 
-              x = min_distance(mol[idi].x - mol[idj].x, L[0]);
-              y = min_distance(mol[idi].y - mol[idj].y, L[1]);
-              z = min_distance(mol[idi].z - mol[idj].z, L[2]);
+              x = min_distance(mol[idj].x - mol[idi].x, L[0]);
+              y = min_distance(mol[idj].y - mol[idi].y, L[1]);
+              z = min_distance(mol[idj].z - mol[idi].z, L[2]);
               rij = mindis(x,y,z,L); 
               if(i == j){}
               else if (i != j && rij < rcut )
@@ -55,10 +55,10 @@ void Induced_dipole_pol(vector<Molecular> &mol, uint nsteps, uint nmol, const ve
                   Eion.z = mol[idj].q * b_z / pow(rij,2.0) ; 
                   Pol_Ifield(mol[idi].PPol, Eion, dummyv); 
                 }
-            } 
-          mol[idi].ID.x += dummyv.x ; TD[idi].x += dummyv.x ;
-          mol[idi].ID.y += dummyv.y ; TD[idi].y += dummyv.y ;
-          mol[idi].ID.z += dummyv.z ; TD[idi].z += dummyv.z ;        
+            }  
+          mol[idi].ID.x += dummyv.x ; //TD[idi].x += dummyv.x ;
+          mol[idi].ID.y += dummyv.y ; //TD[idi].y += dummyv.y ;
+          mol[idi].ID.z += dummyv.z ; //TD[idi].z += dummyv.z ;      
         }
 
       for(uint iter = 0; iter < niter ; ++iter)
@@ -71,9 +71,9 @@ void Induced_dipole_pol(vector<Molecular> &mol, uint nsteps, uint nmol, const ve
               for(uint j = 0;j < nmol;++j)
                 {
                   uint idj = nmol*t+j; 
-                  x = min_distance(mol[idi].x - mol[idj].x, L[0]);
-                  y = min_distance(mol[idi].y - mol[idj].y, L[1]);
-                  z = min_distance(mol[idi].z - mol[idj].z, L[2]);
+                  x = min_distance(mol[idj].x - mol[idi].x, L[0]);
+                  y = min_distance(mol[idj].y - mol[idi].y, L[1]);
+                  z = min_distance(mol[idj].z - mol[idi].z, L[2]);
                   rij = mindis(x,y,z,L); 
                   if(i == j){}
                   else if (i != j && rij < rcut )
@@ -90,6 +90,7 @@ void Induced_dipole_pol(vector<Molecular> &mol, uint nsteps, uint nmol, const ve
               Mat_vec(mol[idi].PPol, dummyTD[i], TD[idi]);
               Mat_Mat(mol[idi].PPol, dummyTP[i], TP[idi]);
 
+           // cout << mol[idi].MOL <<  "  " << TD[idi].x << "  " << TD[idi].y << "  " << TD[idi].z << "  "<< TP[idi].xx << "  " << TP[idi].yy << "  " << TP[idi].zz << endl;
               mol[idi].ID.x += TD[idi].x ;
               mol[idi].ID.y += TD[idi].y ;
               mol[idi].ID.z += TD[idi].z ;
@@ -97,7 +98,8 @@ void Induced_dipole_pol(vector<Molecular> &mol, uint nsteps, uint nmol, const ve
               mol[idi].IPol.xx += TP[idi].xx;mol[idi].IPol.yy += TP[idi].yy;mol[idi].IPol.zz += TP[idi].zz;
               mol[idi].IPol.xy += TP[idi].xy;mol[idi].IPol.xz += TP[idi].xz;mol[idi].IPol.yz += TP[idi].yz;
               mol[idi].IPol.yx += TP[idi].yx;mol[idi].IPol.zx += TP[idi].zx;mol[idi].IPol.zy += TP[idi].zy;
-            }
+
+	    }
         } 
     }
 }
@@ -145,7 +147,7 @@ void parameters(Molecular &mol)
     }
   else if( ( mol.MOL[0] == 'M' || mol.MOL[0] == 'm' ) && ( mol.MOL[1] == 'G' || mol.MOL[1] == 'g' ))
     {
-      mol.q = 1.5;
+      mol.q = 1.4;
       mol.PPol.xx = 10.090;mol.PPol.yy = 10.090;mol.PPol.zz = 10.090;
       mol.PPol.xy = 0.0000;mol.PPol.xz = 0.0000;mol.PPol.yz = 0.0000;
       mol.PPol.yx = 0.0000;mol.PPol.zx = 0.0000;mol.PPol.zy = 0.0000;
@@ -167,7 +169,7 @@ void parameters(Molecular &mol)
     }
   else if( ( mol.MOL[0] == 'N' || mol.MOL[0] == 'n' ) && ( mol.MOL[1] == 'A' || mol.MOL[1] == 'a' ))
     {
-      mol.q = 0;
+      mol.q = 1;
       mol.PPol.xx = 22.050;mol.PPol.yy = 22.050;mol.PPol.zz = 22.050;
       mol.PPol.xy = 0.0000;mol.PPol.xz = 0.0000;mol.PPol.yz = 0.0000;
       mol.PPol.yx = 0.0000;mol.PPol.zx = 0.0000;mol.PPol.zy = 0.0000;
