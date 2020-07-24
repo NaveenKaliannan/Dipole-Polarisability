@@ -17,16 +17,43 @@
 using namespace std;
 
 
-void Induced_dipole_pol(vector<Molecular> &mol, uint nsteps, uint nmol, const vector<float> & L, uint niter)
+void Induced_dipole_pol(vector<Molecular> &mol, uint nsteps, uint nmol, const vector<float> & L, uint niter, vector<Vector> &E)
 {
   float x = 0, y = 0, z = 0, rij = 0;
   float rcut = 20;
   Matrix Tij;
+  Vector Eion;
   vector<Vector> TD (nmol*nsteps), dummyTD (nmol) ; 
   vector<Matrix> TP (nmol*nsteps), dummyTP (nmol) ; 
   copydata(mol, nsteps, nmol, TP, TD );  
   for(uint t = 0; t < nsteps; ++t )
     {   
+      //first induced dipole Mu_i due to External field E and ionic charges are computed: Mu_i = alpha_0 * E + alpha_0 * q/pow(rij,2)
+      for(uint i = 0;i < nmol;++i)
+        {
+          uint idi = nmol*t+i;  
+          Pol_Efield(mol[idi].PPol, E[t], TD[idi]);
+          for(uint j = 0;j < nmol;++j)
+            {
+              uint idj = nmol*t+j; 
+              x = min_distance(mol[idi].x - mol[idj].x, L[0]);
+              y = min_distance(mol[idi].y - mol[idj].y, L[1]);
+              z = min_distance(mol[idi].z - mol[idj].z, L[2]);
+              rij = mindis(x,y,z,L); 
+              if(i == j){}
+              else if (i != j && rij < rcut )
+                {
+                  Eion.x = mol[idj].q / pow(x,2) ;
+                  Eion.y = mol[idj].q / pow(y,2) ;
+                  Eion.z = mol[idj].q / pow(z,2) ;
+                  Pol_Efield(mol[idi].PPol, Eion, TD[idi]);
+                }
+            } 
+          mol[idi].ID.x += TD[i].x ;
+          mol[idi].ID.y += TD[i].y ;
+          mol[idi].ID.z += TD[i].z ;        
+        }
+
       for(uint iter = 0; iter < niter ; ++iter)
         {          
           init_Matrix_zero(dummyTP, 1, nmol);
@@ -37,7 +64,9 @@ void Induced_dipole_pol(vector<Molecular> &mol, uint nsteps, uint nmol, const ve
               for(uint j = 0;j < nmol;++j)
                 {
                   uint idj = nmol*t+j; 
-                  x = min_distance(mol[idi].x - mol[idj].x, L[0]) ; y = min_distance(mol[idi].y - mol[idj].y, L[1]); z = min_distance(mol[idi].z - mol[idj].z, L[2]);
+                  x = min_distance(mol[idi].x - mol[idj].x, L[0]);
+                  y = min_distance(mol[idi].y - mol[idj].y, L[1]);
+                  z = min_distance(mol[idi].z - mol[idj].z, L[2]);
                   rij = mindis(x,y,z,L); 
                   if(i == j){}
                   else if (i != j && rij < rcut )
@@ -51,8 +80,8 @@ void Induced_dipole_pol(vector<Molecular> &mol, uint nsteps, uint nmol, const ve
           for(uint i = 0;i < nmol;++i)
             {
               uint idi = nmol*t+i; 
-              Mat_vec(mol[idi].PPol, dummyTD[i], TD[i]);
-              Mat_Mat(mol[idi].PPol, dummyTP[i], TP[i]);
+              Mat_vec(mol[idi].PPol, dummyTD[i], TD[idi]);
+              Mat_Mat(mol[idi].PPol, dummyTP[i], TP[idi]);
 
               mol[idi].ID.x += TD[i].x ;
               mol[idi].ID.y += TD[i].y ;
@@ -62,7 +91,7 @@ void Induced_dipole_pol(vector<Molecular> &mol, uint nsteps, uint nmol, const ve
               mol[idi].IPol.xy += TP[i].xy;mol[idi].IPol.xz += TP[i].xz;mol[idi].IPol.yz += TP[i].yz;
               mol[idi].IPol.yx += TP[i].yx;mol[idi].IPol.zx += TP[i].zx;mol[idi].IPol.zy += TP[i].zy;
             }
-        }
+        } 
     }
 }
 
@@ -100,8 +129,8 @@ void parameters(Molecular &mol)
       mol.PPol.xy = 0.0018;mol.PPol.xz = -0.0003;mol.PPol.yz = 0.0006;
       mol.PPol.yx = 0.0016;mol.PPol.zx = -0.0002;mol.PPol.zy = 0.0006; 
 
-      mol.PPol.xy = 0.0000;mol.PPol.xz = -0.0000;mol.PPol.yz = 0.0000;
-      mol.PPol.yx = 0.0000;mol.PPol.zx = -0.0000;mol.PPol.zy = 0.0000; 
+      //mol.PPol.xy = 0.0000;mol.PPol.xz = -0.0000;mol.PPol.yz = 0.0000;
+      //mol.PPol.yx = 0.0000;mol.PPol.zx = -0.0000;mol.PPol.zy = 0.0000; 
 
       mol.IPol.xx = 0.0000;mol.IPol.yy = 0.0000;mol.IPol.zz = 0.0000;
       mol.IPol.xy = 0.0000;mol.IPol.xz = 0.0000;mol.IPol.yz = 0.0000;
@@ -376,6 +405,21 @@ void copydata(const vector<Molecular> &mol, uint nsteps, uint nmol,  vector<Matr
           TP[id].yx= mol[id].PPol.yx;TP[id].zx= mol[id].PPol.zx;TP[id].zy= mol[id].PPol.zy;
         }
     }
+}
+
+void Pol_Efield(const Matrix & A, const Vector & b, Vector & dummy)
+{  
+  dummy.x += polfieldtodebye * (A.xx * b.x + A.xy * b.y + A.xz * b.z );
+  dummy.y += polfieldtodebye * (A.yx * b.x + A.yy * b.y + A.yz * b.z );
+  dummy.z += polfieldtodebye * (A.zx * b.x + A.zy * b.y + A.zz * b.z );
+}
+
+
+void Pol_Ifield(const Matrix & A, const Vector & b, Vector & dummy)
+{  
+  dummy.x += polpointchargetodebye * (A.xx * b.x + A.xy * b.y + A.xz * b.z );
+  dummy.y += polpointchargetodebye * (A.yx * b.x + A.yy * b.y + A.yz * b.z );
+  dummy.z += polpointchargetodebye * (A.zx * b.x + A.zy * b.y + A.zz * b.z );
 }
 
 

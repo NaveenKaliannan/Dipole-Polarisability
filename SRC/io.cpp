@@ -94,6 +94,21 @@ void readpsf(vector<Atom> &r, uint nsteps,  uint natoms, string psffilename)
 }
 
 
+//Reading the xyz trajectory
+void readExternalfield(vector<Vector> &E, uint nsteps, string fieldfilename)
+{
+  string temp;
+  ifstream file(fieldfilename);
+  for(uint t = 0; t < nsteps; ++t )
+    { 
+      uint id = t; 
+      file >> temp >> E[id].x  >> E[id].y  >> E[id].z;                     
+    }
+  file.close();
+  file.clear();
+}
+
+
 void Print(vector<Atom> &r, uint nsteps, uint natoms, const vector<float> & L, vector<Molecular> &mol, uint nmol, string filename, string TYPE)
 {
   ofstream outfile(filename);
@@ -329,8 +344,6 @@ void Mat_Mat(const Matrix & A, const Matrix & B, Matrix & C)
   C.zx = A.zx * B.xx + A.zy * B.yx + A.zz * B.zx;
   C.zy = A.zx * B.xy + A.zy * B.yy + A.zz * B.zy;
   C.zz = A.zx * B.xz + A.zy * B.yz + A.zz * B.zz;
-
-//cout << "mat  "<< C.xx << "  " << C.yy << "  " << C.zz << endl;
 }
 
 

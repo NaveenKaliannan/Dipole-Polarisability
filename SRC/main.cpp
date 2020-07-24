@@ -25,7 +25,7 @@ using namespace std;
 int main ( int argc, char** argv )
 {
   uint natoms = 0, nsteps = 0, id = 0, nmol = 0;
-  string temp, xyzfilename, psffilename;
+  string temp, xyzfilename, psffilename, fieldfilename;
   float dt = 0;
   vector<float> L (3,0.0);
 
@@ -39,10 +39,14 @@ int main ( int argc, char** argv )
   L[2] = 80;
   natoms = atoi(argv[6]);
   nmol = atoi(argv[7]);
+  fieldfilename = argv[8];
+
   vector<Atom> r(natoms*nsteps);
   vector<Molecular> mol ;
+  vector<Vector> E (nsteps);
 
   readtrajectory(r, nsteps, natoms, xyzfilename, L);
+  readExternalfield(E, nsteps, fieldfilename);
   AssignAtomicMass(r, nsteps, natoms);
   BringintoBox(r, nsteps, natoms, L);
   TransformAtomictoMolecular(r, nsteps, natoms, L, mol, nmol);
@@ -50,7 +54,7 @@ int main ( int argc, char** argv )
   //readpsf(r, nsteps,  natoms, psffilename);
   Print(r, nsteps, natoms, L, mol, nmol,  "new-traj1.xyz", "ATM");
   Print(r, nsteps, natoms, L, mol, nmol,  "new-traj2.xyz", "MOL");
-  Induced_dipole_pol(mol, nsteps, nmol, L, 5);
+  Induced_dipole_pol(mol, nsteps, nmol, L, 5, E);
   Print(r, nsteps, natoms, L, mol, nmol, "new-traj3.xyz", "DIP");
 
   return 0;
