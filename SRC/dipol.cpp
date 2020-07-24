@@ -29,32 +29,28 @@ void Induced_dipole_pol(vector<Molecular> &mol, uint nsteps, uint nmol, const ve
     {   
       for(uint iter = 0; iter < niter ; ++iter)
         {          
-          init_Matrix_zero(dummyTP, nsteps, nmol);
-          init_Vector_zero(dummyTD, nsteps, nmol);     
+          init_Matrix_zero(dummyTP, 1, nmol);
+          init_Vector_zero(dummyTD, 1, nmol);     
           for(uint i = 0;i < nmol;++i)
             {
               uint idi = nmol*t+i; 
               for(uint j = 0;j < nmol;++j)
                 {
                   uint idj = nmol*t+j; 
-                  x = mol[idi].x - mol[idj].x; y = mol[idi].y - mol[idj].y; z = mol[idi].z - mol[idj].z;
+                  x = min_distance(mol[idi].x - mol[idj].x, L[0]) ; y = min_distance(mol[idi].y - mol[idj].y, L[1]); z = min_distance(mol[idi].z - mol[idj].z, L[2]);
                   rij = mindis(x,y,z,L); 
                   if(i == j){}
                   else if (i != j && rij < rcut )
                   {
                     dipoletensorfield(Tij, rij, x, y, z); 
-                    Tij_dipole(Tij, TD[j], dummyTD[i]);
-                    Tij_Pol(Tij, TP[j], dummyTP[i]);   
+                    Tij_dipole(Tij, TD[idj], dummyTD[i]);
+                    Tij_Pol(Tij, TP[idj], dummyTP[i]);   
                   }
                 }
             }
           for(uint i = 0;i < nmol;++i)
             {
               uint idi = nmol*t+i; 
-if(i == 0)
-{
-cout << mol[idi].PPol.xx << "  " <<  TP[i].xx << "  " << dummyTD[i].x << "  " << TD[i].x << "  " <<  endl;
-}
               Mat_vec(mol[idi].PPol, dummyTD[i], TD[i]);
               Mat_Mat(mol[idi].PPol, dummyTP[i], TP[i]);
 
@@ -65,12 +61,6 @@ cout << mol[idi].PPol.xx << "  " <<  TP[i].xx << "  " << dummyTD[i].x << "  " <<
               mol[idi].IPol.xx += TP[i].xx;mol[idi].IPol.yy += TP[i].yy;mol[idi].IPol.zz += TP[i].zz;
               mol[idi].IPol.xy += TP[i].xy;mol[idi].IPol.xz += TP[i].xz;mol[idi].IPol.yz += TP[i].yz;
               mol[idi].IPol.yx += TP[i].yx;mol[idi].IPol.zx += TP[i].zx;mol[idi].IPol.zy += TP[i].zy;
-
-if(i == 0)
-{
-cout << mol[idi].PPol.xx << "  " <<  TP[i].xx << "  " << TD[i].x << "  " <<  endl;
-}
-
             }
         }
     }
