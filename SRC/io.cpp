@@ -141,13 +141,23 @@ void Print(vector<Atom> &r, uint nsteps, uint natoms, const vector<float> & L, v
         float a1 =0, b1 = 0, c1 = 0;
         for(uint i = 0;i < nmol;++i)
           {
-            uint id = nmol*t+i; 
+            uint id = nmol*t+i;
+	    if(0){
+            a += mol[id].PD.x ;
+            b += mol[id].PD.y ;
+            c += mol[id].PD.z ;
+           a1 += mol[id].PPol.xx ;
+           b1 += mol[id].PPol.yy ;
+           c1 += mol[id].PPol.zz ;
+           } 
+	   else  {
             a += mol[id].PD.x + mol[id].ID.x;
             b += mol[id].PD.y + mol[id].ID.y;
             c += mol[id].PD.z + mol[id].ID.z;
            a1 += mol[id].PPol.xx + mol[id].IPol.xx;
            b1 += mol[id].PPol.yy + mol[id].IPol.yy;
            c1 += mol[id].PPol.zz + mol[id].IPol.zz;
+	    }
           }
         outfile << "## Mol [string] " << nmol << " Mu [Debye] in x y z " << a << "  " << b << "  " << c << "   "  <<  "alpha [Angstrom] xx yy zz  " << a1 << "  " <<  b1  << "  " << c1  << endl;
         for(uint i = 0;i < nmol;++i)

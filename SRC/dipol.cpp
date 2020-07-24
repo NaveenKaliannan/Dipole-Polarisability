@@ -50,14 +50,14 @@ void Induced_dipole_pol(vector<Molecular> &mol, uint nsteps, uint nmol, const ve
                   b_x = b_x / sum ;
                   b_y = b_y / sum ;
                   b_z = b_z / sum ;
-                  Eion.x = mol[idj].q * b_x * pow(rij,-2.0) ;
-                  Eion.y = mol[idj].q * b_y * pow(rij,-2.0) ;
-                  Eion.z = mol[idj].q * b_z * pow(rij,-2.0) ;
-                  Pol_Efield(mol[idi].PPol, Eion, dummyv); 
+                  Eion.x = mol[idj].q * b_x / pow(rij,2.0) ;
+                  Eion.y = mol[idj].q * b_y / pow(rij,2.0) ;
+                  Eion.z = mol[idj].q * b_z / pow(rij,2.0) ; 
+                  Pol_Ifield(mol[idi].PPol, Eion, dummyv); 
                 }
             } 
           mol[idi].ID.x += dummyv.x ; TD[idi].x += dummyv.x ;
-          mol[idi].ID.y += dummyv.y ; TD[idi].y += dummyv.y  ;
+          mol[idi].ID.y += dummyv.y ; TD[idi].y += dummyv.y ;
           mol[idi].ID.z += dummyv.z ; TD[idi].z += dummyv.z ;        
         }
 
@@ -145,7 +145,7 @@ void parameters(Molecular &mol)
     }
   else if( ( mol.MOL[0] == 'M' || mol.MOL[0] == 'm' ) && ( mol.MOL[1] == 'G' || mol.MOL[1] == 'g' ))
     {
-      mol.q = 0;
+      mol.q = 1.5;
       mol.PPol.xx = 10.090;mol.PPol.yy = 10.090;mol.PPol.zz = 10.090;
       mol.PPol.xy = 0.0000;mol.PPol.xz = 0.0000;mol.PPol.yz = 0.0000;
       mol.PPol.yx = 0.0000;mol.PPol.zx = 0.0000;mol.PPol.zy = 0.0000;
@@ -423,7 +423,7 @@ void Pol_Efield(const Matrix & A, const Vector & b, Vector & dummy)
 
 
 void Pol_Ifield(const Matrix & A, const Vector & b, Vector & dummy)
-{  
+{
   dummy.x += polpointchargetodebye * (A.xx * b.x + A.xy * b.y + A.xz * b.z );
   dummy.y += polpointchargetodebye * (A.yx * b.x + A.yy * b.y + A.yz * b.z );
   dummy.z += polpointchargetodebye * (A.zx * b.x + A.zy * b.y + A.zz * b.z );

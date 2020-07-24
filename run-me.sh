@@ -10,6 +10,6 @@ make
 
 ##./exe ../test.xyz traj.psf 1 0.4 15.56 6 2 dipol-pol
 
-./exe ../test.xyz traj.psf 1 0.4 10 3 1 ../field
+./exe ../test.xyz traj.psf 1 0.4 15 4 2 ../field
 
 
