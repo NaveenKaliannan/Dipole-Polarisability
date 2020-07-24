@@ -28,7 +28,8 @@ void Induced_dipole_pol(vector<Molecular> &mol, uint nsteps, uint nmol, const ve
   copydata(mol, nsteps, nmol, TP, TD );  
   for(uint t = 0; t < nsteps; ++t )
     {   
-      //first induced dipole Mu_i due to External field E and ionic charges are computed: Mu_i = alpha_0 * E + alpha_0 * q/pow(rij,2)
+      //first induced dipole Mu_i due to External field E and ionic charges are computed: Mu_i = alpha_0 * E + alpha_0 * q * r /pow(rij,2)
+      //rhat is the unit vector describing the line between i and j molecules
       for(uint i = 0;i < nmol;++i)
         {
           uint idi = nmol*t+i;  
@@ -43,15 +44,22 @@ void Induced_dipole_pol(vector<Molecular> &mol, uint nsteps, uint nmol, const ve
               if(i == j){}
               else if (i != j && rij < rcut )
                 {
-                  Eion.x = mol[idj].q / pow(x,2) ;
-                  Eion.y = mol[idj].q / pow(y,2) ;
-                  Eion.z = mol[idj].q / pow(z,2) ;
+                  //http://www.physics.umd.edu/courses/Phys260/agashe/S10/notes/lecture18.pdf
+                  float b_x = x, b_y = y, b_z = z;          
+                  float sum  =  pow(b_x * b_x  + b_y * b_y + b_z * b_z, 0.5);
+                  b_x = b_x / sum ;
+                  b_y = b_y / sum ;
+                  b_z = b_z / sum ;
+
+                  Eion.x = mol[idj].q * b_x / pow(rij,2.0) ;
+                  Eion.y = mol[idj].q * b_y / pow(rij,2.0) ;
+                  Eion.z = mol[idj].q * b_z / pow(rij,2.0) ;
                   Pol_Efield(mol[idi].PPol, Eion, TD[idi]);
                 }
             } 
-          mol[idi].ID.x += TD[i].x ;
-          mol[idi].ID.y += TD[i].y ;
-          mol[idi].ID.z += TD[i].z ;        
+          mol[idi].ID.x += TD[idi].x ;
+          mol[idi].ID.y += TD[idi].y ;
+          mol[idi].ID.z += TD[idi].z ;        
         }
 
       for(uint iter = 0; iter < niter ; ++iter)
@@ -83,13 +91,13 @@ void Induced_dipole_pol(vector<Molecular> &mol, uint nsteps, uint nmol, const ve
               Mat_vec(mol[idi].PPol, dummyTD[i], TD[idi]);
               Mat_Mat(mol[idi].PPol, dummyTP[i], TP[idi]);
 
-              mol[idi].ID.x += TD[i].x ;
-              mol[idi].ID.y += TD[i].y ;
-              mol[idi].ID.z += TD[i].z ;
+              mol[idi].ID.x += TD[idi].x ;
+              mol[idi].ID.y += TD[idi].y ;
+              mol[idi].ID.z += TD[idi].z ;
 
-              mol[idi].IPol.xx += TP[i].xx;mol[idi].IPol.yy += TP[i].yy;mol[idi].IPol.zz += TP[i].zz;
-              mol[idi].IPol.xy += TP[i].xy;mol[idi].IPol.xz += TP[i].xz;mol[idi].IPol.yz += TP[i].yz;
-              mol[idi].IPol.yx += TP[i].yx;mol[idi].IPol.zx += TP[i].zx;mol[idi].IPol.zy += TP[i].zy;
+              mol[idi].IPol.xx += TP[idi].xx;mol[idi].IPol.yy += TP[idi].yy;mol[idi].IPol.zz += TP[idi].zz;
+              mol[idi].IPol.xy += TP[idi].xy;mol[idi].IPol.xz += TP[idi].xz;mol[idi].IPol.yz += TP[idi].yz;
+              mol[idi].IPol.yx += TP[idi].yx;mol[idi].IPol.zx += TP[idi].zx;mol[idi].IPol.zy += TP[idi].zy;
             }
         } 
     }
