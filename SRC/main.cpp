@@ -55,7 +55,7 @@ int main ( int argc, char** argv )
   Induced_dipole_pol(mol, nsteps, nmol, L, 5, E);
   Print(r, nsteps, natoms, L, mol, nmol, "new-traj1.xyz", "ATM");
   Print(r, nsteps, natoms, L, mol, nmol, "new-traj2.xyz", "MOL");
-  Print(r, nsteps, natoms, L, mol, nmol, "new-traj3.xyz", "DIP");
+  Print(r, nsteps, natoms, L, mol, nmol, argv[9], "DIP");
 
   return 0;
 }

@@ -135,7 +135,7 @@ void Print(vector<Atom> &r, uint nsteps, uint natoms, const vector<float> & L, v
           }
       }
   else if(TYPE[0] == 'D' && TYPE[1] == 'I' && TYPE[2] == 'P')
-    for(uint t = 0; t < nsteps; ++t )
+    for(uint t = 0; t < nsteps; t += 1 )
       { 
         float a =0, b = 0, c = 0;
         float a1 =0, b1 = 0, c1 = 0;
@@ -159,7 +159,8 @@ void Print(vector<Atom> &r, uint nsteps, uint natoms, const vector<float> & L, v
            c1 += mol[id].PPol.zz + mol[id].IPol.zz;
 	    }
           }
-        outfile << "## Mol [string] " << nmol << " Mu [Debye] in x y z " << a << "  " << b << "  " << c << "   "  <<  "alpha [Angstrom] xx yy zz  " << a1 << "  " <<  b1  << "  " << c1  << endl;
+         outfile << t * 0.4 << "  " <<  a << "  " << b << "  " << c << "   " <<  (a - ((b+c)/2.0))/nmol << "  "  <<  a1 << "  " <<  b1  << "  " << c1 << "  " << a1 - ((b1+c1)/2.0)   << endl;        
+        //outfile << "## Mol [string] " << nmol << " Mu [Debye] in x y z " << a << "  " << b << "  " << c << "   "  <<  "alpha [Angstrom] xx yy zz  " << a1 << "  " <<  b1  << "  " << c1  << endl;
         for(uint i = 0;i < nmol;++i)
           {
             uint id = nmol*t+i; 
