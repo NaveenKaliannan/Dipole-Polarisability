@@ -22,3 +22,9 @@ make
 ## 7. Number of Molecules
 ## 8. External field (atomic unit)
 
+## Important Note: Partial charges, atomic polarisability for ions should be 
+## described in parameters() function in  dipol.cpp file
+
+## SO4 coordinates in xyz file should in the following order O S O O O
+## H2O coordinates in xyz file should in the following order O H H
+
