@@ -128,18 +128,23 @@ void parameters(Molecular &mol)
    Pengyu Ren and Jay W. Ponder Polarizable Atomic Multipole Water Model for Molecular Mechanics Simulation
    https://pubs.acs.org/doi/pdf/10.1021/jp027815%2B
 
+   IMOLECULAR POLARCIZABILITLES CALCULATED WITH A MOIXEIEID DIPOLE INTERACTiON
+   AnAtomDipoleInteractionModelforMolecularOpticalProperties
+
    Here the alpha paramters are modified to accurately reproduce the polarisabilites, computed
    using the CP2K program with the same configuration  
 
    The mulliken charges were used and parameterized with the help of CP2K program
 */
 
+  // Atomic Polarisability [Angstrom3]
   if(mol.MOL[0] == 'H' && mol.MOL[1] == '2' && mol.MOL[2] == 'O')
     {
-      mol.q = 0.0;
+      mol.q = 0.00;
       mol.PPol.xx = 1.3227;mol.PPol.yy =  1.1191;mol.PPol.zz = 0.8808;
       mol.PPol.xy = 0.0018;mol.PPol.xz = -0.0003;mol.PPol.yz = 0.0006;
       mol.PPol.yx = 0.0016;mol.PPol.zx = -0.0002;mol.PPol.zy = 0.0006;
+
       mol.IPol.xx = 0.0000;mol.IPol.yy = 0.0000;mol.IPol.zz = 0.0000;
       mol.IPol.xy = 0.0000;mol.IPol.xz = 0.0000;mol.IPol.yz = 0.0000;
       mol.IPol.yx = 0.0000;mol.IPol.zx = 0.0000;mol.IPol.zy = 0.0000; 
@@ -150,6 +155,7 @@ void parameters(Molecular &mol)
       mol.PPol.xx = 10.090;mol.PPol.yy = 10.090;mol.PPol.zz = 10.090;
       mol.PPol.xy = 0.0000;mol.PPol.xz = 0.0000;mol.PPol.yz = 0.0000;
       mol.PPol.yx = 0.0000;mol.PPol.zx = 0.0000;mol.PPol.zy = 0.0000;
+
       mol.IPol.xx = 0.0000;mol.IPol.yy = 0.0000;mol.IPol.zz = 0.0000;
       mol.IPol.xy = 0.0000;mol.IPol.xz = 0.0000;mol.IPol.yz = 0.0000;
       mol.IPol.yx = 0.0000;mol.IPol.zx = 0.0000;mol.IPol.zy = 0.0000; 
@@ -160,16 +166,18 @@ void parameters(Molecular &mol)
       mol.PPol.xx = 1.4300;mol.PPol.yy = 1.4300;mol.PPol.zz = 1.4300;
       mol.PPol.xy = 0.0087;mol.PPol.xz =-0.0080;mol.PPol.yz = 0.0083;
       mol.PPol.yx = 0.0087;mol.PPol.zx =-0.0080;mol.PPol.zy = 0.0083;
+
       mol.IPol.xx = 0.0000;mol.IPol.yy = 0.0000;mol.IPol.zz = 0.0000;
       mol.IPol.xy = 0.0000;mol.IPol.xz = 0.0000;mol.IPol.yz = 0.0000;
       mol.IPol.yx = 0.0000;mol.IPol.zx = 0.0000;mol.IPol.zy = 0.0000; 
     }
   else if( ( mol.MOL[0] == 'N' || mol.MOL[0] == 'n' ) && ( mol.MOL[1] == 'A' || mol.MOL[1] == 'a' ))
     {
-      mol.q = 1;
+      mol.q = 0.748299;
       mol.PPol.xx = 22.050;mol.PPol.yy = 22.050;mol.PPol.zz = 22.050;
       mol.PPol.xy = 0.0000;mol.PPol.xz = 0.0000;mol.PPol.yz = 0.0000;
       mol.PPol.yx = 0.0000;mol.PPol.zx = 0.0000;mol.PPol.zy = 0.0000;
+
       mol.IPol.xx = 0.0000;mol.IPol.yy = 0.0000;mol.IPol.zz = 0.0000;
       mol.IPol.xy = 0.0000;mol.IPol.xz = 0.0000;mol.IPol.yz = 0.0000;
       mol.IPol.yx = 0.0000;mol.IPol.zx = 0.0000;mol.IPol.zy = 0.0000; 
@@ -180,6 +188,7 @@ void parameters(Molecular &mol)
       mol.PPol.xx = 6.104;mol.PPol.yy = 6.0861;mol.PPol.zz = 6.1769;
       mol.PPol.xy =-0.013;mol.PPol.xz = 0.0011;mol.PPol.yz = 0.0808;
       mol.PPol.yx =-0.014;mol.PPol.zx = 0.0006;mol.PPol.zy = 0.0806; 
+     
       mol.IPol.xx = 0.0000;mol.IPol.yy = 0.0000;mol.IPol.zz = 0.0000;
       mol.IPol.xy = 0.0000;mol.IPol.xz = 0.0000;mol.IPol.yz = 0.0000;
       mol.IPol.yx = 0.0000;mol.IPol.zx = 0.0000;mol.IPol.zy = 0.0000; 

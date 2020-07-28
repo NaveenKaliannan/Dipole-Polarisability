@@ -1,0 +1,59 @@
+//single water
+3
+
+O  9.72031  6.78622  2.71738
+H  10.3882  6.12492  2.53212
+H  9.10783  6.79172  1.97531
+
+
+         POLARIZABILITY TENSOR (atomic units):
+         xx,yy,zz        7.95770        7.06141        7.34502
+         xy,xz,yz       -0.97541        0.74135        0.19923
+         yx,zx,zy       -0.98342        0.74855        0.20162
+         POLARIZABILITY TENSOR (Angstrom^3):
+         xx,yy,zz        1.17921        1.04639        1.08842
+         xy,xz,yz       -0.14454        0.10986        0.02952
+         yx,zx,zy       -0.14573        0.11092        0.02988
+
+  Dipole moment [Debye]
+    X=    0.09699704 Y=   -1.11493239 Z=   -1.57383210     Total=      1.93117326
+
+
+3
+
+O  10.17  7.69608  5.27721
+H  9.74491  8.45903  5.75989
+H  9.69265  7.47775  4.45105
+
+         POLARIZABILITY TENSOR (atomic units):
+         xx,yy,zz        7.05887        7.70246        8.37271
+         xy,xz,yz       -0.51934        0.38851        1.43126
+         yx,zx,zy       -0.51843        0.38416        1.42814
+         POLARIZABILITY TENSOR (Angstrom^3):
+         xx,yy,zz        1.04602        1.14139        1.24071
+         xy,xz,yz       -0.07696        0.05757        0.21209
+         yx,zx,zy       -0.07682        0.05693        0.21163
+
+  Dipole moment [Debye]
+    X=   -1.52523923 Y=    0.91800839 Z=   -0.59615662     Total=      1.87736433
+
+
+3
+
+O  9.72031  6.78622  2.71738
+H  10.3882  6.12492  2.53212
+H  9.10783  6.79172  1.97531
+
+
+         POLARIZABILITY TENSOR (atomic units):
+         xx,yy,zz        7.95770        7.06141        7.34502
+         xy,xz,yz       -0.97541        0.74135        0.19923
+         yx,zx,zy       -0.98342        0.74855        0.20162
+         POLARIZABILITY TENSOR (Angstrom^3):
+         xx,yy,zz        1.17921        1.04639        1.08842
+         xy,xz,yz       -0.14454        0.10986        0.02952
+         yx,zx,zy       -0.14573        0.11092        0.02988
+
+  Dipole moment [Debye]
+    X=    0.09699704 Y=   -1.11493239 Z=   -1.57383210     Total=      1.93117326
+

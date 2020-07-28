@@ -112,9 +112,11 @@ void readExternalfield(vector<Vector> &E, uint nsteps, string fieldfilename)
 void Print(vector<Atom> &r, uint nsteps, uint natoms, const vector<float> & L, vector<Molecular> &mol, uint nmol, string filename, string TYPE)
 {
   ofstream outfile(filename);
-  if(TYPE[0] == 'A' && TYPE[1] == 'T' && TYPE[2] == 'M')
-    for(uint t = 0; t < nsteps; ++t )
-      { 
+  for(uint t = 0; t < nsteps; ++t )
+    { 
+      float a =0, b = 0, c = 0, a1 =0, b1 = 0, c1 = 0;
+      if(TYPE[0] == 'A' && TYPE[1] == 'T' && TYPE[2] == 'M')
+      {
         outfile << natoms << endl ;
         outfile << "BOX Length " << L[0] << "  " << L[1] << "  " << L[2] << "\n";
         for(uint i = 0;i < natoms;++i)
@@ -123,9 +125,8 @@ void Print(vector<Atom> &r, uint nsteps, uint natoms, const vector<float> & L, v
             outfile << r[id].symbol <<  "  " << r[id].x << "  " << r[id].y << "  " << r[id].z << endl;
           }
       }
-  else if(TYPE[0] == 'M' && TYPE[1] == 'O' && TYPE[2] == 'L')
-    for(uint t = 0; t < nsteps; ++t )
-      { 
+      else if(TYPE[0] == 'M' && TYPE[1] == 'O' && TYPE[2] == 'L')
+      {
         outfile << nmol << endl ;
         outfile << "BOX Length " << L[0] << "  " << L[1] << "  " << L[2] << "\n";
         for(uint i = 0;i < nmol;++i)
@@ -134,40 +135,47 @@ void Print(vector<Atom> &r, uint nsteps, uint natoms, const vector<float> & L, v
             outfile << mol[id].MOL << " " << mol[id].x << "  " << mol[id].y << "  " << mol[id].z << endl;
           }
       }
-  else if(TYPE[0] == 'D' && TYPE[1] == 'I' && TYPE[2] == 'P')
-    for(uint t = 0; t < nsteps; t += 1 )
-      { 
-        float a =0, b = 0, c = 0;
-        float a1 =0, b1 = 0, c1 = 0;
+      else if(TYPE[0] == 'D' && TYPE[1] == 'I' && TYPE[2] == 'P' && TYPE[3] == '-')
+      {
         for(uint i = 0;i < nmol;++i)
           {
             uint id = nmol*t+i;
-	    if(0){
-            a += mol[id].PD.x ;
-            b += mol[id].PD.y ;
-            c += mol[id].PD.z ;
-           a1 += mol[id].PPol.xx ;
-           b1 += mol[id].PPol.yy ;
-           c1 += mol[id].PPol.zz ;
-           } 
-	   else  {
-            a += mol[id].PD.x + mol[id].ID.x;
-            b += mol[id].PD.y + mol[id].ID.y;
-            c += mol[id].PD.z + mol[id].ID.z;
-           a1 += mol[id].PPol.xx + mol[id].IPol.xx;
-           b1 += mol[id].PPol.yy + mol[id].IPol.yy;
-           c1 += mol[id].PPol.zz + mol[id].IPol.zz;
-	    }
+             if(TYPE[4] == 'P')
+               {
+                 a  += mol[id].PD.x ; b  += mol[id].PD.y ; c  += mol[id].PD.z ;
+                 a1 += mol[id].PPol.xx ; b1 += mol[id].PPol.yy ; c1 += mol[id].PPol.zz ;
+               }
+             else if(TYPE[4] == 'I')
+               {
+                 a  += mol[id].ID.x ; b  += mol[id].ID.y ; c  += mol[id].ID.z ;
+                 a1 += mol[id].IPol.xx ; b1 += mol[id].IPol.yy ; c1 += mol[id].IPol.zz ;
+               }
+             else if(TYPE[4] == 'T')
+               {
+                 a += mol[id].PD.x + mol[id].ID.x;  b += mol[id].PD.y + mol[id].ID.y;  c += mol[id].PD.z + mol[id].ID.z;
+                 a1 += mol[id].PPol.xx + mol[id].IPol.xx; b1 += mol[id].PPol.yy + mol[id].IPol.yy; c1 += mol[id].PPol.zz + mol[id].IPol.zz;
+               }
           }
-         outfile << t * 0.4 << "  " <<  a << "  " << b << "  " << c << "   " <<  (a - ((b+c)/2.0))/nmol << "  "  <<  a1 << "  " <<  b1  << "  " << c1 << "  " << a1 - ((b1+c1)/2.0)   << endl;        
-        //outfile << "## Mol [string] " << nmol << " Mu [Debye] in x y z " << a << "  " << b << "  " << c << "   "  <<  "alpha [Angstrom] xx yy zz  " << a1 << "  " <<  b1  << "  " << c1  << endl;
+        outfile << "#Time  " << t * 0.4 << "\n" << "## Total Mol [string] " << nmol << " Total \u03BC  [Debye] in x y z " << a << "  " << b << "  " << c << "   "  <<  " Total \u03B1 [Angstrom] xx yy zz  " << a1 << "  " <<  b1  << "  " << c1  << endl;
+        outfile << "##Mol [string]  \u03BC  [Debye] in x y z \u03B1 [Angstrom] xx yy zz  \n";
         for(uint i = 0;i < nmol;++i)
           {
-            uint id = nmol*t+i; 
-            outfile << mol[id].MOL <<  "  " << mol[id].PD.x << "  " << mol[id].PD.y << "  " << mol[id].PD.z << "  "<< mol[id].PPol.xx << "  " << mol[id].PPol.yy << "  " << mol[id].PPol.zz << endl;
-            outfile << mol[id].MOL <<  "  " << mol[id].PD.x + mol[id].ID.x << "  " << mol[id].PD.y + mol[id].ID.y << "  " << mol[id].PD.z + mol[id].ID.z << "  "<< mol[id].PPol.xx + mol[id].IPol.xx << "  " << mol[id].PPol.yy + mol[id].IPol.yy << "  " << mol[id].PPol.zz + mol[id].IPol.zz << endl;
+            uint id = nmol*t+i;
+             if(TYPE[4] == 'P')
+               {
+                 outfile << mol[id].MOL <<  "  " << mol[id].PD.x << "  " << mol[id].PD.y << "  " << mol[id].PD.z << "  "<< mol[id].PPol.xx << "  " << mol[id].PPol.yy << "  " << mol[id].PPol.zz << endl;
+               }
+             else if(TYPE[4] == 'I')
+               {
+                 outfile << mol[id].MOL <<  "  " <<  mol[id].ID.x << "  " <<  mol[id].ID.y << "  " <<  mol[id].ID.z << "  "<<  mol[id].IPol.xx << "  " <<  mol[id].IPol.yy << "  " <<  mol[id].IPol.zz << endl;
+               }
+             else if(TYPE[4] == 'T')
+               {
+                 outfile << mol[id].MOL <<  "  " << mol[id].PD.x + mol[id].ID.x << "  " << mol[id].PD.y + mol[id].ID.y << "  " << mol[id].PD.z + mol[id].ID.z << "  "<< mol[id].PPol.xx + mol[id].IPol.xx << "  " << mol[id].PPol.yy + mol[id].IPol.yy << "  " << mol[id].PPol.zz + mol[id].IPol.zz << endl;
+               }
           }
       }
+    }
   outfile.close();
   outfile.clear();
 }
