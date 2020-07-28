@@ -265,14 +265,6 @@ void TransformAtomictoMolecular(vector<Atom> &r, uint nsteps,  uint natoms, cons
               mols.z = ( r[id-1].z * am_O + r[id].z * am_S + r[id+1].z * am_O + r[id+2].z * am_O + r[id+3].z * am_O ) / am_SO4 ;               
               mols.MOL = "SO4";
               mols.m = 96.06;  
-              float wb_x = 0,wb_y = 0,wb_z = 0;           // bisector vector
-              wb_x = min_distance(r[id-1].x - r[id].x, L[0]) + min_distance(r[id+1].x - r[id].x, L[0]) + min_distance(r[id+2].x - r[id].x, L[0]) + min_distance(r[id+3].x - r[id].x, L[0]) ;
-              wb_y = min_distance(r[id-1].y - r[id].y, L[1]) + min_distance(r[id+1].y - r[id].y, L[1]) + min_distance(r[id+2].y - r[id].y, L[1]) + min_distance(r[id+3].y - r[id].y, L[1]) ;
-              wb_z = min_distance(r[id-1].z - r[id].z, L[2]) + min_distance(r[id+1].z - r[id].z, L[2]) + min_distance(r[id+2].z - r[id].z, L[2]) + min_distance(r[id+3].z - r[id].z, L[2]) ;
-              float sum  =  pow(wb_x * wb_x  + wb_y * wb_y + wb_z * wb_z, 0.5);
-              wb_x = wb_x / sum ;
-              wb_y = wb_y / sum ;
-              wb_z = wb_z / sum ;
               mols.PD.x = 0.0 ;
               mols.PD.y = 0.0 ;
               mols.PD.z = 0.0 ;
@@ -286,10 +278,10 @@ void TransformAtomictoMolecular(vector<Atom> &r, uint nsteps,  uint natoms, cons
           if(r[id].symbol[0] == 'O' && r[id+1].symbol[0] == 'H' && r[id+2].symbol[0] == 'H')
             { 
               const float am_H = 1.00784 * amu, am_O = 15.999 * amu, am_H2O = 18.015 * amu ;
-              float wb_x = 0,wb_y = 0,wb_z = 0;           // bisector vector
-              float wb1_x = 0,wb1_y = 0,wb1_z = 0;           // bisector vector
-              float wb2_x = 0,wb2_y = 0,wb2_z = 0;           // bisector vector
-              float HH_x = 0,HH_y = 0,HH_z = 0 ;           // H-H vector
+              float wb_x = 0,wb_y = 0,wb_z = 0;           // bisector vector H2O
+              float wb1_x = 0,wb1_y = 0,wb1_z = 0;        // bisector vector OH1
+              float wb2_x = 0,wb2_y = 0,wb2_z = 0;        // bisector vector OH2
+              float HH_x = 0,HH_y = 0,HH_z = 0 ;          // H-H vector
               float Pv_x = 0,Pv_y = 0,Pv_z = 0;           // vector Perpendicular to bisector and H-H vector
               mols.x = ( r[id].x * am_O + r[id+1].x * am_H + r[id+2].x * am_H ) / am_H2O ;
               mols.y = ( r[id].y * am_O + r[id+1].y * am_H + r[id+2].y * am_H ) / am_H2O ;
