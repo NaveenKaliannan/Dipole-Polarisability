@@ -52,12 +52,12 @@ int main ( int argc, char** argv )
   TransformAtomictoMolecular(r, nsteps, natoms, L, mol, nmol);
   //computevelocity(r, nsteps, natoms, L, dt);
   //readpsf(r, nsteps,  natoms, psffilename);
-  Induced_dipole_pol(mol, nsteps, nmol, L, 5, E);
-  Print(r, nsteps, natoms, L, mol, nmol, "PBC-trajectory.xyz", "ATM");
-  Print(r, nsteps, natoms, L, mol, nmol, "COM.xyz", "MOL");
-  Print(r, nsteps, natoms, L, mol, nmol, "Permanet.data", "DIP-P");
-  Print(r, nsteps, natoms, L, mol, nmol, "Induced.data", "DIP-I");
-  Print(r, nsteps, natoms, L, mol, nmol, "Total.data", "DIP-T");
+  Induced_dipole_pol(mol, nsteps, nmol, L, 10, E);
+  Print(r, nsteps, natoms, L, mol, nmol, dt, "PBC-trajectory.xyz", "ATM");
+  Print(r, nsteps, natoms, L, mol, nmol, dt, "COM.xyz", "MOL");
+  Print(r, nsteps, natoms, L, mol, nmol, dt, "Permanet.data", "DIP-P");
+  Print(r, nsteps, natoms, L, mol, nmol, dt, "Induced.data", "DIP-I");
+  Print(r, nsteps, natoms, L, mol, nmol, dt, "Total.data", "DIP-T");
 
   return 0;
 }

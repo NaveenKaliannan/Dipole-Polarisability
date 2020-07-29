@@ -36,6 +36,7 @@ void Induced_dipole_pol(vector<Molecular> &mol, uint nsteps, uint nmol, const ve
           for(uint j = 0;j < nmol;++j)
             {
               uint idj = nmol*t+j; 
+              //rhat unit vector describing the line between i and j molecules (i->j direction dont change it)
               x = min_distance(mol[idj].x - mol[idi].x, L[0]);
               y = min_distance(mol[idj].y - mol[idi].y, L[1]);
               z = min_distance(mol[idj].z - mol[idi].z, L[2]);
@@ -44,7 +45,6 @@ void Induced_dipole_pol(vector<Molecular> &mol, uint nsteps, uint nmol, const ve
               else if (i != j && rij < rcut )
                 {
                   //http://www.physics.umd.edu/courses/Phys260/agashe/S10/notes/lecture18.pdf
-                  //rhat unit vector describing the line between i and j molecules
                   float b_x = x, b_y = y, b_z = z;          
                   float sum  =  pow(b_x * b_x  + b_y * b_y + b_z * b_z, 0.5);
                   b_x = b_x / sum ;
@@ -59,6 +59,7 @@ void Induced_dipole_pol(vector<Molecular> &mol, uint nsteps, uint nmol, const ve
           mol[idi].ID.x += dummyv.x ; //TD[idi].x += dummyv.x ;
           mol[idi].ID.y += dummyv.y ; //TD[idi].y += dummyv.y ;
           mol[idi].ID.z += dummyv.z ; //TD[idi].z += dummyv.z ; 
+         // induced contribution due to applied external field and ions are not considered for below iteration.
         }
 
       for(uint iter = 0; iter < niter ; ++iter)
@@ -131,6 +132,8 @@ void parameters(Molecular &mol)
    IMOLECULAR POLARCIZABILITLES CALCULATED WITH A MOIXEIEID DIPOLE INTERACTiON
    AnAtomDipoleInteractionModelforMolecularOpticalProperties
 
+  //2018 Table of static dipole polarizabilities of theneutral elements in the periodic table
+
    Here the alpha paramters are modified to accurately reproduce the polarisabilites, computed
    using the CP2K program with the same configuration  
 
@@ -151,7 +154,7 @@ void parameters(Molecular &mol)
     }
   else if( ( mol.MOL[0] == 'M' || mol.MOL[0] == 'm' ) && ( mol.MOL[1] == 'G' || mol.MOL[1] == 'g' ))
     {
-      mol.q = 1.6;
+      mol.q = 1.039752;
       mol.PPol.xx = 10.090;mol.PPol.yy = 10.090;mol.PPol.zz = 10.090;
       mol.PPol.xy = 0.0000;mol.PPol.xz = 0.0000;mol.PPol.yz = 0.0000;
       mol.PPol.yx = 0.0000;mol.PPol.zx = 0.0000;mol.PPol.zy = 0.0000;
@@ -162,7 +165,7 @@ void parameters(Molecular &mol)
     }
   else if( ( mol.MOL[0] == 'C' || mol.MOL[0] == 'c' ) && ( mol.MOL[1] == 'L' || mol.MOL[1] == 'l' ))
     {
-      mol.q = -0.8;
+      mol.q = -0.519872;
       mol.PPol.xx = 1.4300;mol.PPol.yy = 1.4300;mol.PPol.zz = 1.4300;
       mol.PPol.xy = 0.0087;mol.PPol.xz =-0.0080;mol.PPol.yz = 0.0083;
       mol.PPol.yx = 0.0087;mol.PPol.zx =-0.0080;mol.PPol.zy = 0.0083;

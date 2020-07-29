@@ -1,0 +1,33 @@
+//mg-cl
+2
+
+Mg 0 0 0
+Cl 2.5 0 0
+
+
+  Dipole moment [Debye]
+    X=   -5.09207670 Y=   -0.00003046 Z=   -0.00003351     Total=      5.09207670
+
+
+//mg-cl2
+3
+
+cl 0 2.5 0
+Mg 0 0 0
+Cl 2.5 0 0
+
+
+  Dipole moment [Debye]
+    X=   -6.25941053 Y=   -6.25939358 Z=    0.00000366     Total=      8.85213128
+
+         POLARIZABILITY TENSOR (atomic units):
+         xx,yy,zz       64.52844       64.24956       41.34883
+         xy,xz,yz        6.96981        0.00046        0.00065
+         yx,zx,zy        6.93295        0.00021        0.00034
+         POLARIZABILITY TENSOR (Angstrom^3):
+         xx,yy,zz        9.56213        9.52080        6.12726
+         xy,xz,yz        1.03282        0.00007        0.00010
+         yx,zx,zy        1.02736        0.00003        0.00005
+
+
+

@@ -12,7 +12,7 @@ using namespace std;
 #define jtohartree  2.2937104
 #define amu  1.66053906
 #define vAperfmstoamu   0.0460908 // converts velocity [angstrom/fms] to atomic units  
-#define Unitvectortodebye  1.95  // easily comparable to cp2k results. The dipole moment slightly changes due to the variation in H-bonding environments.
+#define Unitvectortodebye  1.93  // easily comparable to cp2k results. The dipole moment slightly changes due to the variation in H-bonding environments.
 #define polfieldtodebye   17.14131  // E-30 (angstrom3 to m3) * 5.142 E11 (field a.u. to V/m or J C-1 m-1) * 8.85418 E-12 * 4 * 3.14 (permentivty of free space C2 m-1 J-1) / 3.336E-30 (coversion from C.m to debye)
 #define polpointchargetodebye 4.8021  // E-30 (angstrom3 to m3) * 1.602E-19 (elementary charge C) / E-20 (angstrom2 to m2) * 3.336E-30 (coversion from C.m to debye)
 
@@ -70,7 +70,7 @@ void readtrajectory(vector<Atom> &r, uint nsteps, uint natoms, string xyzfilenam
 void readExternalfield(vector<Vector> &E, uint nsteps, string fieldfilename);
 void computevelocity(vector<Atom> &r, uint nsteps, uint natoms, const vector<float> & L, float dt);
 void readpsf(vector<Atom> &r, uint nsteps,  uint natoms, string psffilename);
-void Print(vector<Atom> &r, uint nsteps, uint natoms, const vector<float> & L, vector<Molecular> &mol, uint nmol, string filename, string TYPE);
+void Print(vector<Atom> &r, uint nsteps, uint natoms, const vector<float> & L, vector<Molecular> &mol, uint nmol, float dt, string filename, string TYPE);
 void init_Matrix_zero(vector<Matrix> & Tij, uint nsteps, uint nmol);
 void init_Vector_zero(vector<Vector> & dipole, uint nsteps, uint nmol);
 void Mat_vec(const Matrix & A, const Vector & b, Vector & dummy);
