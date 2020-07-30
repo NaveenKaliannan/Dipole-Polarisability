@@ -56,10 +56,14 @@ void Induced_dipole_pol(vector<Molecular> &mol, uint nsteps, uint nmol, const ve
                   Pol_Ifield(mol[idi].PPol, Eion, dummyv); 
                 }
             }  
-          mol[idi].ID.x += dummyv.x ; //TD[idi].x += dummyv.x ;
-          mol[idi].ID.y += dummyv.y ; //TD[idi].y += dummyv.y ;
-          mol[idi].ID.z += dummyv.z ; //TD[idi].z += dummyv.z ; 
-         // induced contribution due to applied external field and ions are not considered for below iteration.
+          mol[idi].ID.x += dummyv.x ; 
+          mol[idi].ID.y += dummyv.y ; 
+          mol[idi].ID.z += dummyv.z ;
+          /*
+            induced polarisability due to ionic charges and applied external field needed to implemented
+          */ 
+          // induced contribution due to applied external field and ions are not considered for below iteration.
+          //TD[idi].x += dummyv.x ; TD[idi].y += dummyv.y ; TD[idi].z += dummyv.z ;
         }
 
       for(uint iter = 0; iter < niter ; ++iter)
