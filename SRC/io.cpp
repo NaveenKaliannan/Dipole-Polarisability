@@ -115,6 +115,7 @@ void Print(vector<Atom> &r, uint nsteps, uint natoms, const vector<float> & L, v
   for(uint t = 0; t < nsteps; ++t )
     { 
       float a =0, b = 0, c = 0, a1 =0, b1 = 0, c1 = 0;
+      float axy =0, axz = 0, ayz = 0, ayx =0, azx = 0, azy = 0;
       if(TYPE[0] == 'A' && TYPE[1] == 'T' && TYPE[2] == 'M')
       {
         outfile << natoms << endl ;
@@ -144,19 +145,28 @@ void Print(vector<Atom> &r, uint nsteps, uint natoms, const vector<float> & L, v
                {
                  a  += mol[id].PD.x ; b  += mol[id].PD.y ; c  += mol[id].PD.z ;
                  a1 += mol[id].PPol.xx ; b1 += mol[id].PPol.yy ; c1 += mol[id].PPol.zz ;
+                 axy += mol[id].PPol.xy ; axz += mol[id].PPol.xz ; ayz += mol[id].PPol.yz ; 
+                 ayx += mol[id].PPol.yx ; azx += mol[id].PPol.zx ; azy += mol[id].PPol.zy ;
                }
              else if(TYPE[4] == 'I')
                {
                  a  += mol[id].ID.x ; b  += mol[id].ID.y ; c  += mol[id].ID.z ;
                  a1 += mol[id].IPol.xx ; b1 += mol[id].IPol.yy ; c1 += mol[id].IPol.zz ;
+                 axy += mol[id].IPol.xy; axz +=  mol[id].IPol.xz; ayz +=  mol[id].IPol.yz ; 
+                 ayx += mol[id].IPol.yx ; azx += mol[id].IPol.zx; azy +=  mol[id].IPol.zy;
                }
              else if(TYPE[4] == 'T')
                {
                  a += mol[id].PD.x + mol[id].ID.x;  b += mol[id].PD.y + mol[id].ID.y;  c += mol[id].PD.z + mol[id].ID.z;
                  a1 += mol[id].PPol.xx + mol[id].IPol.xx; b1 += mol[id].PPol.yy + mol[id].IPol.yy; c1 += mol[id].PPol.zz + mol[id].IPol.zz;
+                 axy += mol[id].PPol.xy + mol[id].IPol.xy; axz += mol[id].PPol.xz + mol[id].IPol.xz; ayz += mol[id].PPol.yz + mol[id].IPol.yz ; 
+                 ayx += mol[id].PPol.yx + mol[id].IPol.yx ; azx += mol[id].PPol.zx + mol[id].IPol.zx; azy += mol[id].PPol.zy + mol[id].IPol.zy;
                }
           }
-        outfile <<  t * dt << "   " << a << "  " << b << "  " << c << "   "  << a1 << "  " <<  b1  << "  " << c1  << endl;
+        outfile <<  t * dt << " " <<  a   << " " <<  b  << " "  << c
+                           << " " <<  a1  << " " <<  b1 << " "  << c1
+                           << " " <<  axy << " " << axz << " "  << ayz
+                           << " " <<  ayx << " " << azx << " "  << azy  << endl;
         
        // outfile << "#Time  " << t * dt << "\n" << "## Total Mol [string] " << nmol << " Total \u03BC  [Debye] in x y z " << a << "  " << b << "  " << c << "   "  <<  " Total \u03B1 [Angstrom] xx yy zz  " << a1 << "  " <<  b1  << "  " << c1  << endl;
         //outfile << "##Mol [string]  \u03BC  [Debye] in x y z \u03B1 [Angstrom] xx yy zz  \n";
