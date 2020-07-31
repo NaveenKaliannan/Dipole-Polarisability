@@ -113,7 +113,11 @@ void Induced_dipole_pol(vector<Molecular> &mol, uint nsteps, uint nmol, const ve
 
 void parameters(Molecular &mol)
 {  
-/* The parameter for the polarizability are generally set to axx = 1.626 angstrom,
+/*
+   Cp2k Luber2014 Raman spectra from ab initio moleculardynamics and its application to liquid S-methyloxirane
+        Putrino2002 , Anharmonic Raman Spectra in High-Pressure Ice fromAb InitioSimulations
+
+   The parameter for the polarizability are generally set to axx = 1.626 angstrom,
    ayy = 1.495 angstrom,and azz = 1.286 angstrom. 
    While the Xaxis corresponds to the vector that connects H-H atoms, 
    the Yaxis is the water bisector, and
@@ -135,6 +139,16 @@ void parameters(Molecular &mol)
 
    IMOLECULAR POLARCIZABILITLES CALCULATED WITH A MOIXEIEID DIPOLE INTERACTiON
    AnAtomDipoleInteractionModelforMolecularOpticalProperties
+
+    polarisabulity due to field: Flexible bent rod model with a saturatinginduced dipole moment to study theelectric linear dichroism of DNA fragments
+
+   Extended dipole-induced dipole mechanism for generatingRaman and optical Kerr effect intensities oflow-frequency dynamics in liquids
+
+   Polarizability response in polar solvents:Molecular-dynamics simulations ofacetonitrile and chloroform
+ 
+   J Comput Chem. 2007 May ; 28(7): 1261–1274    Gaussian Induced Dipole Polarization Model
+
+   Development of Polarizable Gaussian Model for MolecularMechanical Calculations I: Atomic Polarizability Parameterization ToReproduceab InitioAnisotropy
 
   //2018 Table of static dipole polarizabilities of theneutral elements in the periodic table
 
@@ -158,7 +172,7 @@ void parameters(Molecular &mol)
     }
   else if( ( mol.MOL[0] == 'M' || mol.MOL[0] == 'm' ) && ( mol.MOL[1] == 'G' || mol.MOL[1] == 'g' ))
     {
-      mol.q = 1.039752;
+      mol.q = 1.158801;
       mol.PPol.xx = 10.090;mol.PPol.yy = 10.090;mol.PPol.zz = 10.090;
       mol.PPol.xy = 0.0000;mol.PPol.xz = 0.0000;mol.PPol.yz = 0.0000;
       mol.PPol.yx = 0.0000;mol.PPol.zx = 0.0000;mol.PPol.zy = 0.0000;
@@ -169,7 +183,7 @@ void parameters(Molecular &mol)
     }
   else if( ( mol.MOL[0] == 'C' || mol.MOL[0] == 'c' ) && ( mol.MOL[1] == 'L' || mol.MOL[1] == 'l' ))
     {
-      mol.q = -0.519872;
+      mol.q = -0.615590;
       mol.PPol.xx = 1.4300;mol.PPol.yy = 1.4300;mol.PPol.zz = 1.4300;
       mol.PPol.xy = 0.0087;mol.PPol.xz =-0.0080;mol.PPol.yz = 0.0083;
       mol.PPol.yx = 0.0087;mol.PPol.zx =-0.0080;mol.PPol.zy = 0.0083;

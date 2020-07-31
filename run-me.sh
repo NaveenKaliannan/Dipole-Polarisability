@@ -10,7 +10,10 @@ make
 
 ##./exe ../test.xyz traj.psf 1000 1 15.56 15 5 ../field_atomicunit  
 
+##./exe ../test.xyz traj.psf 1000 1 15.56 18 8 ../field_atomicunit  
+
 ./exe ../test.xyz traj.psf 1000 1 15.56 3 3 ../field_atomicunit  
+
 
 #./exe ../traj.xyz traj.psf 1 0.4 15.56 389 131 ../field_atomicunit  
 
