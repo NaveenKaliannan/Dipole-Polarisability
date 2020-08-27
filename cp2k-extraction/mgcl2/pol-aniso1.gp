@@ -40,8 +40,9 @@ set size 0.35, 1
 set origin -0.009, 0.0
 
 
-set label "{/Symbol a}_{xy}" at 100,1  font 'Arial,20' textcolor rgb "black"
-set xrange [0:500]
+set label "{/Symbol a}_{xy}" at 100,4  font 'Arial,20' textcolor rgb "black"
+set xrange [0:700]
+set yrange [-5:5]
 set xlabel "t (fms)"
 set ylabel "Polarisability [Å^3]"
 
@@ -62,8 +63,7 @@ set tmargin at screen 0.88; set bmargin at screen 0.15
 set size 0.37, 1
 set origin 0.27,0.0
 
-set label "{/Symbol a}_{xz}" at 100,1  font 'Arial,20' textcolor rgb "black"
-set xrange [0:500]
+set label "{/Symbol a}_{xz}" at 100,4  font 'Arial,20' textcolor rgb "black"
 set xlabel "t (fms)"
 
 plot "mgcl2-ref.dat" using 1:9 notitle  with line ls 1 lc rgb "black" lw 1, "mgcl2.dat" using 1:9 notitle  with line ls 1 lc rgb "red" lw 1
@@ -78,8 +78,7 @@ set tmargin at screen 0.88; set bmargin at screen 0.15
 set size 0.37, 1
 set origin 0.57,0.0
 
-set label "{/Symbol a}_{yz}" at 100,1  font 'Arial,20' textcolor rgb "black"
-set xrange [0:500]
+set label "{/Symbol a}_{yz}" at 100,4  font 'Arial,20' textcolor rgb "black"
 set xlabel "t (fms)"
 
 plot "mgcl2-ref.dat" using 1:10 notitle  with line ls 1 lc rgb "black" lw 1, "mgcl2.dat" using 1:10 notitle  with line ls 1 lc rgb "red" lw 1

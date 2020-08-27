@@ -38,6 +38,30 @@ void readtrajectory(vector<Atom> &r, uint nsteps, uint natoms, string xyzfilenam
 }
 
 
+void readmullikencharges(vector<Atom> &r, uint nsteps, uint natoms, string filename)
+{
+  string temp;
+  for(uint t = 0; t < nsteps; ++t )
+    { 
+      string filename = "/home/naveenk/temp/1-mgcl2/Frame" + to_string(t+1) + "/charges.out.mulliken" ;
+      ifstream charges_filename(filename);
+      for(uint i = 0; i <  5; ++i)
+        {
+          getline(charges_filename, temp);
+        }
+      for(uint i = 0;i < natoms;++i)
+        {
+          uint id = natoms*t+i; 
+          charges_filename >> temp >> temp >> temp >> temp >> r[id].charge; 
+          //cout << t <<  "  " << i << "  " << r[id].symbol << "  " <<  r[id].charge << endl;
+        }
+      charges_filename.close();
+      charges_filename.clear();
+    }
+}
+
+
+
 // computes velocity with central difference scheme as CP2K (multiply with vAperfmstoamu converts to atomic unit )
 void computevelocity(vector<Atom> &r, uint nsteps, uint natoms, const vector<float> & L, float dt)
 {
@@ -116,7 +140,27 @@ void Print(vector<Atom> &r, uint nsteps, uint natoms, const vector<float> & L, v
     { 
       float a =0, b = 0, c = 0, a1 =0, b1 = 0, c1 = 0;
       float axy =0, axz = 0, ayz = 0, ayx =0, azx = 0, azy = 0;
-      if(TYPE[0] == 'A' && TYPE[1] == 'T' && TYPE[2] == 'M')
+      if(TYPE[0] == 'R' && TYPE[1] == 'E' && TYPE[2] == 'P' && TYPE[3] == 'L' && TYPE[4] == 'I')
+      {
+        uint ncell = 3 ;
+        outfile << natoms * pow(ncell,3) << endl ;
+        outfile << " BOX Length " << L[0] * ncell << "  " << L[1] * ncell << "  " << L[2] * ncell << "\n";
+        for(uint x = 0; x < ncell ; ++x)
+          {
+            for(uint y = 0; y < ncell ; ++y)
+              {
+                for(uint z = 0; z < ncell ; ++z)
+                  {
+                    for(uint i = 0;i < natoms;++i)
+                      {
+                        uint id = natoms*t+i; 
+                        outfile << r[id].symbol <<  "  " << r[id].x + L[0] * x  << "  " << r[id].y + L[1] * y << "  " << r[id].z + L[2] * z << "\n";
+                      }
+                  }
+              }
+          }
+      }
+      else if(TYPE[0] == 'A' && TYPE[1] == 'T' && TYPE[2] == 'M')
       {
         outfile << natoms << endl ;
         outfile << "BOX Length " << L[0] << "  " << L[1] << "  " << L[2] << "\n";
@@ -155,9 +199,12 @@ void Print(vector<Atom> &r, uint nsteps, uint natoms, const vector<float> & L, v
                  axy += mol[id].IPol.xy; axz +=  mol[id].IPol.xz; ayz +=  mol[id].IPol.yz ; 
                  ayx += mol[id].IPol.yx ; azx += mol[id].IPol.zx; azy +=  mol[id].IPol.zy;
                }
-             else if(TYPE[4] == 'T')
+             else if(TYPE[4] == 'T' )
                {
-                 a += mol[id].PD.x + mol[id].ID.x;  b += mol[id].PD.y + mol[id].ID.y;  c += mol[id].PD.z + mol[id].ID.z;
+                 a += mol[id].PD.x + mol[id].ID.x ;
+                 b += mol[id].PD.y + mol[id].ID.y ; 
+                 c += mol[id].PD.z + mol[id].ID.z ;
+
                  a1 += mol[id].PPol.xx + mol[id].IPol.xx; b1 += mol[id].PPol.yy + mol[id].IPol.yy; c1 += mol[id].PPol.zz + mol[id].IPol.zz;
                  axy += mol[id].PPol.xy + mol[id].IPol.xy; axz += mol[id].PPol.xz + mol[id].IPol.xz; ayz += mol[id].PPol.yz + mol[id].IPol.yz ; 
                  ayx += mol[id].PPol.yx + mol[id].IPol.yx ; azx += mol[id].PPol.zx + mol[id].IPol.zx; azy += mol[id].PPol.zy + mol[id].IPol.zy;
@@ -334,6 +381,20 @@ void BringintoBox(vector<Atom> &r, uint nsteps,  uint natoms, const vector<float
             }
         }
     }
+}
+
+
+void init_matrix_zero(Matrix &dummyM)
+{
+  dummyM.xx= 0;dummyM.yy= 0;dummyM.zz= 0;
+  dummyM.xy= 0;dummyM.xz= 0;dummyM.yz= 0;
+  dummyM.yx= 0;dummyM.zx= 0;dummyM.zy= 0;
+}
+
+
+void init_vector_zero(Vector & dummyv)
+{
+  dummyv.x = 0; dummyv.y = 0; dummyv.z = 0; 
 }
 
 void init_Matrix_zero(vector<Matrix> & Tij, uint nsteps, uint nmol)

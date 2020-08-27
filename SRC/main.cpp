@@ -49,12 +49,17 @@ int main ( int argc, char** argv )
   readExternalfield(E, nsteps, fieldfilename);
   AssignAtomicMass(r, nsteps, natoms);
   BringintoBox(r, nsteps, natoms, L);
+
   TransformAtomictoMolecular(r, nsteps, natoms, L, mol, nmol);
+  Induced_dipole_pol(mol, nsteps, nmol, L, 3, E);
+
   //computevelocity(r, nsteps, natoms, L, dt);
   //readpsf(r, nsteps,  natoms, psffilename);
-  Induced_dipole_pol(mol, nsteps, nmol, L, 100, E);
+  //readmullikencharges(r, nsteps, natoms, "test" ) ;
+  //Print(r, nsteps, natoms, L, mol, nmol, dt, "pimages-trajectory.xyz", "REPLICA");
+
   Print(r, nsteps, natoms, L, mol, nmol, dt, "PBC-trajectory.xyz", "ATM");
-  Print(r, nsteps, natoms, L, mol, nmol, dt, "COM.xyz", "MOL");
+  //Print(r, nsteps, natoms, L, mol, nmol, dt, "COM.xyz", "MOL");
   Print(r, nsteps, natoms, L, mol, nmol, dt, "Permanet.data", "DIP-P");
   Print(r, nsteps, natoms, L, mol, nmol, dt, "Induced.data", "DIP-I");
   Print(r, nsteps, natoms, L, mol, nmol, dt, "Total.data", "DIP-T");

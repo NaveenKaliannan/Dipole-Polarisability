@@ -42,6 +42,7 @@ set origin -0.009, 0.0
 
 set label "{/Symbol a}_{xx}" at 100,7.5  font 'Arial,20' textcolor rgb "black"
 set xrange [0:1000]
+set yrange [0:20]
 set xlabel "t (fms)"
 set ylabel "Polarisability [Å^3]"
 

@@ -18,10 +18,10 @@ using namespace std;
 
 
 
-float min_distance(float r, float l);
-float mindis(float dx,float dy,float dz, const vector<float> & L);
-float norm(float x,float y,float z);
-
+double min_distance(double r, float l);
+double mindis(double dx,double dy,double dz, const vector<float> & L);
+double norm(double x,double y,double z);
+void convertounivector(double &b_x,double &b_y,double &b_z);
 
 
 #endif

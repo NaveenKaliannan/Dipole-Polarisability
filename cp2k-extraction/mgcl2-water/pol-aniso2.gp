@@ -40,8 +40,9 @@ set size 0.35, 1
 set origin -0.009, 0.0
 
 
-set label "{/Symbol a}_{yx}" at 100,1  font 'Arial,20' textcolor rgb "black"
+set label "{/Symbol a}_{yx}" at 100,8  font 'Arial,20' textcolor rgb "black"
 set xrange [0:1000]
+set yrange [-5:10]
 set xlabel "t (fms)"
 set ylabel "Polarisability [Å^3]"
 
@@ -62,7 +63,7 @@ set tmargin at screen 0.88; set bmargin at screen 0.15
 set size 0.37, 1
 set origin 0.27,0.0
 
-set label "{/Symbol a}_{zx}" at 100,1  font 'Arial,20' textcolor rgb "black"
+set label "{/Symbol a}_{zx}" at 100,8  font 'Arial,20' textcolor rgb "black"
 set xrange [0:1000]
 set xlabel "t (fms)"
 
@@ -78,7 +79,7 @@ set tmargin at screen 0.88; set bmargin at screen 0.15
 set size 0.37, 1
 set origin 0.57,0.0
 
-set label "{/Symbol a}_{zy}" at 100,1  font 'Arial,20' textcolor rgb "black"
+set label "{/Symbol a}_{zy}" at 100,8  font 'Arial,20' textcolor rgb "black"
 set xrange [0:1000]
 set xlabel "t (fms)"
 
