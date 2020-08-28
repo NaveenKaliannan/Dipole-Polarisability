@@ -8,30 +8,9 @@ cd build
 cmake . 
 make
 
-./exe ../mgcl2/NVE-pos-1.xyz traj.psf 10000 1 15.56 3 3 ../field_atomicunit 
+./exe ../../mgcl2-h2o/NVE-pos-1.xyz traj.psf 3300 1 15.56 18 18 ../field_atomicunit 
 
-
-##./exe ../nacl/NVE-pos-1.xyz traj.psf 7000 1 15.56 2 2 ../field_atomicunit 
-
-##./exe ../traj.xyz traj.psf 1 1 15.56 389 131 ../field_atomicunit 
-
-
-
-##./exe ../traj.xyz traj.psf 9 1 15.56 2 2 ../field_atomicunit 
-
-
-##./exe ../test.xyz traj.psf 1000 1 15.56 3 3 ../field_atomicunit 
-
-##./exe ../test3.xyz traj.psf 1000 1 15.56 15 5 ../field_atomicunit  
-
-##./exe ../test2.xyz traj.psf 1000 1 15.56 18 8 ../field_atomicunit 
-
-##./exe ../test.xyz traj.psf 163 1 15.56 3 3 ../field_atomicunit 
-
-##./exe ../../nacl.xyz traj.psf 200 1 15.56 2 2 ../field_atomicunit 
-
-##./exe ../mgcl2-nacl.xyz traj.psf 5000 1 15.56 7 7 ../field_atomicunit 
-
+##./exe ../nacl.xyz traj.psf 1 1 15.56 18 18 ../field_atomicunit 
 
 
 ## argumets

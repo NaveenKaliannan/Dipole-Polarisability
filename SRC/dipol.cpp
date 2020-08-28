@@ -25,11 +25,18 @@ void Induced_dipole_pol(vector<Molecular> &mol, uint nsteps, uint nmol, const ve
   for(uint t = 0; t < nsteps;t += 1 )
     {
       FieldduetoPermanentMultipoles(mol, t, nmol, L, Field);
-      FieldduetoExternalField(mol, t, nmol, E,  Field);
+      //FieldduetoExternalField(mol, t, nmol, E,  Field);
       for(uint i = 0;i < nmol;++i)
         {
           idi = nmol*t+i;            
+          //cout << i << "  " <<  Field[i].x << "  " << Field[i].y <<  "   " << Field[i].z << "  "  << endl;
           Mat_vec(mol[idi].PPol, Field[i], mol[idi].ID);
+        }
+
+      for(uint i = 0;i < nmol;++i)
+        {
+          idi = nmol*t+i;             
+         // cout << i << "  " <<  mol[idi].ID.x << "  " << mol[idi].ID.y <<  "   " << mol[idi].ID.z << "  "  << endl;
         }
 
       init_Vector_zero(rsd, 1, nmol);
@@ -46,9 +53,9 @@ void Induced_dipole_pol(vector<Molecular> &mol, uint nsteps, uint nmol, const ve
         }
 
       // Induced dipole is computed via conjugate gradient
-      // (CG) approach, exactly as implemented in Tinker Molecular
-      // Modeling Software
-      for(uint iter = 0;iter < 10;++iter)
+      // (CG) approach, exactly as implemented in  Tinker 
+      // Molecular Modeling software package
+      for(uint iter = 0;iter < niter;++iter)
         {
           for(uint i = 0;i < nmol;++i)
             {
@@ -95,18 +102,27 @@ void Induced_dipole_pol(vector<Molecular> &mol, uint nsteps, uint nmol, const ve
               b = b + rsd[i].x * zrsd[i].x + rsd[i].y * zrsd[i].y + rsd[i].z * zrsd[i].z ;
             }
           b = (b/sum) ; 
+          double eps = 0.0;
           for(uint i = 0;i < nmol;++i)
             {
               idi = nmol*t+i; 
               conj[i].x = zrsd[i].x + b * conj[i].x ;
               conj[i].y = zrsd[i].y + b * conj[i].y ;
               conj[i].z = zrsd[i].z + b * conj[i].z ;
-            }                 
+              eps = eps + rsd[i].x * rsd[i].x + rsd[i].y * rsd[i].y + rsd[i].z * rsd[i].z; 
+            } 
+            if (eps < 0.000001)  { cout << t << "  " <<  iter << endl;  iter = niter;}   
+            if (iter == niter - 1)  { cout << " not converged " << endl;  }                                 
+        } 
+      for(uint i = 0;i < nmol;++i)
+        {
+          idi = nmol*t+i;             
+         // cout << i << "  " <<  mol[idi].ID.x << "  " << mol[idi].ID.y <<  "   " << mol[idi].ID.z << "  "  << endl;
         }
+
     }
       
 }
-
 
 // Field due to externally applied field
 void FieldduetoExternalField(vector<Molecular> &mol, uint t, uint nmol, const vector<Vector> &E,  vector <Vector> & Field)
@@ -125,7 +141,7 @@ void FieldduetoExternalField(vector<Molecular> &mol, uint t, uint nmol, const ve
 //Field due to induced dipoles
 void Fieldduetodipole(vector<Molecular> &mol, uint t, uint nmol, const vector<float> & L, vector <Vector> & Field)
 {
-  uint idi = 0, idj = 0, ncell = 3;
+  uint idi = 0, idj = 0, ncell = 1;
   float x = 0, y = 0, z = 0, rij = 0, rcut = 10;
   vector<float> PB_L(3,0.0);
   vector<Vector_int> imageno(pow(ncell,3));
@@ -163,13 +179,13 @@ void Fieldduetodipole(vector<Molecular> &mol, uint t, uint nmol, const vector<fl
                 Tij.zy =  0  + r5 * z * y ; 
 
                 Vector dipole;
-                dipole.x = mol[idj].PD.x + mol[idj].ID.x; 
-                dipole.y = mol[idj].PD.y + mol[idj].ID.y; 
-                dipole.z = mol[idj].PD.z + mol[idj].ID.z; 
+                dipole.x =  mol[idj].ID.x; 
+                dipole.y =  mol[idj].ID.y; 
+                dipole.z =  mol[idj].ID.z; 
 
                 Field[i].x += Tij.xx * dipole.x + Tij.xy * dipole.y + Tij.xz * dipole.z;
                 Field[i].y += Tij.yx * dipole.x + Tij.yy * dipole.y + Tij.yz * dipole.z;
-                Field[i].z += Tij.zx * dipole.x + Tij.zy * dipole.y + Tij.zz * dipole.z;
+                Field[i].z += Tij.zx * dipole.x + Tij.zy * dipole.y + Tij.zz * dipole.z;        
               }                          
             }
         }
@@ -180,7 +196,7 @@ void Fieldduetodipole(vector<Molecular> &mol, uint t, uint nmol, const vector<fl
 // Field due to permanent multipoles [charge, dipole, quadrupole]
 void FieldduetoPermanentMultipoles(vector<Molecular> &mol, uint t, uint nmol, const vector<float> & L, vector <Vector> & Field)
 {
-  uint idi = 0, idj = 0, ncell = 3;
+  uint idi = 0, idj = 0, ncell = 1;
   float x = 0, y = 0, z = 0, rij = 0, rcut = 10;
   vector<float> PB_L(3,0.0);
   vector<Vector_int> imageno(pow(ncell,3));
@@ -209,14 +225,19 @@ void FieldduetoPermanentMultipoles(vector<Molecular> &mol, uint t, uint nmol, co
 
                 // Field due to point charges and dipole (quadrupole not considered)
                 float pc =  mol[idj].q;
-                Field[i].x += x * ( r3 * pc * pointchargedistancetodebye ) ;
-                Field[i].y += y * ( r3 * pc * pointchargedistancetodebye ) ;
-                Field[i].z += z * ( r3 * pc * pointchargedistancetodebye ) ;
+                float pd =  mol[idj].PD.x * x + mol[idj].PD.y * y + mol[idj].PD.z * z  ;
+                Field[i].x += x * ( r3 * pc * pointchargedistancetodebye - r5 * pd ) ;
+                Field[i].y += y * ( r3 * pc * pointchargedistancetodebye - r5 * pd ) ;
+                Field[i].z += z * ( r3 * pc * pointchargedistancetodebye - r5 * pd ) ;
 
                 // Field due to dipole moment (quadrupole moment not considered)
-                Field[i].x += -r3 * mol[idj].PD.x  ;
-                Field[i].y += -r3 * mol[idj].PD.y  ;
-                Field[i].z += -r3 * mol[idj].PD.z  ;
+                Field[i].x += r3 * mol[idj].PD.x  ;
+                Field[i].y += r3 * mol[idj].PD.y  ;
+                Field[i].z += r3 * mol[idj].PD.z  ;
+
+//                cout << i << "  " <<  x *  r3 * pc * pointchargedistancetodebye  << "  " << x * r5 * pd << "  " << pd << "  " << mol[idj].PD.x << "  " << mol[idj].PD.y << "  " << mol[idj].PD.z << "  "  << endl;
+
+//                cout << i << "  " <<  Field[i].x << "  " << Field[i].y <<  "   " << Field[i].z << "  "  << endl;
               }                          
             }
         }
@@ -254,6 +275,8 @@ void parameters(Molecular &mol)
    Simulation of the Far Infrared Spectrum of Liquid Water and Steam Along the Coexistence Curve
    from the Triple Point to the Critical Point https://doi.org/10.1007/978-94-011-0183-7_10
 
+Pengyu Ren and Jay W. Ponder  Polarizable Atomic Multipole Water Model for Molecular Mechanics Simulation
+
    Pengyu Ren and Jay W. Ponder Polarizable Atomic Multipole Water Model for Molecular Mechanics Simulation
    https://pubs.acs.org/doi/pdf/10.1021/jp027815%2B
 
@@ -290,16 +313,31 @@ void parameters(Molecular &mol)
       mol.IPol.xy = 0.0000;mol.IPol.xz = 0.0000;mol.IPol.yz = 0.0000;
       mol.IPol.yx = 0.0000;mol.IPol.zx = 0.0000;mol.IPol.zy = 0.0000; 
     }
-  else if( ( mol.MOL[0] == 'A' || mol.MOL[0] == 'a' ) && ( mol.MOL[1] == 'R' || mol.MOL[1] == 'r' ))
+  else if(mol.MOL[0] == 'H')
     {
-      mol.q = 0;
-      mol.PPol.xx = 1.6400;mol.PPol.yy = 1.6400;mol.PPol.zz = 1.6400;
+      mol.q = 0.25983;
+      mol.PPol.xx = 0.4960;mol.PPol.yy = 0.4960;mol.PPol.zz = 0.4960;
       mol.PPol.xy = 0.0000;mol.PPol.xz = 0.0000;mol.PPol.yz = 0.0000;
       mol.PPol.yx = 0.0000;mol.PPol.zx = 0.0000;mol.PPol.zy = 0.0000;
+      mol.PD.x    =-0.03859;mol.PD.y    = 0.0000;mol.PD.z    =-0.05818;
 
       mol.IPol.xx = 0.0000;mol.IPol.yy = 0.0000;mol.IPol.zz = 0.0000;
       mol.IPol.xy = 0.0000;mol.IPol.xz = 0.0000;mol.IPol.yz = 0.0000;
       mol.IPol.yx = 0.0000;mol.IPol.zx = 0.0000;mol.IPol.zy = 0.0000; 
+      mol.ID.x    = 0.0000;mol.ID.y    = 0.0000;mol.ID.z    = 0.0000;
+    }
+  else if(mol.MOL[0] == 'O')
+    {
+      mol.q = -0.51966;
+      mol.PPol.xx = 0.8370;mol.PPol.yy = 0.8370;mol.PPol.zz = 0.8370;
+      mol.PPol.xy = 0.0000;mol.PPol.xz = 0.0000;mol.PPol.yz = 0.0000;
+      mol.PPol.yx = 0.0000;mol.PPol.zx = 0.0000;mol.PPol.zy = 0.0000;
+      mol.PD.x    = 0.0000;mol.PD.y    = 0.0000;mol.PD.z    = 0.14279;
+
+      mol.IPol.xx = 0.0000;mol.IPol.yy = 0.0000;mol.IPol.zz = 0.0000;
+      mol.IPol.xy = 0.0000;mol.IPol.xz = 0.0000;mol.IPol.yz = 0.0000;
+      mol.IPol.yx = 0.0000;mol.IPol.zx = 0.0000;mol.IPol.zy = 0.0000; 
+      mol.ID.x    = 0.0000;mol.ID.y    = 0.0000;mol.ID.z    = 0.0000;
     }
   else if( ( mol.MOL[0] == 'M' || mol.MOL[0] == 'm' ) && ( mol.MOL[1] == 'G' || mol.MOL[1] == 'g' ))
     {
@@ -307,10 +345,12 @@ void parameters(Molecular &mol)
       mol.PPol.xx = 0.0800;mol.PPol.yy = 0.0800;mol.PPol.zz = 0.0800;
       mol.PPol.xy = 0.0000;mol.PPol.xz = 0.0000;mol.PPol.yz = 0.0000;
       mol.PPol.yx = 0.0000;mol.PPol.zx = 0.0000;mol.PPol.zy = 0.0000;
-
+      mol.PD.x    = 0.0000;mol.PD.y    = 0.0000;mol.PD.z    = 0.0000;
+ 
       mol.IPol.xx = 0.0000;mol.IPol.yy = 0.0000;mol.IPol.zz = 0.0000;
       mol.IPol.xy = 0.0000;mol.IPol.xz = 0.0000;mol.IPol.yz = 0.0000;
       mol.IPol.yx = 0.0000;mol.IPol.zx = 0.0000;mol.IPol.zy = 0.0000; 
+      mol.ID.x    = 0.0000;mol.ID.y    = 0.0000;mol.ID.z    = 0.0000;
     }
   else if( ( mol.MOL[0] == 'C' || mol.MOL[0] == 'c' ) && ( mol.MOL[1] == 'L' || mol.MOL[1] == 'l' ))
     {
@@ -318,33 +358,65 @@ void parameters(Molecular &mol)
       mol.PPol.xx = 4.0000;mol.PPol.yy = 4.0000;mol.PPol.zz = 4.0000;
       mol.PPol.xy = 0.0000;mol.PPol.xz = 0.0000;mol.PPol.yz = 0.0000;
       mol.PPol.yx = 0.0000;mol.PPol.zx = 0.0000;mol.PPol.zy = 0.0000;
-
+      mol.PD.x    = 0.0000;mol.PD.y    = 0.0000;mol.PD.z    = 0.0000;
+ 
       mol.IPol.xx = 0.0000;mol.IPol.yy = 0.0000;mol.IPol.zz = 0.0000;
       mol.IPol.xy = 0.0000;mol.IPol.xz = 0.0000;mol.IPol.yz = 0.0000;
       mol.IPol.yx = 0.0000;mol.IPol.zx = 0.0000;mol.IPol.zy = 0.0000; 
+      mol.ID.x    = 0.0000;mol.ID.y    = 0.0000;mol.ID.z    = 0.0000;
     }
   else if( ( mol.MOL[0] == 'N' || mol.MOL[0] == 'n' ) && ( mol.MOL[1] == 'A' || mol.MOL[1] == 'a' ))
     {
-      mol.q = 0.63;
-      mol.PPol.xx = 22.050;mol.PPol.yy = 22.050;mol.PPol.zz = 22.050;
+      mol.q = 1;
+      mol.PPol.xx = 0.1200;mol.PPol.yy = 0.1200;mol.PPol.zz = 0.1200;
       mol.PPol.xy = 0.0000;mol.PPol.xz = 0.0000;mol.PPol.yz = 0.0000;
       mol.PPol.yx = 0.0000;mol.PPol.zx = 0.0000;mol.PPol.zy = 0.0000;
-
+      mol.PD.x    = 0.0000;mol.PD.y    = 0.0000;mol.PD.z    = 0.0000;
+ 
       mol.IPol.xx = 0.0000;mol.IPol.yy = 0.0000;mol.IPol.zz = 0.0000;
       mol.IPol.xy = 0.0000;mol.IPol.xz = 0.0000;mol.IPol.yz = 0.0000;
       mol.IPol.yx = 0.0000;mol.IPol.zx = 0.0000;mol.IPol.zy = 0.0000; 
+      mol.ID.x    = 0.0000;mol.ID.y    = 0.0000;mol.ID.z    = 0.0000;
     }
   else if(mol.MOL[0] == 'S' && mol.MOL[1] == 'O' && mol.MOL[2] == '4')
     {
       mol.q = 0;
       mol.PPol.xx = 6.104;mol.PPol.yy = 6.0861;mol.PPol.zz = 6.1769;
-      mol.PPol.xy =-0.013;mol.PPol.xz = 0.0011;mol.PPol.yz = 0.0808;
-      mol.PPol.yx =-0.014;mol.PPol.zx = 0.0006;mol.PPol.zy = 0.0806; 
-     
+//      mol.PPol.xy =-0.013;mol.PPol.xz = 0.0011;mol.PPol.yz = 0.0808;
+//      mol.PPol.yx =-0.014;mol.PPol.zx = 0.0006;mol.PPol.zy = 0.0806; 
+      mol.PPol.xy = 0.0000;mol.PPol.xz = 0.0000;mol.PPol.yz = 0.0000;
+      mol.PPol.yx = 0.0000;mol.PPol.zx = 0.0000;mol.PPol.zy = 0.0000;
+      mol.PD.x    = 0.0000;mol.PD.y    = 0.0000;mol.PD.z    = 0.0000;
+ 
       mol.IPol.xx = 0.0000;mol.IPol.yy = 0.0000;mol.IPol.zz = 0.0000;
       mol.IPol.xy = 0.0000;mol.IPol.xz = 0.0000;mol.IPol.yz = 0.0000;
       mol.IPol.yx = 0.0000;mol.IPol.zx = 0.0000;mol.IPol.zy = 0.0000; 
+      mol.ID.x    = 0.0000;mol.ID.y    = 0.0000;mol.ID.z    = 0.0000;
     }
+}
+
+
+// Transforming atomic to atomic assigns dipole moment, center of mass and permanent polarisabilites to the variables
+void TransformAtomictoAtomic(vector<Atom> &r, uint nsteps,  uint natoms, const vector<float> & L, vector<Molecular> &mol, uint nmol)
+{
+  Molecular mols; 
+  for(uint t = 0; t < nsteps; ++t )
+    { 
+      for(uint i = 0;i < natoms;++i)
+        {
+          uint id = natoms*t+i;  
+          mols.x = r[id].x;
+          mols.y = r[id].y;
+          mols.z = r[id].z;
+          mols.MOL = r[id].symbol;
+          mols.m = r[id].atomicmass; 
+          parameters(mols);
+          mols.PD.x *= amutodebye;
+          mols.PD.y *= amutodebye;
+          mols.PD.z *= amutodebye;
+          mol.push_back(mols);         
+        }
+    } 
 }
 
 
@@ -366,29 +438,6 @@ void TransformAtomictoMolecular(vector<Atom> &r, uint nsteps,  uint natoms, cons
               mols.MOL = r[id].symbol;
               mols.m = r[id].atomicmass; 
               parameters(mols);
-              mols.PD.x = 0;
-              mols.PD.y = 0;
-              mols.PD.z = 0;
-              mols.ID.x = 0.0 ;
-              mols.ID.y = 0.0 ;
-              mols.ID.z = 0.0 ;
-              mol.push_back(mols); 
-            }
-          //Ar
-          if((r[id].symbol[0] == 'A' || r[id].symbol[0] == 'a' ) && ( r[id].symbol[1] == 'R' || r[id].symbol[1] == 'r'))
-            {
-              mols.x = r[id].x;
-              mols.y = r[id].y;
-              mols.z = r[id].z;
-              mols.MOL = r[id].symbol;
-              mols.m = r[id].atomicmass; 
-              parameters(mols);
-              mols.PD.x = 0;
-              mols.PD.y = 0;
-              mols.PD.z = 0;
-              mols.ID.x = 0.0 ;
-              mols.ID.y = 0.0 ;
-              mols.ID.z = 0.0 ;
               mol.push_back(mols); 
             }
           //MG
@@ -400,12 +449,6 @@ void TransformAtomictoMolecular(vector<Atom> &r, uint nsteps,  uint natoms, cons
               mols.MOL = r[id].symbol;
               mols.m = r[id].atomicmass; 
               parameters(mols);
-              mols.PD.x = 0;
-              mols.PD.y = 0;
-              mols.PD.z = 0;
-              mols.ID.x = 0.0 ;
-              mols.ID.y = 0.0 ;
-              mols.ID.z = 0.0 ;
               mol.push_back(mols); 
             }
           //CL
@@ -417,12 +460,6 @@ void TransformAtomictoMolecular(vector<Atom> &r, uint nsteps,  uint natoms, cons
               mols.MOL = r[id].symbol;
               mols.m = r[id].atomicmass; 
               parameters(mols);
-              mols.PD.x = 0;
-              mols.PD.y = 0;
-              mols.PD.z = 0;
-              mols.ID.x = 0.0 ;
-              mols.ID.y = 0.0 ;
-              mols.ID.z = 0.0 ;
               mol.push_back(mols); 
             }
           // SO4
@@ -436,12 +473,6 @@ void TransformAtomictoMolecular(vector<Atom> &r, uint nsteps,  uint natoms, cons
               mols.MOL = "SO4";
               mols.m = 96.06;  
               parameters(mols);
-              mols.PD.x = 0;
-              mols.PD.y = 0;
-              mols.PD.z = 0;
-              mols.ID.x = 0.0 ;
-              mols.ID.y = 0.0 ;
-              mols.ID.z = 0.0 ;
               mol.push_back(mols);
             } 
           // H2O
