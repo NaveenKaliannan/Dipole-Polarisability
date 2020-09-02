@@ -8,10 +8,14 @@ cd build
 cmake . 
 make
 
-./exe ../../mgcl2-h2o/NVE-pos-1.xyz traj.psf 3300 1 15.56 18 18 ../field_atomicunit 
+./exe ../../mgcl2-h2o/NVE-pos-1.xyz traj.psf 1 1 16.099 414 148 ../field_atomicunit
+ 
 
-##./exe ../nacl.xyz traj.psf 1 1 15.56 18 18 ../field_atomicunit 
+##./exe ../../mgcl2-h2o/NVE-pos-1.xyz traj.psf 4700 1 16.099 414 148 ../field_atomicunit 
 
+##./exe ../../mgcl2-h2o/NVE-pos-1.xyz traj.psf 10000 1 15.56 18 8 ../field_atomicunit 
+
+##./exe ../../mgcl2/NVE-pos-1.xyz traj.psf 10000 1 15.56 3 3 ../field_atomicunit 
 
 ## argumets
 ## 1. trajectory

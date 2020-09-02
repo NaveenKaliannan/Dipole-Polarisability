@@ -18,9 +18,10 @@ using namespace std;
 
 void Induced_dipole_pol(vector<Molecular> &mol, uint nsteps, uint nmol, const vector<float> & L, uint niter, vector<Vector> &E)
 {
+  uint idi = 0, idj = 0;
+  float a = 0.0, sum = 0.0, b = 0.0, eps = 0.0;
   vector<Vector> Field (nmol);
   vector<Vector> rsd (nmol), zrsd (nmol), conj (nmol), vec(nmol);
-  uint idi = 0, idj = 0;
 
   for(uint t = 0; t < nsteps;t += 1 )
     {
@@ -29,14 +30,7 @@ void Induced_dipole_pol(vector<Molecular> &mol, uint nsteps, uint nmol, const ve
       for(uint i = 0;i < nmol;++i)
         {
           idi = nmol*t+i;            
-          //cout << i << "  " <<  Field[i].x << "  " << Field[i].y <<  "   " << Field[i].z << "  "  << endl;
           Mat_vec(mol[idi].PPol, Field[i], mol[idi].ID);
-        }
-
-      for(uint i = 0;i < nmol;++i)
-        {
-          idi = nmol*t+i;             
-         // cout << i << "  " <<  mol[idi].ID.x << "  " << mol[idi].ID.y <<  "   " << mol[idi].ID.z << "  "  << endl;
         }
 
       init_Vector_zero(rsd, 1, nmol);
@@ -53,8 +47,8 @@ void Induced_dipole_pol(vector<Molecular> &mol, uint nsteps, uint nmol, const ve
         }
 
       // Induced dipole is computed via conjugate gradient
-      // (CG) approach, exactly as implemented in  Tinker 
-      // Molecular Modeling software package
+      // (CG) approach, exactly as in  Tinker Molecular
+      //  Modeling software package
       for(uint iter = 0;iter < niter;++iter)
         {
           for(uint i = 0;i < nmol;++i)
@@ -73,8 +67,8 @@ void Induced_dipole_pol(vector<Molecular> &mol, uint nsteps, uint nmol, const ve
               vec[i].z = (conj[i].z/mol[idi].PPol.zz) - Field[i].z;
             }
 
-          float a = 0.0 ;
-          float sum = 0.0;
+          a = 0.0 ;
+          sum = 0.0;
           for(uint i = 0;i < nmol;++i)
             {
               idi = nmol*t+i; 
@@ -94,7 +88,7 @@ void Induced_dipole_pol(vector<Molecular> &mol, uint nsteps, uint nmol, const ve
               rsd[i].z = rsd[i].z - a * vec[i].z;
             }
 
-          float b = 0.0;
+          b = 0.0;
           for(uint i = 0;i < nmol;++i)
             {
               idi = nmol*t+i; 
@@ -102,7 +96,7 @@ void Induced_dipole_pol(vector<Molecular> &mol, uint nsteps, uint nmol, const ve
               b = b + rsd[i].x * zrsd[i].x + rsd[i].y * zrsd[i].y + rsd[i].z * zrsd[i].z ;
             }
           b = (b/sum) ; 
-          double eps = 0.0;
+          eps = 0.0;
           for(uint i = 0;i < nmol;++i)
             {
               idi = nmol*t+i; 
@@ -111,15 +105,9 @@ void Induced_dipole_pol(vector<Molecular> &mol, uint nsteps, uint nmol, const ve
               conj[i].z = zrsd[i].z + b * conj[i].z ;
               eps = eps + rsd[i].x * rsd[i].x + rsd[i].y * rsd[i].y + rsd[i].z * rsd[i].z; 
             } 
-            if (eps < 0.000001)  { cout << t << "  " <<  iter << endl;  iter = niter;}   
-            if (iter == niter - 1)  { cout << " not converged " << endl;  }                                 
+            if (eps < 0.000001)  { cout << t <<  "  " << iter << endl; iter = niter;}   
+            if (iter == niter - 1)  { cout << "Frame " << t <<  " is not converged " << endl;  }                                 
         } 
-      for(uint i = 0;i < nmol;++i)
-        {
-          idi = nmol*t+i;             
-         // cout << i << "  " <<  mol[idi].ID.x << "  " << mol[idi].ID.y <<  "   " << mol[idi].ID.z << "  "  << endl;
-        }
-
     }
       
 }
@@ -142,9 +130,12 @@ void FieldduetoExternalField(vector<Molecular> &mol, uint t, uint nmol, const ve
 void Fieldduetodipole(vector<Molecular> &mol, uint t, uint nmol, const vector<float> & L, vector <Vector> & Field)
 {
   uint idi = 0, idj = 0, ncell = 1;
-  float x = 0, y = 0, z = 0, rij = 0, rcut = 10;
-  vector<float> PB_L(3,0.0);
+  float x = 0, y = 0, z = 0, rij = 0, rcut = 40;
+  float ar = 0.0, st1 = 0.0, st2 = 0.0, r3 = 0.0, r5 = 0.0;
+  vector<float> PB_L(6,0.0);
   vector<Vector_int> imageno(pow(ncell,3));
+  Vector dipole;
+  Matrix Tij;
 
   init_Vector_zero(Field, 1, nmol); 
 
@@ -159,15 +150,13 @@ void Fieldduetodipole(vector<Molecular> &mol, uint t, uint nmol, const vector<fl
             {
               dist(mol, idi, idj, L, PB_L, imageno, cell, x, y, z );
               rij = mindis(x,y,z,PB_L);       
-              if ((i != j && cell == 0 ) || (cell > 0))
+              if ((i != j && cell == 0 ) || (cell > 0 && rij < rcut))
               {
-                float ar  = sl * rij;
-                float st1 = 1.0 - (1.0 + ar + (ar*ar/2.0)) * exp(-ar);     
-                float st2 = 1.0 - (1.0 + ar + (ar*ar/2.0) + (pow(ar,3.0)/6.0)) * exp(-ar); 
-                float r3  = pow(rij, -3.0); 
-                float r5  = 3.0 * pow(rij, -5.0);
-
-                Matrix Tij;
+                //ar  = sl * rij;
+                //st1 = 1.0 - (1.0 + ar + (ar*ar/2.0)) * exp(-ar);     
+                //st2 = 1.0 - (1.0 + ar + (ar*ar/2.0) + (pow(ar,3.0)/6.0)) * exp(-ar); 
+                r3  = pow(rij, -3.0); 
+                r5  = 3.0 * pow(rij, -5.0);
                 Tij.xx = -r3 + r5 * x * x ;
                 Tij.yy = -r3 + r5 * y * y ; 
                 Tij.zz = -r3 + r5 * z * z ;
@@ -178,10 +167,9 @@ void Fieldduetodipole(vector<Molecular> &mol, uint t, uint nmol, const vector<fl
                 Tij.zx =  0  + r5 * z * x ;
                 Tij.zy =  0  + r5 * z * y ; 
 
-                Vector dipole;
-                dipole.x =  mol[idj].ID.x; 
-                dipole.y =  mol[idj].ID.y; 
-                dipole.z =  mol[idj].ID.z; 
+                dipole.x = mol[idj].ID.x; 
+                dipole.y = mol[idj].ID.y; 
+                dipole.z = mol[idj].ID.z; 
 
                 Field[i].x += Tij.xx * dipole.x + Tij.xy * dipole.y + Tij.xz * dipole.z;
                 Field[i].y += Tij.yx * dipole.x + Tij.yy * dipole.y + Tij.yz * dipole.z;
@@ -197,8 +185,9 @@ void Fieldduetodipole(vector<Molecular> &mol, uint t, uint nmol, const vector<fl
 void FieldduetoPermanentMultipoles(vector<Molecular> &mol, uint t, uint nmol, const vector<float> & L, vector <Vector> & Field)
 {
   uint idi = 0, idj = 0, ncell = 1;
-  float x = 0, y = 0, z = 0, rij = 0, rcut = 10;
-  vector<float> PB_L(3,0.0);
+  float x = 0, y = 0, z = 0, rij = 0, rcut = 40;
+  float ar = 0.0, st1 = 0.0, st2 = 0.0, r3 = 0.0, r5 = 0.0, pc = 0.0, pd = 0.0;
+  vector<float> PB_L(6,0.0);
   vector<Vector_int> imageno(pow(ncell,3));
 
   init_Vector_zero(Field, 1, nmol); 
@@ -214,30 +203,30 @@ void FieldduetoPermanentMultipoles(vector<Molecular> &mol, uint t, uint nmol, co
             {
               dist(mol, idi, idj, L, PB_L, imageno, cell, x, y, z );
               rij = mindis(x,y,z,PB_L);       
-              if ((i != j && cell == 0 ) || (cell > 0))
+              if ((i != j && cell == 0 ) || (cell > 0 && rij < rcut))
               {
-                float ar  = sl * rij;
-                float st1 = 1.0 - (1.0 + ar + (ar*ar/2.0)) * exp(-ar);     
-                float st2 = 1.0 - (1.0 + ar + (ar*ar/2.0) + (pow(ar,3.0)/6.0)) * exp(-ar); 
-                float r3  = pow(rij, -3.0); 
-                float r5  = 3.0 * pow(rij, -5.0);
-                float r7  = 15.0 * pow(rij, -7.0);
+                //ar  = sl * rij;
+                //st1 = 1.0 - (1.0 + ar + (ar*ar/2.0)) * exp(-ar);     
+                //st2 = 1.0 - (1.0 + ar + (ar*ar/2.0) + (pow(ar,3.0)/6.0)) * exp(-ar); 
+                r3  = pow(rij, -3.0); 
+                r5  = 3.0 * pow(rij, -5.0);
 
-                // Field due to point charges and dipole (quadrupole not considered)
-                float pc =  mol[idj].q;
-                float pd =  mol[idj].PD.x * x + mol[idj].PD.y * y + mol[idj].PD.z * z  ;
-                Field[i].x += x * ( r3 * pc * pointchargedistancetodebye - r5 * pd ) ;
-                Field[i].y += y * ( r3 * pc * pointchargedistancetodebye - r5 * pd ) ;
-                Field[i].z += z * ( r3 * pc * pointchargedistancetodebye - r5 * pd ) ;
+                // Field due to point charge and dipole (quadrupole not considered)
+                //point charge - http://www.physics.umd.edu/courses/Phys260/agashe/S10/notes/lecture18.pdf 
+                //point dipole - http://www.physnet.org/modules/pdf_modules/m120.pdf 
+                // Here we follow the standart physics convention to compare
+                // with CP2K: dipole moment from - to +. hence i->j direction otherwise below [-x -y -z] vector
+                // should be used in pd and field calculations
+                pc =  mol[idj].q * pointchargedistancetodebye;
+                pd =  mol[idj].PD.x * x + mol[idj].PD.y * y + mol[idj].PD.z * z  ; 
+                Field[i].x += x * ( r3 * pc + r5 * pd ) ;
+                Field[i].y += y * ( r3 * pc + r5 * pd ) ;
+                Field[i].z += z * ( r3 * pc + r5 * pd ) ;
 
                 // Field due to dipole moment (quadrupole moment not considered)
-                Field[i].x += r3 * mol[idj].PD.x  ;
-                Field[i].y += r3 * mol[idj].PD.y  ;
-                Field[i].z += r3 * mol[idj].PD.z  ;
-
-//                cout << i << "  " <<  x *  r3 * pc * pointchargedistancetodebye  << "  " << x * r5 * pd << "  " << pd << "  " << mol[idj].PD.x << "  " << mol[idj].PD.y << "  " << mol[idj].PD.z << "  "  << endl;
-
-//                cout << i << "  " <<  Field[i].x << "  " << Field[i].y <<  "   " << Field[i].z << "  "  << endl;
+                Field[i].x += -r3 * mol[idj].PD.x  ;
+                Field[i].y += -r3 * mol[idj].PD.y  ;
+                Field[i].z += -r3 * mol[idj].PD.z  ;
               }                          
             }
         }
@@ -252,9 +241,6 @@ void parameters(Molecular &mol)
 /*
    Cp2k Luber2014 Raman spectra from ab initio moleculardynamics and its application to liquid S-methyloxirane
         Putrino2002 , Anharmonic Raman Spectra in High-Pressure Ice fromAb InitioSimulations
-
-              //rhat unit vector describing the line between i and j molecules (Imp: i->j direction)
-              //http://www.physics.umd.edu/courses/Phys260/agashe/S10/notes/lecture18.pdf
 
 //  Introductory Bioelectronics: For Engineers and Physical Scientists equaiton 3.5 rhat
 
@@ -529,7 +515,8 @@ void TransformAtomictoMolecular(vector<Atom> &r, uint nsteps,  uint natoms, cons
               //Dipole moment [Debye]
               mols.PD.x = wb_x * Unitvectortodebye ;
               mols.PD.y = wb_y * Unitvectortodebye ;
-              mols.PD.z = wb_z * Unitvectortodebye ;  
+              mols.PD.z = wb_z * Unitvectortodebye ; 
+ 
               mols.ID.x = 0.0 ;
               mols.ID.y = 0.0 ;
               mols.ID.z = 0.0 ;
@@ -580,6 +567,11 @@ void replica(const vector<float> & L, uint ncell, vector<float> & PB_L, vector<V
   PB_L[0] = L[0] * ncell ;
   PB_L[1] = L[1] * ncell ;
   PB_L[2] = L[2] * ncell ;
+
+  PB_L[3] = PB_L[0] * 0.5;
+  PB_L[4] = PB_L[1] * 0.5;
+  PB_L[5] = PB_L[2] * 0.5;
+
   for(uint cellz = 0; cellz < ncell ; ++cellz)
     {
       for(uint celly = 0; celly < ncell ; ++celly)
@@ -607,13 +599,13 @@ void dist(vector<Molecular> &mol, uint idi, uint idj, const vector<float> & L,  
   y = y + imageno[index].y * L[1];
   z = z + imageno[index].z * L[2];
 
-  if(x > 0 && abs(x) > (PB_L[0] * 0.5) ) { x  -= PB_L[0] ; }
-  if(y > 0 && abs(y) > (PB_L[1] * 0.5) ) { y  -= PB_L[1] ; }
-  if(z > 0 && abs(z) > (PB_L[2] * 0.5) ) { z  -= PB_L[2] ; } 
+  if(x > 0 && abs(x) > PB_L[3] ) { x  -= PB_L[0] ; }
+  if(y > 0 && abs(y) > PB_L[4] ) { y  -= PB_L[1] ; }
+  if(z > 0 && abs(z) > PB_L[5] ) { z  -= PB_L[2] ; } 
 
-  if(x < 0 && abs(x) > (PB_L[0] * 0.5) ) { x  += PB_L[0] ; }
-  if(y < 0 && abs(y) > (PB_L[1] * 0.5) ) { y  += PB_L[1] ; }
-  if(z < 0 && abs(z) > (PB_L[2] * 0.5) ) { z  += PB_L[2] ; }
+  if(x < 0 && abs(x) > PB_L[3] ) { x  += PB_L[0] ; }
+  if(y < 0 && abs(y) > PB_L[4] ) { y  += PB_L[1] ; }
+  if(z < 0 && abs(z) > PB_L[5] ) { z  += PB_L[2] ; }
 }
 
 

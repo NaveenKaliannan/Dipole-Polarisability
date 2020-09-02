@@ -140,27 +140,7 @@ void Print(vector<Atom> &r, uint nsteps, uint natoms, const vector<float> & L, v
     { 
       float a =0, b = 0, c = 0, a1 =0, b1 = 0, c1 = 0;
       float axy =0, axz = 0, ayz = 0, ayx =0, azx = 0, azy = 0;
-      if(TYPE[0] == 'R' && TYPE[1] == 'E' && TYPE[2] == 'P' && TYPE[3] == 'L' && TYPE[4] == 'I')
-      {
-        uint ncell = 3 ;
-        outfile << natoms * pow(ncell,3) << endl ;
-        outfile << " BOX Length " << L[0] * ncell << "  " << L[1] * ncell << "  " << L[2] * ncell << "\n";
-        for(uint x = 0; x < ncell ; ++x)
-          {
-            for(uint y = 0; y < ncell ; ++y)
-              {
-                for(uint z = 0; z < ncell ; ++z)
-                  {
-                    for(uint i = 0;i < natoms;++i)
-                      {
-                        uint id = natoms*t+i; 
-                        outfile << r[id].symbol <<  "  " << r[id].x + L[0] * x  << "  " << r[id].y + L[1] * y << "  " << r[id].z + L[2] * z << "\n";
-                      }
-                  }
-              }
-          }
-      }
-      else if(TYPE[0] == 'A' && TYPE[1] == 'T' && TYPE[2] == 'M')
+      if(TYPE[0] == 'A' && TYPE[1] == 'T' && TYPE[2] == 'M')
       {
         outfile << natoms << endl ;
         outfile << "BOX Length " << L[0] << "  " << L[1] << "  " << L[2] << "\n";
