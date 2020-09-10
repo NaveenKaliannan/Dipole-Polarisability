@@ -34,7 +34,8 @@ int main(int argc, char** argv)
           //cout << count * 0.4 << "  " << 0 << "  " << 0 << "  " << 0 << endl;          
           //cout << count * 0.4 << "  " << r[i] << "  " << 0 << "  " << 0 << endl;
           //cout << count << "  " << r[i] << "  " <<  0 << "  " << 0 << endl; 
-          cout << count << "  " << 0 << "  " <<  0 << "  " << 0 << endl; 
+          //cout << count * 0.4 << "  " << 0 << "  " <<  0 << "  " << 0 << endl; 
+          cout << count * 0.4 << "  " << r[i] * 30000 << "  " <<  0 << "  " << 0 << endl; 
           count += 1;
         }
     }

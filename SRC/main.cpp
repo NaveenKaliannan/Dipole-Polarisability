@@ -64,8 +64,9 @@ int main ( int argc, char** argv )
   //Print(r, nsteps, natoms, L, mol, nmol, dt, "Permanet.data", "DIP-P");
   //Print(r, nsteps, natoms, L, mol, nmol, dt, "Induced.data", "DIP-I");
 
-  Print(r, nsteps, natoms, L, mol, nmol, dt, "PBC-trajectory.xyz", "ATM");
-  Print(r, nsteps, natoms, L, mol, nmol, dt, "Total.data", "DIP-T");
+  Print_tinker(r, nsteps, natoms, L, mol, nmol, dt, "water.xyz", "TINKER");
+  //Print(r, nsteps, natoms, L, mol, nmol, dt, "PBC-trajectory.xyz", "ATM");
+  Print(r, nsteps, natoms, L, mol, nmol, dt, argv[9], "DIP-T");
 
   return 0;
 }

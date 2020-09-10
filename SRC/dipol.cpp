@@ -131,7 +131,8 @@ void Fieldduetodipole(vector<Molecular> &mol, uint t, uint nmol, const vector<fl
 {
   uint idi = 0, idj = 0, ncell = 1;
   float x = 0, y = 0, z = 0, rij = 0, rcut = 40;
-  float ar = 0.0, st1 = 0.0, st2 = 0.0, r3 = 0.0, r5 = 0.0;
+  float u = 0.0, ar = 0.0, st1 = 0.0, st2 = 0.0, r3 = 0.0, r5 = 0.0, pc = 0.0, pd = 0.0;
+  float mean_alpha1 = 0, mean_alpha2 = 0;
   vector<float> PB_L(6,0.0);
   vector<Vector_int> imageno(pow(ncell,3));
   Vector dipole;
@@ -152,11 +153,15 @@ void Fieldduetodipole(vector<Molecular> &mol, uint t, uint nmol, const vector<fl
               rij = mindis(x,y,z,PB_L);       
               if ((i != j && cell == 0 ) || (cell > 0 && rij < rcut))
               {
-                //ar  = sl * rij;
-                //st1 = 1.0 - (1.0 + ar + (ar*ar/2.0)) * exp(-ar);     
-                //st2 = 1.0 - (1.0 + ar + (ar*ar/2.0) + (pow(ar,3.0)/6.0)) * exp(-ar); 
-                r3  = pow(rij, -3.0); 
-                r5  = 3.0 * pow(rij, -5.0);
+                mean_alpha1 = (mol[idi].PPol.xx + mol[idi].PPol.yy + mol[idi].PPol.zz ) / 3.0;
+                mean_alpha2 = (mol[idj].PPol.xx + mol[idj].PPol.yy + mol[idj].PPol.zz ) / 3.0;
+                u = rij / pow(mean_alpha1 * mean_alpha2, 0.16666);
+                ar  = mol[idj].sl * pow(u,3);
+                st1 = 1.0 - (1.0 + ar + (ar*ar/2.0)) * exp(-ar);     
+                st2 = 1.0 - (1.0 + ar + (ar*ar/2.0) + (pow(ar,3.0)/6.0)) * exp(-ar); 
+                r3  = pow(rij, -3.0)  * (st1 + 0.0); 
+                r5  = 3.0 * pow(rij, -5.0)  * (st2 + 0.0);
+
                 Tij.xx = -r3 + r5 * x * x ;
                 Tij.yy = -r3 + r5 * y * y ; 
                 Tij.zz = -r3 + r5 * z * z ;
@@ -186,7 +191,8 @@ void FieldduetoPermanentMultipoles(vector<Molecular> &mol, uint t, uint nmol, co
 {
   uint idi = 0, idj = 0, ncell = 1;
   float x = 0, y = 0, z = 0, rij = 0, rcut = 40;
-  float ar = 0.0, st1 = 0.0, st2 = 0.0, r3 = 0.0, r5 = 0.0, pc = 0.0, pd = 0.0;
+  float u = 0.0, ar = 0.0, st1 = 0.0, st2 = 0.0, r3 = 0.0, r5 = 0.0, pc = 0.0, pd = 0.0;
+  float mean_alpha1 = 0, mean_alpha2 = 0;
   vector<float> PB_L(6,0.0);
   vector<Vector_int> imageno(pow(ncell,3));
 
@@ -205,18 +211,58 @@ void FieldduetoPermanentMultipoles(vector<Molecular> &mol, uint t, uint nmol, co
               rij = mindis(x,y,z,PB_L);       
               if ((i != j && cell == 0 ) || (cell > 0 && rij < rcut))
               {
-                //ar  = sl * rij;
-                //st1 = 1.0 - (1.0 + ar + (ar*ar/2.0)) * exp(-ar);     
-                //st2 = 1.0 - (1.0 + ar + (ar*ar/2.0) + (pow(ar,3.0)/6.0)) * exp(-ar); 
-                r3  = pow(rij, -3.0); 
-                r5  = 3.0 * pow(rij, -5.0);
+                // S Grimme - Effect of the Damping Function in Dispersion Corrected Density Functional Theory
+                // A Universal Damping Function for Empirical Dispersion Correctionon Density Functional Theory
+                // vdw radii https://www.cgl.ucsf.edu/chimerax/docs/user/radii.html and Consistent van der Waals Radii for the Whole Main Group and Van der Waals Radii of Elements
+                //Set of van der Waals and Coulombic Radii of Protein  Atoms for Molecular and Solvent-Accessible Surface Calculation, Packing Evaluation, and Docking
+                // https://bip.weizmann.ac.il/course/structbioinfo/databases/CCDC_Mercury/appa_glossary.4.73.html Bondi, J.Phys.Chem., 68, 441, 1964
+                // https://www.pamoc.it/kw_dfd.html
+                // A consistent and accurate ab initioparametrization of density functionaldispersion correction (DFT-D) for the 94elements H-Pu
+                // Density Functional Theory Augmented with an Empirical Dispersion Term. Interaction Energies and Geometries of 80 Noncovalent Complexes Compared with Ab Initio Quantum Mechanics Calculations
+                // Damping functions in the effective fragmentpotential method
+                // On the performance of molecular polarization methods. II. Water and carbon tetrachloride close to a cation
+                // Gaussian and Exponeital damping function:  The polarizable point dipoles method withelectrostatic damping: Implementation on amodel system
+                // Becke-Johnson  (BJ)  damping  function: A generally applicable atomic-chargedependent London dispersion correction
+                // Thole damping:  Molecular and Atomic Polarizabilities: Thole’s Model Revisited
+                // Thole damping: Molecular polarizabilities calculated with a modified dipole interaction
+                // Empirical D3 Dispersion as a Replacement for ab Initio Dispersion Terms in Density Functional Theory-Based Symmetry-Adapted Perturbation Theory
+                // atomic radii Semiempirical GGA-Type Density Functional Constructed with a Long-Range Dispersion Correction
+                // Accurate Description of van der Waals Complexes by Density Functional Theory Including  Empirical Corrections
+                // The polarizable point dipoles method withelectrostatic damping: Implementation on amodel system
+                //Interatomic Methods for the Dispersion Energy Derived from the AdiabaticConnection Fluctuation-Dissipation Theorem
+                //Note: Fermic  and Hesselmann daming function goes to zero quickly at smaller r, not suitable here. 
+                // Wu and Yang damping function J. Chem. Phys. 2002, 116, 515-524. 
+
+                //Thole damping function
+                mean_alpha1 = (mol[idi].PPol.xx + mol[idi].PPol.yy + mol[idi].PPol.zz ) / 3.0;
+                mean_alpha2 = (mol[idj].PPol.xx + mol[idj].PPol.yy + mol[idj].PPol.zz ) / 3.0;
+                u = rij / pow(mean_alpha1 * mean_alpha2, 0.16666);
+                ar  = mol[idj].sl * pow(u,3.0)  ;   
+                st1 = 1.0 - (1.0 + ar + (ar*ar/2.0)) * exp(-ar);     
+                st2 = 1.0 - (1.0 + ar + (ar*ar/2.0) + (pow(ar,3.0)/6.0)) * exp(-ar);                   
+                //r3  = pow(rij, -3.0)  * (st1 + 0.0); 
+                //r5  = 3.0 * pow(rij, -5.0)  * (st2 + 0.0);
+
+                // enhanced thole screening length agrees with Wu and Yang damping function
+                //r3  = pow(rij, -3.0)  * (st1 + 0.15); 
+                //r5  = 3.0 * pow(rij, -5.0)  * (st2 + 0.15);
+
+                // Wu and Yang damping function
+                float cdamp = 3.54 ; 
+                float r_vdwr = mol[idi].vdwr + mol[idj].vdwr ;
+                float WY1 =  pow( 1.0  - exp( -1.0 * cdamp * pow( rij / r_vdwr ,3)) , 2);
+                //r3  = pow(rij, -3.0)  * WY1 ; 
+                //r5  = 3.0 * pow(rij, -5.0)  * WY1;
+
+                r3  = pow(rij, -3.0) * WY1; 
+                r5  = 3.0 * pow(rij, -5.0) * (st2 + 0.15) ;
+
 
                 // Field due to point charge and dipole (quadrupole not considered)
                 //point charge - http://www.physics.umd.edu/courses/Phys260/agashe/S10/notes/lecture18.pdf 
                 //point dipole - http://www.physnet.org/modules/pdf_modules/m120.pdf 
                 // Here we follow the standart physics convention to compare
-                // with CP2K: dipole moment from - to +. hence i->j direction otherwise below [-x -y -z] vector
-                // should be used in pd and field calculations
+                // with CP2K: dipole moment from - to +. hence i->j direction
                 pc =  mol[idj].q * pointchargedistancetodebye;
                 pd =  mol[idj].PD.x * x + mol[idj].PD.y * y + mol[idj].PD.z * z  ; 
                 Field[i].x += x * ( r3 * pc + r5 * pd ) ;
@@ -353,7 +399,7 @@ Pengyu Ren and Jay W. Ponder  Polarizable Atomic Multipole Water Model for Molec
     }
   else if( ( mol.MOL[0] == 'N' || mol.MOL[0] == 'n' ) && ( mol.MOL[1] == 'A' || mol.MOL[1] == 'a' ))
     {
-      mol.q = 1;
+      mol.q = 0.8;
       mol.PPol.xx = 0.1200;mol.PPol.yy = 0.1200;mol.PPol.zz = 0.1200;
       mol.PPol.xy = 0.0000;mol.PPol.xz = 0.0000;mol.PPol.yz = 0.0000;
       mol.PPol.yx = 0.0000;mol.PPol.zx = 0.0000;mol.PPol.zy = 0.0000;
@@ -423,6 +469,8 @@ void TransformAtomictoMolecular(vector<Atom> &r, uint nsteps,  uint natoms, cons
               mols.z = r[id].z;
               mols.MOL = r[id].symbol;
               mols.m = r[id].atomicmass; 
+              mols.sl = 0.3900 ; 
+              mols.vdwr = 2.27 ;    
               parameters(mols);
               mol.push_back(mols); 
             }
@@ -434,6 +482,8 @@ void TransformAtomictoMolecular(vector<Atom> &r, uint nsteps,  uint natoms, cons
               mols.z = r[id].z;
               mols.MOL = r[id].symbol;
               mols.m = r[id].atomicmass; 
+              mols.sl = 0.1150 ;
+              mols.vdwr = 1.364 ;     
               parameters(mols);
               mol.push_back(mols); 
             }
@@ -444,7 +494,9 @@ void TransformAtomictoMolecular(vector<Atom> &r, uint nsteps,  uint natoms, cons
               mols.y = r[id].y;
               mols.z = r[id].z;
               mols.MOL = r[id].symbol;
-              mols.m = r[id].atomicmass; 
+              mols.m = r[id].atomicmass;
+              mols.sl = 0.3900 ; 
+              mols.vdwr = 1.639 ;    
               parameters(mols);
               mol.push_back(mols); 
             }
@@ -457,7 +509,9 @@ void TransformAtomictoMolecular(vector<Atom> &r, uint nsteps,  uint natoms, cons
               mols.y = ( r[id-1].y * am_O + r[id].y * am_S + r[id+1].y * am_O + r[id+2].y * am_O + r[id+3].y * am_O ) / am_SO4 ;
               mols.z = ( r[id-1].z * am_O + r[id].z * am_S + r[id+1].z * am_O + r[id+2].z * am_O + r[id+3].z * am_O ) / am_SO4 ;               
               mols.MOL = "SO4";
-              mols.m = 96.06;  
+              mols.m = 96.06; 
+              mols.sl = 0.3900 ;
+              mols.vdwr = 1.75 ;   
               parameters(mols);
               mol.push_back(mols);
             } 
@@ -520,6 +574,9 @@ void TransformAtomictoMolecular(vector<Atom> &r, uint nsteps,  uint natoms, cons
               mols.ID.x = 0.0 ;
               mols.ID.y = 0.0 ;
               mols.ID.z = 0.0 ;
+
+              mols.sl = 0.39 ; 
+              mols.vdwr = 1.7 ; 
 
               // Permanent polarisability [Angstrom]
               parameters(mols);

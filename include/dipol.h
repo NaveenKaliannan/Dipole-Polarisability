@@ -7,7 +7,6 @@
 #include "../include/numerics.h" 
 
 
-#define sl 2.4380 // screeing length thole 
 
 using namespace std;
 
