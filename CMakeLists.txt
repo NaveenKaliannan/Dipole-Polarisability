@@ -17,4 +17,7 @@ include_directories(${MPI_INCLUDE_PATH})
 # Source files are added
 file(GLOB SOURCES "../SRC/*.cpp") 
 add_executable(exe ${SOURCES})
+
+
 target_link_libraries(exe ${MPI_LIBRARIES})
+

@@ -62,26 +62,6 @@ void readmullikencharges(vector<Atom> &r, uint nsteps, uint natoms, string filen
 
 
 
-// computes velocity with central difference scheme as CP2K (multiply with vAperfmstoamu converts to atomic unit )
-void computevelocity(vector<Atom> &r, uint nsteps, uint natoms, const vector<float> & L, float dt)
-{
-  for(uint t = 1; t < nsteps-1; ++t )
-    { 
-      for(uint i = 0;i < natoms;++i)
-        {
-          uint id = natoms*(t)+i; 
-          uint id1 = natoms*(t-1)+i; 
-          uint id2 = natoms*(t+1)+i; 
-          r[id].vx = min_distance((r[id2].x - r[id1].x), L[0])/(2*dt) ;
-          r[id].vy = min_distance((r[id2].y - r[id1].y), L[1])/(2*dt) ;
-          r[id].vz = min_distance((r[id2].z - r[id1].z), L[2])/(2*dt) ;
-        }
-    }
-    //if(abs(r[id].vx * vAperfmstoamu  - v[id].x) > 1.E-4 ) checking condition 
-}
-
-
-
 //Reading the psf file
 void readpsf(vector<Atom> &r, uint nsteps,  uint natoms, string psffilename)
 {

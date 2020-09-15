@@ -18,6 +18,7 @@
 #include "../include/io.h"
 #include "../include/numerics.h"
 #include "../include/dipol.h"
+#include "../include/velocity.h"
 
 using namespace std;
 
@@ -46,16 +47,19 @@ int main ( int argc, char** argv )
   vector<Vector> E (nsteps);
 
   readtrajectory(r, nsteps, natoms, xyzfilename, L);
-  readExternalfield(E, nsteps, fieldfilename);
-  AssignAtomicMass(r, nsteps, natoms);
-  BringintoBox(r, nsteps, natoms, L);
 
-  TransformAtomictoMolecular(r, nsteps, natoms, L, mol, nmol);
-  Induced_dipole_pol(mol, nsteps, nmol, L, 500, E);
+  //AssignAtomicMass(r, nsteps, natoms);
+  //BringintoBox(r, nsteps, natoms, L);
+  computeatomicvelocity(r, nsteps, natoms, L, dt);
+  PrintKEs(r, nsteps, natoms, L, dt, argv[9]);
+  Printcosine(r, nsteps, natoms, L, dt, argv[10]);
+
+  //TransformAtomictoMolecular(r, nsteps, natoms, L, mol, nmol);
+  //readExternalfield(E, nsteps, fieldfilename);
+  //Induced_dipole_pol(mol, nsteps, nmol, L, 500, E);
 
  // TransformAtomictoAtomic(r, nsteps, natoms, L, mol, nmol);
   //TransformAtomictoMolecular(r, nsteps, natoms, L, mol, nmol);
-  //computevelocity(r, nsteps, natoms, L, dt);
   //readpsf(r, nsteps,  natoms, psffilename);
   //readmullikencharges(r, nsteps, natoms, "test" ) ;
 
@@ -64,9 +68,9 @@ int main ( int argc, char** argv )
   //Print(r, nsteps, natoms, L, mol, nmol, dt, "Permanet.data", "DIP-P");
   //Print(r, nsteps, natoms, L, mol, nmol, dt, "Induced.data", "DIP-I");
 
-  Print_tinker(r, nsteps, natoms, L, mol, nmol, dt, "water.xyz", "TINKER");
+  //Print_tinker(r, nsteps, natoms, L, mol, nmol, dt, "water.xyz", "TINKER");
   //Print(r, nsteps, natoms, L, mol, nmol, dt, "PBC-trajectory.xyz", "ATM");
-  Print(r, nsteps, natoms, L, mol, nmol, dt, argv[9], "DIP-T");
+  //Print(r, nsteps, natoms, L, mol, nmol, dt, argv[9], "DIP-T");
 
   return 0;
 }
