@@ -19,6 +19,8 @@
 #include "../include/numerics.h"
 #include "../include/dipol.h"
 #include "../include/velocity.h"
+#include "../include/tinker.h"
+#include "../include/molar.h"
 
 using namespace std;
 
@@ -71,6 +73,7 @@ int main ( int argc, char** argv )
   //Print_tinker(r, nsteps, natoms, L, mol, nmol, dt, "water.xyz", "TINKER");
   //Print(r, nsteps, natoms, L, mol, nmol, dt, "PBC-trajectory.xyz", "ATM");
   //Print(r, nsteps, natoms, L, mol, nmol, dt, argv[9], "DIP-T");
+  //   EstimateCellSizenNumberofResidue();
 
   return 0;
 }

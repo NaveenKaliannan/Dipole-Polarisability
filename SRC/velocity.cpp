@@ -17,8 +17,6 @@
 using namespace std;
 
 
-
-
 // computes atomic velocity with central difference scheme as CP2K (multiply with vAperfmstoamu converts to atomic unit )
 void computeatomicvelocity(vector<Atom> &r, uint nsteps, uint natoms, const vector<float> & L, float dt)
 {
@@ -105,6 +103,7 @@ void Printcosine(vector<Atom> &r, uint nsteps, uint natoms, const vector<float> 
         }
     }
 
+  // consine thetha per water molecules
   ofstream outfile(filename);
   for(uint t = 1; t < nsteps-1; ++t )
     {

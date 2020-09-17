@@ -94,7 +94,6 @@ void readmullikencharges(vector<Atom> &r, uint nsteps, uint natoms, string filen
 void readExternalfield(vector<Vector> &E, uint nsteps, string fieldfilename);
 void readpsf(vector<Atom> &r, uint nsteps,  uint natoms, string psffilename);
 void Print(vector<Atom> &r, uint nsteps, uint natoms, const vector<float> & L, vector<Molecular> &mol, uint nmol, float dt, string filename, string TYPE);
-void Print_tinker(vector<Atom> &r, uint nsteps, uint natoms, const vector<float> & L, vector<Molecular> &mol, uint nmol, float dt, string filename, string TYPE);
 
 void init_matrix_zero(Matrix &dummyM);
 void init_vector_zero(Vector & dummyv);
