@@ -257,12 +257,13 @@ void FieldduetoPermanentMultipoles(vector<Molecular> &mol, uint t, uint nmol, co
                 r3  = pow(rij, -3.0) * WY1; 
                 r5  = 3.0 * pow(rij, -5.0) * (st2 + 0.15) ;
 
-
                 // Field due to point charge and dipole (quadrupole not considered)
                 //point charge - http://www.physics.umd.edu/courses/Phys260/agashe/S10/notes/lecture18.pdf 
                 //point dipole - http://www.physnet.org/modules/pdf_modules/m120.pdf 
                 // Here we follow the standart physics convention to compare
                 // with CP2K: dipole moment from - to +. hence i->j direction
+                // In tinker, dipole moment from + to -. hence j->i direction, 
+                // However, at the end in accelration computation (verlet.f), they multiply with -ve sign
                 pc =  mol[idj].q * pointchargedistancetodebye;
                 pd =  mol[idj].PD.x * x + mol[idj].PD.y * y + mol[idj].PD.z * z  ; 
                 Field[i].x += x * ( r3 * pc + r5 * pd ) ;

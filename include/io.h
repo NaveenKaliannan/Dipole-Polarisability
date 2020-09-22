@@ -22,7 +22,7 @@ using namespace std;
 #define amufieldtoangstrom  3.57637  //  5.14220652 E11 (field a.u. to V/m or J C-1 m-1) * 8.85418 E-12 * 4 * PI (permentivty of free space C2 m-1 J-1) = 57.2935 C m-2
                                               //  57.2935 E-20 C angstrom-2 / 16.02E-20 
 
-#define amufieldtokcalpermol  // 5.14220652 E11 (field a.u. to V/m or J C-1 m-1) *  1.602E-19 C 
+#define amufieldtokcalpermol 1185.8592256  // 5.14220652 E11 (field a.u. to V/m or J C-1 m-1) *  1.602E-19 C 
                               // 5.14220652 E11 * E-3 (J to KJ) * E-10 (m-1 to angstrom-1) * 1.602E-19 * 6.023E23  KJ per angstrom per mol = 4961.635 KJ per mol per angstrom 
                               // 4961.635  KJ per mol per angstrom  * 0.239006 = 1185.8592256 kcal per mol per angstrom
 

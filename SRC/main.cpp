@@ -49,12 +49,17 @@ int main ( int argc, char** argv )
   vector<Vector> E (nsteps);
 
   readtrajectory(r, nsteps, natoms, xyzfilename, L);
+  BringintoBox(r, nsteps, natoms, L);
+  PrintKEs(r, nsteps, natoms, L, dt, argv[9]);
+  Printcosine(r, nsteps, natoms, L, dt, argv[10]);
+
+  //Print_tinker(r, nsteps, natoms, L, mol, nmol, dt, "water.xyz", "TINKER");
 
   //AssignAtomicMass(r, nsteps, natoms);
   //BringintoBox(r, nsteps, natoms, L);
-  computeatomicvelocity(r, nsteps, natoms, L, dt);
-  PrintKEs(r, nsteps, natoms, L, dt, argv[9]);
-  Printcosine(r, nsteps, natoms, L, dt, argv[10]);
+  //computeatomicvelocity(r, nsteps, natoms, L, dt);
+  //PrintKEs(r, nsteps, natoms, L, dt, argv[9]);
+  //Printcosine(r, nsteps, natoms, L, dt, argv[10]);
 
   //TransformAtomictoMolecular(r, nsteps, natoms, L, mol, nmol);
   //readExternalfield(E, nsteps, fieldfilename);

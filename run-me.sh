@@ -8,7 +8,23 @@ cd build
 cmake . 
 make
 
-./exe ../../mgcl2-h2o/NVE-pos-1.xyz traj.psf 340 1 16.099 414 148 ../field_atomicunit tinker
+
+declare -i n
+for i in {1..7..2}
+##for i in {1000..183000..400}
+do
+n+=1 
+echo $n $i
+##./exe ../../water/blyp-d3-$i/OHH.xyz traj.psf 11400 0.4 15.6404 384 128 ../field_atomicunit water$n cosine$n
+./exe ../../test/water$i.xyz traj.psf 11400 0.4 15.6404 384 128 ../field_atomicunit water$n cosine$n
+##./exe ../../test/water$i.xyz traj.psf 11400 0.4 16.099 414 148 ../field_atomicunit water$n cosine$n
+done
+
+
+##//./exe ../../test/NVE-pos-1.xyz traj.psf 1600 1 16.096 417 143 ../field_atomicunit tinker
+
+
+##./exe ../../mgcl2-h2o/NVE-pos-1.xyz traj.psf 340 1 16.099 414 148 ../field_atomicunit tinker
 
 ##./exe ../../mgcl2-h2o/NVE-pos-1.xyz traj.psf 340 1 16.099 414 148 ../field_atomicunit tinker
 
@@ -25,7 +41,7 @@ declare -i n
 ##for i in {1..2..1}
 for i in {1000..183000..400}
 do
-##n+=1 
+n+=1 
 ##echo $n
 ##./exe ../../water/blyp-d3-$i/OHH.xyz traj.psf 11400 0.4 15.6404 384 128 ../field_atomicunit water$n cosine$n
 ##./exe ../../test/water$i.xyz traj.psf 11400 0.4 15.6404 384 128 ../field_atomicunit water$n cosine$n

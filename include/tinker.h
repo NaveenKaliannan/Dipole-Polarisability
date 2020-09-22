@@ -6,7 +6,7 @@
 #include "../include/numerics.h"
 
 using namespace std;
-
+void readtrajectory_tinker(vector<Atom> &r, uint nsteps, uint natoms, string xyzfilename, const vector<float> & L);
 void Print_tinker(vector<Atom> &r, uint nsteps, uint natoms, const vector<float> & L, vector<Molecular> &mol, uint nmol, float dt, string filename, string TYPE);
 
 #endif

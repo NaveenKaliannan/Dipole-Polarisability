@@ -38,6 +38,7 @@ void computeatomicvelocity(vector<Atom> &r, uint nsteps, uint natoms, const vect
 
 void PrintKEs(vector<Atom> &r, uint nsteps, uint natoms, const vector<float> & L, float dt, string filename)
 {
+  computeatomicvelocity(r, nsteps, natoms, L, dt);
   vector<float> total_KE (nsteps, 0.0), trans_KE (nsteps, 0.0), rot_KE (nsteps, 0.0);
   float count = 0;
   float am_H = 1 * amu, am_O = 16 * amu, am_H2O = 18 * amu ;
@@ -103,7 +104,7 @@ void Printcosine(vector<Atom> &r, uint nsteps, uint natoms, const vector<float> 
         }
     }
 
-  // consine thetha per water molecules
+  // consine thetha per water molecule
   ofstream outfile(filename);
   for(uint t = 1; t < nsteps-1; ++t )
     {
