@@ -17,7 +17,7 @@
 using namespace std;
 
 
-/* computes atomic velocity with central difference scheme as CP2K (multiply with vAperfmstoamu converts to atomic unit )*/
+/* computes atomic velocity via central difference scheme as CP2K (multiply with vAperfmstoamu converts to atomic unit )*/
 void computeatomicvelocity(vector<Atom> &r, uint nsteps, uint natoms, const vector<float> & L, float dt)
 {
   for(uint t = 1; t < nsteps-1; ++t )

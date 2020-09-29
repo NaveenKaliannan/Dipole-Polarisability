@@ -16,7 +16,7 @@
 
 using namespace std;
 
-void Induced_dipole_pol(vector<Molecular> &mol, uint nsteps, uint nmol, const vector<float> & L, uint niter, vector<Vector> &E)
+void Induced_dipole(vector<Molecular> &mol, uint nsteps, uint nmol, const vector<float> & L, uint niter, vector<Vector> &E)
 {
   uint idi = 0, idj = 0;
   float a = 0.0, sum = 0.0, b = 0.0, eps = 0.0;
@@ -48,7 +48,7 @@ void Induced_dipole_pol(vector<Molecular> &mol, uint nsteps, uint nmol, const ve
 
       // Induced dipole is computed via conjugate gradient
       // (CG) approach, exactly as in  Tinker Molecular
-      //  Modeling software package
+      // Modeling software package
       for(uint iter = 0;iter < niter;++iter)
         {
           for(uint i = 0;i < nmol;++i)
@@ -105,20 +105,127 @@ void Induced_dipole_pol(vector<Molecular> &mol, uint nsteps, uint nmol, const ve
               conj[i].z = zrsd[i].z + b * conj[i].z ;
               eps = eps + rsd[i].x * rsd[i].x + rsd[i].y * rsd[i].y + rsd[i].z * rsd[i].z; 
             } 
-            if (eps < 0.000001)  { cout << t <<  "  " << iter << endl; iter = niter;}   
-            if (iter == niter - 1)  { cout << "Frame " << t <<  " is not converged (dipole) " << endl;  }                                 
-        } 
-
-      // computing the induced polarisability via SCF 
-      for(uint iter = 0;iter < niter;++iter)
-        {
-
-            if (eps < 0.000001)  { cout << t <<  "  " << iter << endl; iter = niter;}   
-            if (iter == niter - 1)  { cout << "Frame " << t <<  " is not converged (polarisability) " << endl;  }                                 
+          if (eps < 0.000001)  { cout << t <<  "  " << iter << endl; iter = niter;}   
+          if (iter == niter - 1)  { cout << "Frame " << t <<  " is not converged (dipole) " << endl;  }                                 
         } 
     }
       
 }
+
+void Induced_polarisability(vector<Molecular> &mol, uint nsteps, uint nmol, const vector<float> & L, uint niter, vector<Vector> &E)
+{
+  uint idi = 0, idj = 0;
+  float eps = 0.0, b = 0.0, a = 0.0;
+  vector<Matrix> tensor (nmol), dummy_ipolar (nmol);
+
+  for(uint t = 0; t < nsteps;t += 1 )
+    {
+      // computing the induced polarisability via scf  
+      for(uint iter = 0;iter < 100;++iter)
+        {
+          TensorduetoPolarisability(mol, t, nmol, L, tensor);
+
+          a = 0.0;
+          for(uint i = 0;i < nmol;++i)
+            {
+              idi = nmol*t+i;            
+              a += mol[idi].PPol.xx + mol[idi].IPol.xx ; 
+              a += mol[idi].PPol.yy + mol[idi].IPol.yy ;
+              a += mol[idi].PPol.zz + mol[idi].IPol.zz ; 
+            }            
+          for(uint i = 0;i < nmol;++i)
+            {
+              idi = nmol*t+i;            
+              Mat_Mat(mol[idi].PPol, tensor[i], mol[idi].IPol);
+            }
+          b = 0.0;
+          for(uint i = 0;i < nmol;++i)
+            {
+              idi = nmol*t+i;            
+              b += mol[idi].PPol.xx + mol[idi].IPol.xx ; 
+              b += mol[idi].PPol.yy + mol[idi].IPol.yy ;
+              b += mol[idi].PPol.zz + mol[idi].IPol.zz ; 
+            }
+          eps = a - b  ; cout << iter << "  " << a << "  " <<  b << endl;
+          if (abs(eps) < 0.000001)  { cout << t <<  "  " << iter << endl; iter = niter;}   
+          if (iter == niter - 1)  { cout << "Frame " << t <<  " is not converged (polarisability) " << endl;  }                                 
+        } 
+    }
+      
+}
+
+//Field Tensor due to permanent and induced polarisability
+void TensorduetoPolarisability(vector<Molecular> &mol, uint t, uint nmol, const vector<float> & L, vector <Matrix> & C)
+{
+  uint idi = 0, idj = 0, ncell = 1;
+  float x = 0, y = 0, z = 0, rij = 0, rcut = 40;
+  float u = 0.0, ar = 0.0, st1 = 0.0, st2 = 0.0, r3 = 0.0, r5 = 0.0;
+  float mean_alpha1 = 0, mean_alpha2 = 0;
+  vector<float> PB_L(6,0.0);
+  vector<Vector_int> imageno(pow(ncell,3));
+  Matrix polar;
+  Matrix Tij;
+
+  init_Matrix_zero(C, 1, nmol);
+  replica(L, ncell, PB_L, imageno);
+  for(uint i = 0;i < nmol;++i)
+    {
+      idi = nmol*t+i; 
+      for(uint j = 0;j < nmol;++j)
+        {
+          idj = nmol*t+j;
+          for(uint cell = 0; cell < pow(ncell,3); ++cell)
+            {
+              dist(mol, idi, idj, L, PB_L, imageno, cell, x, y, z );
+              rij = mindis(x,y,z,PB_L);       
+              if ((i != j && cell == 0 ) || (cell > 0 && rij < rcut))
+              {
+                mean_alpha1 = (mol[idi].PPol.xx + mol[idi].PPol.yy + mol[idi].PPol.zz ) / 3.0;
+                mean_alpha2 = (mol[idj].PPol.xx + mol[idj].PPol.yy + mol[idj].PPol.zz ) / 3.0;
+                u = rij / pow(mean_alpha1 * mean_alpha2, 0.16666);
+                ar  = mol[idj].sl * pow(u,3);
+                st1 = 1.0 - (1.0 + ar + (ar*ar/2.0)) * exp(-ar);     
+                st2 = 1.0 - (1.0 + ar + (ar*ar/2.0) + (pow(ar,3.0)/6.0)) * exp(-ar); 
+                r3  = pow(rij, -3.0)  * (st1 + 0.0); 
+                r5  = 3.0 * pow(rij, -5.0)  * (st2 + 0.0);
+
+                Tij.xx = -r3 + r5 * x * x ;
+                Tij.yy = -r3 + r5 * y * y ; 
+                Tij.zz = -r3 + r5 * z * z ;
+                Tij.xy =  0  + r5 * x * y ;  
+                Tij.xz =  0  + r5 * x * z ;
+                Tij.yz =  0  + r5 * y * z ; 
+                Tij.yx =  0  + r5 * y * x ;    
+                Tij.zx =  0  + r5 * z * x ;
+                Tij.zy =  0  + r5 * z * y ; 
+
+                polar.xx = mol[idj].PPol.xx + mol[idj].IPol.xx ;
+                polar.yy = mol[idj].PPol.yy + mol[idj].IPol.yy ; 
+                polar.zz = mol[idj].PPol.zz + mol[idj].IPol.zz ;
+                polar.xy = mol[idj].PPol.xy + mol[idj].IPol.xy  ;  
+                polar.xz = mol[idj].PPol.xz + mol[idj].IPol.xz ;
+                polar.yz = mol[idj].PPol.yz + mol[idj].IPol.yz ; 
+                polar.yx = mol[idj].PPol.yx + mol[idj].IPol.yx  ;    
+                polar.zx = mol[idj].PPol.zx + mol[idj].IPol.zx ;
+                polar.zy = mol[idj].PPol.zy + mol[idj].IPol.zy ;
+
+                C[i].xx += Tij.xx * polar.xx + Tij.xy * polar.yx + Tij.xz * polar.zx;
+                C[i].xy += Tij.xx * polar.xy + Tij.xy * polar.yy + Tij.xz * polar.zy;
+                C[i].xz += Tij.xx * polar.xz + Tij.xy * polar.yz + Tij.xz * polar.zz;
+
+                C[i].yx += Tij.yx * polar.xx + Tij.yy * polar.yx + Tij.yz * polar.zx;
+                C[i].yy += Tij.yx * polar.xy + Tij.yy * polar.yy + Tij.yz * polar.zy;
+                C[i].yz += Tij.yx * polar.xz + Tij.yy * polar.yz + Tij.yz * polar.zz;
+
+                C[i].zx += Tij.zx * polar.xx + Tij.zy * polar.yx + Tij.zz * polar.zx;
+                C[i].zy += Tij.zx * polar.xy + Tij.zy * polar.yy + Tij.zz * polar.zy;
+                C[i].zz += Tij.zx * polar.xz + Tij.zy * polar.yz + Tij.zz * polar.zz;
+              }                          
+            }
+        }
+    }
+}
+
 
 // Field due to externally applied field
 void FieldduetoExternalField(vector<Molecular> &mol, uint t, uint nmol, const vector<Vector> &E,  vector <Vector> & Field)

@@ -49,9 +49,16 @@ int main ( int argc, char** argv )
   vector<Molecular> mol ;
   vector<Vector> E (nsteps);
 
-  readtrajectory_tinker(r, nsteps, natoms, xyzfilename, L);
+  readtrajectory(r, nsteps, natoms, xyzfilename, L);
   BringintoBox(r, nsteps, natoms, L);
-  Printrdf(r, nsteps, natoms, L, dt, argv[9]);
+  AssignAtomicMass(r, nsteps, natoms);
+  TransformAtomictoMolecular(r, nsteps, natoms, L, mol, nmol);
+  Induced_dipole(mol, nsteps, nmol, L, 500, E);
+  Induced_polarisability(mol, nsteps, nmol, L, 500, E);
+
+  Print(r, nsteps, natoms, L, mol, nmol, dt, "sim.dat", "DIP-T");
+
+  //Printrdf(r, nsteps, natoms, L, dt, argv[9]);
   //PrintKEs(r, nsteps, natoms, L, dt, argv[9]);
   //Printcosine(r, nsteps, natoms, L, dt, argv[10]);
 
