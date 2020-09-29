@@ -21,6 +21,7 @@
 #include "../include/velocity.h"
 #include "../include/tinker.h"
 #include "../include/molar.h"
+#include "../include/rdf.h"
 
 using namespace std;
 
@@ -48,10 +49,11 @@ int main ( int argc, char** argv )
   vector<Molecular> mol ;
   vector<Vector> E (nsteps);
 
-  readtrajectory(r, nsteps, natoms, xyzfilename, L);
+  readtrajectory_tinker(r, nsteps, natoms, xyzfilename, L);
   BringintoBox(r, nsteps, natoms, L);
-  PrintKEs(r, nsteps, natoms, L, dt, argv[9]);
-  Printcosine(r, nsteps, natoms, L, dt, argv[10]);
+  Printrdf(r, nsteps, natoms, L, dt, argv[9]);
+  //PrintKEs(r, nsteps, natoms, L, dt, argv[9]);
+  //Printcosine(r, nsteps, natoms, L, dt, argv[10]);
 
   //Print_tinker(r, nsteps, natoms, L, mol, nmol, dt, "water.xyz", "TINKER");
 

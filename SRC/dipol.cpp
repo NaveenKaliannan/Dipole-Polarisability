@@ -106,7 +106,15 @@ void Induced_dipole_pol(vector<Molecular> &mol, uint nsteps, uint nmol, const ve
               eps = eps + rsd[i].x * rsd[i].x + rsd[i].y * rsd[i].y + rsd[i].z * rsd[i].z; 
             } 
             if (eps < 0.000001)  { cout << t <<  "  " << iter << endl; iter = niter;}   
-            if (iter == niter - 1)  { cout << "Frame " << t <<  " is not converged " << endl;  }                                 
+            if (iter == niter - 1)  { cout << "Frame " << t <<  " is not converged (dipole) " << endl;  }                                 
+        } 
+
+      // computing the induced polarisability via SCF 
+      for(uint iter = 0;iter < niter;++iter)
+        {
+
+            if (eps < 0.000001)  { cout << t <<  "  " << iter << endl; iter = niter;}   
+            if (iter == niter - 1)  { cout << "Frame " << t <<  " is not converged (polarisability) " << endl;  }                                 
         } 
     }
       
@@ -254,6 +262,7 @@ void FieldduetoPermanentMultipoles(vector<Molecular> &mol, uint t, uint nmol, co
                 //r3  = pow(rij, -3.0)  * WY1 ; 
                 //r5  = 3.0 * pow(rij, -5.0)  * WY1;
 
+                // mixed damping function Wu Yang and Thole
                 r3  = pow(rij, -3.0) * WY1; 
                 r5  = 3.0 * pow(rij, -5.0) * (st2 + 0.15) ;
 

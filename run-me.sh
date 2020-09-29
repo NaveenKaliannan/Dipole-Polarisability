@@ -9,14 +9,20 @@ cmake .
 make
 
 
+
+taskset --cpu-list 1 ./exe ../../water1.arc traj.psf 2500 1 16.099 417 148 ../field_atomicunit water$n cosine$n
+
+##taskset --cpu-list 1 ./exe ../../benni/8md_nvt_160.gro traj.psf 1 0.4 59.3382 21029 128 ../field_atomicunit water$n cosine$n
+
+
 declare -i n
-for i in {1..7..2}
-##for i in {1000..183000..400}
+##for i in {1..1..1}
+for i in {1000..1000..400}
 do
 n+=1 
-echo $n $i
-##./exe ../../water/blyp-d3-$i/OHH.xyz traj.psf 11400 0.4 15.6404 384 128 ../field_atomicunit water$n cosine$n
-./exe ../../test/water$i.xyz traj.psf 11400 0.4 15.6404 384 128 ../field_atomicunit water$n cosine$n
+##echo $n $i
+##taskset --cpu-list 1 ./exe ../../water/blyp-d3-$i/OHH.xyz traj.psf 400 0.4 15.6404 384 128 ../field_atomicunit water$n cosine$n
+##./exe ../../test/water$i.xyz traj.psf 11400 0.4 15.6404 384 128 ../field_atomicunit water$n cosine$n
 ##./exe ../../test/water$i.xyz traj.psf 11400 0.4 16.099 414 148 ../field_atomicunit water$n cosine$n
 done
 
@@ -78,4 +84,9 @@ done
 
 ## SO4 coordinates in xyz file should in the following order O S O O O
 ## H2O coordinates in xyz file should in the following order O H H
+
+### assigning executables for each cores in cpu
+### for i in {0..39}; do echo "n+=1" ;  echo "taskset --cpu-list $i ./exe  ../../sim\$n/water.arc traj.psf 11400 0.4 15.6404 384 128 ../field_atomicunit water\$n watercosine\$n &"   ; done
+
+
 

@@ -52,6 +52,7 @@ struct Vector_int
 
 struct Atom
 {
+  string gro;
   string symbol;
   double x,y,z;
   double vx,vy,vz;
@@ -94,6 +95,7 @@ void readmullikencharges(vector<Atom> &r, uint nsteps, uint natoms, string filen
 void readExternalfield(vector<Vector> &E, uint nsteps, string fieldfilename);
 void readpsf(vector<Atom> &r, uint nsteps,  uint natoms, string psffilename);
 void Print(vector<Atom> &r, uint nsteps, uint natoms, const vector<float> & L, vector<Molecular> &mol, uint nmol, float dt, string filename, string TYPE);
+void readgrotrajectory(vector<Atom> &r, uint nsteps, uint natoms, string xyzfilename, const vector<float> & L);
 
 void init_matrix_zero(Matrix &dummyM);
 void init_vector_zero(Vector & dummyv);

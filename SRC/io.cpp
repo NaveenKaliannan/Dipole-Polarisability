@@ -15,6 +15,29 @@
 
 using namespace std;
 
+//Reading the gro trajectory
+void readgrotrajectory(vector<Atom> &r, uint nsteps, uint natoms, string xyzfilename, const vector<float> & L)
+{
+  string temp;
+  ifstream xyzfile(xyzfilename);
+  for(uint t = 0; t < nsteps; ++t )
+    { 
+      getline(xyzfile, temp); 
+      xyzfile >> natoms; 
+      getline(xyzfile, temp); 
+      for(uint i = 0;i < natoms;++i)
+        {
+          uint id = natoms*t+i; 
+          xyzfile >> r[id].gro >> r[id].symbol >> temp >> r[id].x  >> r[id].y  >> r[id].z >> temp >> temp >> temp;
+          r[id].x = r[id].x * 10;  r[id].y = r[id].y * 10; r[id].z = r[id].z * 10; 
+          //cout << r[id].symbol <<  "  " << r[id].x << "  " << r[id].y << "  " << r[id].z << endl;
+        }
+    }
+  xyzfile.close();
+  xyzfile.clear();
+}
+
+
 
 //Reading the xyz trajectory
 void readtrajectory(vector<Atom> &r, uint nsteps, uint natoms, string xyzfilename, const vector<float> & L)
