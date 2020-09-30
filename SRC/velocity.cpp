@@ -43,13 +43,13 @@ void PrintKEs(vector<Atom> &r, uint nsteps, uint natoms, const vector<float> & L
   vector<float> total_KE_anion (nsteps, 0.0), trans_KE_anion (nsteps, 0.0), rot_KE_anion (nsteps, 0.0);
   vector<float> total_KE_both (nsteps, 0.0), trans_KE_both (nsteps, 0.0), rot_KE_both (nsteps, 0.0);
   vector<float> total_KE_rem (nsteps, 0.0), trans_KE_rem (nsteps, 0.0), rot_KE_rem (nsteps, 0.0);
+  vector<float> total_KE_ions (nsteps, 0.0), trans_KE_ions (nsteps, 0.0), rot_KE_ions (nsteps, 0.0);
 
   float rij1 = 0, rij2 = 0, rij = 0, temp1 = 0, temp2 = 0, temp3 = 0, x = 0, y = 0, z = 0 ;
-  float count = 0, count_cation = 0, count_anion = 0, count_both = 0, count_rem = 0;
+  float count = 0, count_cation = 0, count_anion = 0, count_both = 0, count_rem = 0, count_ions = 0;
   uint hbond_cation = 0, hbond_anion = 0;
   float am_H = 1 * amu, am_O = 16 * amu, am_H2O = 18 * amu ;
   double com[3]; 
-
 
   computeatomicvelocity(r, nsteps, natoms, L, dt);
   for(uint i = 0;i < natoms;++i)
@@ -111,6 +111,10 @@ void PrintKEs(vector<Atom> &r, uint nsteps, uint natoms, const vector<float> & L
             {
               count_cation += 1; 
             }
+          else if(hbond_cation > 0 || hbond_anion > 0  || (hbond_cation + hbond_anion) > 0 )
+            {
+              count_ions += 1; 
+            }
 
           for(uint t = 1; t < nsteps-1; ++t )
             {
@@ -156,20 +160,42 @@ void PrintKEs(vector<Atom> &r, uint nsteps, uint natoms, const vector<float> & L
                   total_KE_cation[t]  += temp2 ;
                   rot_KE_cation[t]    += temp3 ;
                 }
+              else if(hbond_cation > 0 || hbond_anion > 0  || (hbond_cation + hbond_anion) > 0 )
+                {
+                  trans_KE_ions[t]  += temp1 ;
+                  total_KE_ions[t]  += temp2 ;
+                  rot_KE_ions[t]    += temp3 ;
+                }
 
 
             }
         }
     }
 
+  if(count == 0) {count = 1;}
+  if(count_rem == 0) {count_rem = 1;}
+  if(count_both == 0) {count_both = 1;}
+  if(count_anion == 0) {count_anion = 1;}
+  if(count_cation == 0) {count_cation = 1;}
+  if(count_ions == 0) {count_ions = 1;}
+
   /* Total KE is in Atomic Unit in order to compare with CP2K data */
   ofstream outfile(filename);
   for(uint t = 1; t < nsteps-1; ++t )
     {
+      if(total_KE[t] == 0)        {total_KE[t]        = 1;}
+      if(total_KE_cation[t] == 0) {total_KE_cation[t] = 1;}
+      if(total_KE_anion[t] == 0)  {total_KE_anion[t]  = 1;}
+      if(total_KE_both[t] == 0)   {total_KE_both[t]   = 1;}
+      if(total_KE_ions[t] == 0)   {total_KE_ions[t]   = 1;}
+      if(total_KE_rem[t] == 0)    {total_KE_rem[t]    = 1;}
+
+
       outfile << t*dt << "  " << total_KE[t]       << "  " << trans_KE[t] / total_KE[t]               << "  " << rot_KE[t] / total_KE[t]               << "   " << 
                                 total_KE_cation[t] << "  " << trans_KE_cation[t] / total_KE_cation[t] << "  " << rot_KE_cation[t] / total_KE_cation[t] << "   " <<
                                 total_KE_anion[t]  << "  " << trans_KE_anion[t] / total_KE_anion[t]   << "  " << rot_KE_anion[t] / total_KE_anion[t]   << "   " <<
                                 total_KE_both[t]   << "  " << trans_KE_both[t] / total_KE_both[t]     << "  " << rot_KE_both[t] / total_KE_both[t]     << "   " <<
+                                total_KE_ions[t]   << "  " << trans_KE_ions[t] / total_KE_ions[t]     << "  " << rot_KE_ions[t] / total_KE_ions[t]     << "   " <<
                                 total_KE_rem[t]    << "  " << trans_KE_rem[t] / total_KE_rem[t]       << "  " << rot_KE_rem[t] / total_KE_rem[t]       << endl;
     }
   outfile.close();
@@ -182,9 +208,10 @@ void Printcosine(vector<Atom> &r, uint nsteps, uint natoms, const vector<float> 
   vector<float> cosine (nsteps, 0.0), cosine_square (nsteps, 0.0);
   vector<float> cosine_cation (nsteps, 0.0), cosine_anion (nsteps, 0.0);
   vector<float> cosine_both (nsteps, 0.0), cosine_rem (nsteps, 0.0);
+  vector<float> cosine_ions (nsteps, 0.0);
 
   float rij1 = 0, rij2 = 0, rij = 0, temp = 0, x = 0, y = 0, z = 0 ;
-  float count = 0, count_cation = 0, count_anion = 0, count_both = 0, count_rem = 0;
+  float count = 0, count_cation = 0, count_anion = 0, count_both = 0, count_rem = 0, count_ions = 0;
   uint hbond_cation = 0, hbond_anion = 0;
   double vec[3]; 
   for(uint i = 0;i < natoms;++i)
@@ -245,6 +272,10 @@ void Printcosine(vector<Atom> &r, uint nsteps, uint natoms, const vector<float> 
             {
               count_cation += 1; 
             }
+          else if(hbond_cation > 0 || hbond_anion > 0  || (hbond_cation + hbond_anion) > 0 )
+            {
+              count_ions += 1; 
+            }
 
           for(uint t = 1; t < nsteps-1; ++t )
             {
@@ -277,9 +308,20 @@ void Printcosine(vector<Atom> &r, uint nsteps, uint natoms, const vector<float> 
                 {
                   cosine_cation[t] += temp; 
                 }
+              else if(hbond_cation > 0 || hbond_anion > 0  || (hbond_cation + hbond_anion) > 0 )
+                {
+                  cosine_ions[t] += temp; 
+                }
             }
         }
     }
+
+  if(count == 0) {count = 1;}
+  if(count_rem == 0) {count_rem = 1;}
+  if(count_both == 0) {count_both = 1;}
+  if(count_anion == 0) {count_anion = 1;}
+  if(count_cation == 0) {count_cation = 1;}
+  if(count_ions == 0) {count_ions = 1;}
 
   ofstream outfile(filename);
   for(uint t = 1; t < nsteps-1; ++t )
@@ -289,6 +331,7 @@ void Printcosine(vector<Atom> &r, uint nsteps, uint natoms, const vector<float> 
                                  cosine_cation[t] / count_cation << "  " << 
                                  cosine_anion[t]  / count_anion << "  " << 
                                  cosine_both[t]   / count_both << "  " <<  
+                                 cosine_ions[t]   / count_ions << "  " <<  
                                  cosine_rem[t]    / count_rem  << endl;
     }
   outfile.close();

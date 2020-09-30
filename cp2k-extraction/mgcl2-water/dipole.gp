@@ -41,7 +41,7 @@ set origin -0.009, 0.0
 
 
 set label "{/Symbol m}_x" at 100,10  font 'Arial,20' textcolor rgb "black"
-set xrange [0:1000]
+set xrange [0:10000]
 set yrange [-17:17]
 set xlabel "t (fms)"
 set ylabel "Dipole Moment [Debye]"
@@ -64,7 +64,7 @@ set size 0.37, 1
 set origin 0.27,0.0
 
 set label "{/Symbol m}_y" at 100,10  font 'Arial,20' textcolor rgb "black"
-set xrange [0:1000]
+set xrange [0:10000]
 set xlabel "t (fms)"
 
 plot "mgcl2-ref.dat" using 1:3 notitle  with line ls 1 lc rgb "black" lw 1, "mgcl2.dat" using 1:3 notitle  with line ls 1 lc rgb "red" lw 1
@@ -80,7 +80,7 @@ set size 0.37, 1
 set origin 0.57,0.0
 
 set label "{/Symbol m}_z" at 100,10  font 'Arial,20' textcolor rgb "black"
-set xrange [0:1000]
+set xrange [0:10000]
 set xlabel "t (fms)"
 
 plot "mgcl2-ref.dat" using 1:4 notitle  with line ls 1 lc rgb "black" lw 1, "mgcl2.dat" using 1:4 notitle  with line ls 1 lc rgb "red" lw 1

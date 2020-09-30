@@ -88,14 +88,12 @@ struct Molecular
 
 };
 
-void AssignAtomicMass(vector<Atom> &r, uint nsteps, uint natoms);
+
 void BringintoBox(vector<Atom> &r, uint nsteps,  uint natoms, const vector<float> & L);
 void readtrajectory(vector<Atom> &r, uint nsteps, uint natoms, string xyzfilename, const vector<float> & L);
-void readmullikencharges(vector<Atom> &r, uint nsteps, uint natoms, string filename);
 void readExternalfield(vector<Vector> &E, uint nsteps, string fieldfilename);
 void readpsf(vector<Atom> &r, uint nsteps,  uint natoms, string psffilename);
 void Print(vector<Atom> &r, uint nsteps, uint natoms, const vector<float> & L, vector<Molecular> &mol, uint nmol, float dt, string filename, string TYPE);
-void readgrotrajectory(vector<Atom> &r, uint nsteps, uint natoms, string xyzfilename, const vector<float> & L);
 
 void init_matrix_zero(Matrix &dummyM);
 void init_vector_zero(Vector & dummyv);

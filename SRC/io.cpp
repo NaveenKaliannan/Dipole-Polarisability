@@ -15,29 +15,6 @@
 
 using namespace std;
 
-//Reading the gro trajectory
-void readgrotrajectory(vector<Atom> &r, uint nsteps, uint natoms, string xyzfilename, const vector<float> & L)
-{
-  string temp;
-  ifstream xyzfile(xyzfilename);
-  for(uint t = 0; t < nsteps; ++t )
-    { 
-      getline(xyzfile, temp); 
-      xyzfile >> natoms; 
-      getline(xyzfile, temp); 
-      for(uint i = 0;i < natoms;++i)
-        {
-          uint id = natoms*t+i; 
-          xyzfile >> r[id].gro >> r[id].symbol >> temp >> r[id].x  >> r[id].y  >> r[id].z >> temp >> temp >> temp;
-          r[id].x = r[id].x * 10;  r[id].y = r[id].y * 10; r[id].z = r[id].z * 10; 
-          //cout << r[id].symbol <<  "  " << r[id].x << "  " << r[id].y << "  " << r[id].z << endl;
-        }
-    }
-  xyzfile.close();
-  xyzfile.clear();
-}
-
-
 
 //Reading the xyz trajectory
 void readtrajectory(vector<Atom> &r, uint nsteps, uint natoms, string xyzfilename, const vector<float> & L)
@@ -59,30 +36,6 @@ void readtrajectory(vector<Atom> &r, uint nsteps, uint natoms, string xyzfilenam
   xyzfile.close();
   xyzfile.clear();
 }
-
-
-void readmullikencharges(vector<Atom> &r, uint nsteps, uint natoms, string filename)
-{
-  string temp;
-  for(uint t = 0; t < nsteps; ++t )
-    { 
-      string filename = "/home/naveenk/temp/1-mgcl2/Frame" + to_string(t+1) + "/charges.out.mulliken" ;
-      ifstream charges_filename(filename);
-      for(uint i = 0; i <  5; ++i)
-        {
-          getline(charges_filename, temp);
-        }
-      for(uint i = 0;i < natoms;++i)
-        {
-          uint id = natoms*t+i; 
-          charges_filename >> temp >> temp >> temp >> temp >> r[id].charge; 
-          //cout << t <<  "  " << i << "  " << r[id].symbol << "  " <<  r[id].charge << endl;
-        }
-      charges_filename.close();
-      charges_filename.clear();
-    }
-}
-
 
 
 //Reading the psf file
@@ -192,8 +145,8 @@ void Print(vector<Atom> &r, uint nsteps, uint natoms, const vector<float> & L, v
                  ayx += mol[id].PPol.yx + mol[id].IPol.yx ; azx += mol[id].PPol.zx + mol[id].IPol.zx; azy += mol[id].PPol.zy + mol[id].IPol.zy;
                }
           }
-        outfile <<  t * dt << " " <<  a   << " " <<  b  << " "  << c
-                           << " " <<  a1  << " " <<  b1 << " "  << c1
+        outfile <<  t * dt << " " <<  a   << " " <<  b  << " "  << c << "  " << a-b
+                           << " " <<  a1  << " " <<  b1 << " "  << c1 << "   " << a1-b1
                            << " " <<  axy << " " << axz << " "  << ayz
                            << " " <<  ayx << " " << azx << " "  << azy  << endl;
         
@@ -220,149 +173,6 @@ void Print(vector<Atom> &r, uint nsteps, uint natoms, const vector<float> & L, v
     }
   outfile.close();
   outfile.clear();
-}
-
-
-
-void AssignAtomicMass(vector<Atom> &r, uint nsteps, uint natoms)
-{
-  for(uint t = 0; t < nsteps; ++t )
-    { 
-      for(uint i = 0;i < natoms;++i)
-        {
-          uint id = natoms*t+i; 
-          if((r[id].symbol[0] == 'N' || r[id].symbol[0] == 'n' ) && ( r[id].symbol[1] == 'A' || r[id].symbol[1] == 'a'))
-            {
-              r[id].atomicmass = 22.9897;
-            }
-          else if((r[id].symbol[0] == 'M' || r[id].symbol[0] == 'm' ) && ( r[id].symbol[1] == 'G' || r[id].symbol[1] == 'g'))
-            {
-              r[id].atomicmass = 24.305;
-            }
-          else if(r[id].symbol[0] == 'O' || r[id].symbol[0] == 'o' )
-            {
-              r[id].atomicmass = 15.999;
-            }
-          else if(r[id].symbol[0] == 'S' || r[id].symbol[0] == 's' )
-            {
-              r[id].atomicmass = 32.065;
-            }
-          else if(r[id].symbol[0] == 'H' || r[id].symbol[0] == 'h' )
-            {
-              r[id].atomicmass = 1.00784;
-            }
-        }
-    }
-}
-
-//Broken bonds due to PBC are solved here, Minimum image convention was applied
-void BringintoBox(vector<Atom> &r, uint nsteps,  uint natoms, const vector<float> & L)
-{
-  for(uint t = 0; t < nsteps; ++t )
-    { 
-      for(uint i = 0;i < natoms;++i)
-        {
-          uint id = natoms*t+i; 
-          if(r[id].x > L[0] || r[id].x < 0 ) { r[id].x  = min_distance(r[id].x, L[0]); }
-          if(r[id].y > L[1] || r[id].y < 0 ) { r[id].y  = min_distance(r[id].y, L[1]); }
-          if(r[id].z > L[2] || r[id].z < 0 ) { r[id].z  = min_distance(r[id].z, L[2]); }
-
-          if(r[id].x > L[0] ) { r[id].x  -= L[0] ; }
-          if(r[id].y > L[1] ) { r[id].y  -= L[1] ; }
-          if(r[id].z > L[2] ) { r[id].z  -= L[2] ; }
-
-          if(r[id].x < 0 ) { r[id].x += L[0] ; }
-          if(r[id].y < 0 ) { r[id].y += L[1] ; }
-          if(r[id].z < 0 ) { r[id].z += L[2] ; }
-        }
-    }
-
-  for(uint t = 0; t < nsteps; ++t )
-    { 
-      for(uint i = 0;i < natoms;++i)
-        {
-          uint id = natoms*t+i;
- 
-          // Unites SO4
-          if(r[id].symbol[0] == 'S')
-            {
-              for(uint j = 0;j < natoms;++j)
-                {
-                  uint id2 = natoms*t+j; 
-                  if(i == j){}
-                  else if(r[id2].symbol[0] == 'O')
-                    {
-                      float rij = mindis(r[id].x - r[id2].x, r[id].y - r[id2].y, r[id].z - r[id2].z, L);
-                      if(rij < 2.25)
-                        { 
-                          float rij2 = norm(r[id].x - r[id2].x, r[id].y - r[id2].y, r[id].z - r[id2].z);
-                          if(abs(rij2 -  rij) > 0.1)
-                            {  
-                             float rij3 = norm(r[id].x - r[id2].x, 0, 0);
-                             if(abs(rij3) > 2.5)
-                               {   
-                                 if(r[id].x > r[id2].x ) { r[id2].x += L[0]; }    
-                                 else if(r[id].x < r[id2].x ) { r[id2].x -= L[0]; }                                                                  
-                               }
-                             rij3 = norm(0, r[id].y - r[id2].y, 0);
-                             if(abs(rij3) > 2.5)
-                               {    
-                                 if(r[id].y > r[id2].y ) { r[id2].y += L[1]; }    
-                                 else if(r[id].y < r[id2].y ) { r[id2].y -= L[1]; }                                                                                                    
-                               }  
-                             rij3 = norm(0, 0, r[id].z - r[id2].z);
-                             if(abs(rij3) > 2.5)
-                               {                           
-                                 if(r[id].z > r[id2].z ) { r[id2].z += L[2]; }    
-                                 else if(r[id].z < r[id2].z ) { r[id2].z -= L[2]; }                                                                                                        
-                               }                                      
-                            }
-                        }
-                    }
-                } 
-            }
-
-
-          // Unites H2O
-          if(r[id].symbol[0] == 'O')
-            {
-              for(uint j = 0;j < natoms;++j)
-                {
-                  uint id2 = natoms*t+j; 
-                  if(i == j){}
-                  else if(r[id2].symbol[0] == 'H')
-                    {
-                      float rij = mindis(r[id].x - r[id2].x, r[id].y - r[id2].y, r[id].z - r[id2].z, L);
-                      if(rij < 1.25)
-                        { 
-                          float rij2 = norm(r[id].x - r[id2].x, r[id].y - r[id2].y, r[id].z - r[id2].z);
-                          if(abs(rij2 -  rij) > 0.1)
-                            {  
-                             float rij3 = norm(r[id].x - r[id2].x, 0, 0);
-                             if(abs(rij3) > 2.5)
-                               {   
-                                 if(r[id].x > r[id2].x ) { r[id2].x += L[0]; }    
-                                 else if(r[id].x < r[id2].x ) { r[id2].x -= L[0]; }                                                                  
-                               }
-                             rij3 = norm(0, r[id].y - r[id2].y, 0);
-                             if(abs(rij3) > 2.5)
-                               {    
-                                 if(r[id].y > r[id2].y ) { r[id2].y  =  r[id2].y += L[1]; }    
-                                 else if(r[id].y < r[id2].y ) { r[id2].y -= L[1]; }                                                                                                    
-                               }  
-                             rij3 = norm(0, 0, r[id].z - r[id2].z);
-                             if(abs(rij3) > 2.5)
-                               {                           
-                                 if(r[id].z > r[id2].z ) { r[id2].z += L[2]; }    
-                                 else if(r[id].z < r[id2].z ) { r[id2].z -= L[2]; }                                                                                                        
-                               }                                      
-                            }
-                        }
-                    }
-                } 
-            }
-        }
-    }
 }
 
 

@@ -22,6 +22,7 @@
 #include "../include/tinker.h"
 #include "../include/molar.h"
 #include "../include/rdf.h"
+#include "../include/assign.h"
 
 using namespace std;
 

@@ -8,9 +8,8 @@ cd build
 cmake . 
 make
 
-##taskset --cpu-list 1 ./exe ../../mgcl2-ho/NVE-pos-1.xyz traj.psf 10000 1 15.56 18 8 ../field_atomicunit 
+taskset --cpu-list 1 ./exe ../../mgcl2-ho/NVE-pos-1.xyz traj.psf 10000 1 15.56 18 8 ../field_atomicunit 
 
-taskset --cpu-list 1 ./exe ../../mgcl2-h2o/NVE-pos-1.xyz traj.psf 200 1 15.56 414 148 ../field_atomicunit 
 
 
 
