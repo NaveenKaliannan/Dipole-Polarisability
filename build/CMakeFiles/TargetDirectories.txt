@@ -1,3 +1,0 @@
-/home/naveenk/temp/Dipole-Polarisability/build/CMakeFiles/rebuild_cache.dir
-/home/naveenk/temp/Dipole-Polarisability/build/CMakeFiles/exe.dir
-/home/naveenk/temp/Dipole-Polarisability/build/CMakeFiles/edit_cache.dir

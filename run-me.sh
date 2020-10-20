@@ -1,31 +1,29 @@
 
 #!/bin/bash
 
-rm -rf build/*
+##rm -rf build/*
 mkdir build
 cp CMakeLists.txt build/CMakeLists.txt
 cd build
 cmake . 
 make
 
-taskset --cpu-list 1 ./exe ../../mgcl2-ho/NVE-pos-1.xyz traj.psf 10000 1 15.56 18 8 ../field_atomicunit 
 
+taskset --cpu-list 1 ./exe ../../water.arc traj.psf 10000 1 15.6404 384 128 ../field_atomicunit
 
+##./exe /home/naveenk/temp/water.arc traj.psf 65 0.4 145 288000 96000 ../field_atomicunit KEnCos
 
+##./exe ../naf.xyz traj.psf 2500 0.4 16.099 417 143 ../field_atomicunit water$n cosine$n
+##./exe ../mgcl2.xyz traj.psf 2500 0.4 16.099 414 148 ../field_atomicunit water$n cosine$n
 
 declare -i n
-##for i in {1..1..1}
-for i in {1000..1000..400}
+for i in {1000..183000..400}
 do
 n+=1 
 ##echo $n $i
-##taskset --cpu-list 1 ./exe ../../water/blyp-d3-$i/OHH.xyz traj.psf 400 0.4 15.6404 384 128 ../field_atomicunit water$n cosine$n
-##./exe ../../test/water$i.xyz traj.psf 11400 0.4 15.6404 384 128 ../field_atomicunit water$n cosine$n
-##./exe ../../test/water$i.xyz traj.psf 11400 0.4 16.099 414 148 ../field_atomicunit water$n cosine$n
+##taskset --cpu-list 1 ./exe ../../water/blyp-d3-$i/OHH.xyz traj.psf 10000 0.4 15.6404 384 128 ../field_atomicunit water$n cosine$n dipol$n
 done
 
-
-##//./exe ../../test/NVE-pos-1.xyz traj.psf 1600 1 16.096 417 143 ../field_atomicunit tinker
 
 
 ##./exe ../../mgcl2-h2o/NVE-pos-1.xyz traj.psf 340 1 16.099 414 148 ../field_atomicunit tinker
@@ -38,34 +36,6 @@ done
 
 ##./exe  /home/naveenk/temp_soft/Tinker/exe/OHH.xyz traj.psf 5000 0.4 15.6404 384 128 ../field_atomicunit tinker
 
-
-
-
-declare -i n
-##for i in {1..2..1}
-for i in {1000..183000..400}
-do
-n+=1 
-##echo $n
-##./exe ../../water/blyp-d3-$i/OHH.xyz traj.psf 11400 0.4 15.6404 384 128 ../field_atomicunit water$n cosine$n
-##./exe ../../test/water$i.xyz traj.psf 11400 0.4 15.6404 384 128 ../field_atomicunit water$n cosine$n
-done
-
-
-##./exe ../../mgcl/OHH.xyz traj.psf 10 1 15.6404 2 2 ../field_atomicunit
-  
-
-##./exe ../../mgcl2-h2o/NVE-pos-1.xyz traj.psf 340 1 16.099 414 148 ../field_atomicunit
-
-##./exe ../../../Tinker/exe/OHH.xyz traj.psf 11400 0.4 15.6404 384 128 ../field_atomicunit
-  
-##./exe ../../frame.xyz traj.psf 1 1 15.6404 384 128 ../field_atomicunit
-
-##./exe ../../mgcl2-h2o/NVE-pos-1.xyz traj.psf 2100 1 16.099 414 148 ../field_atomicunit 
-
-##./exe ../../mgcl2-h2o/NVE-pos-1.xyz traj.psf 10000 1 15.56 18 8 ../field_atomicunit 
-
-##./exe ../../mgcl2/NVE-pos-1.xyz traj.psf 2420 1 15.56 3 3 ../field_atomicunit 
 
 ## argumets
 ## 1. trajectory

@@ -91,18 +91,29 @@ void readExternalfield(vector<Vector> &E, uint nsteps, string fieldfilename)
 void Print(vector<Atom> &r, uint nsteps, uint natoms, const vector<float> & L, vector<Molecular> &mol, uint nmol, float dt, string filename, string TYPE)
 {
   ofstream outfile(filename);
-  for(uint t = 0; t < nsteps; ++t )
+  for(uint t = 0; t < nsteps; t += 30 )
     { 
       float a =0, b = 0, c = 0, a1 =0, b1 = 0, c1 = 0;
       float axy =0, axz = 0, ayz = 0, ayx =0, azx = 0, azy = 0;
+
       if(TYPE[0] == 'A' && TYPE[1] == 'T' && TYPE[2] == 'M')
       {
-        outfile << natoms << endl ;
-        outfile << "BOX Length " << L[0] << "  " << L[1] << "  " << L[2] << "\n";
-        for(uint i = 0;i < natoms;++i)
+        uint n = 2;
+        outfile << natoms * pow(n,3) << endl ;
+        outfile << "BOX Length " << L[0]*n << "  " << L[1]*n << "  " << L[2]*n << "\n";
+        for(uint x = 0; x < 1; ++x)
           {
-            uint id = natoms*t+i; 
-            outfile << r[id].symbol <<  "  " << r[id].x << "  " << r[id].y << "  " << r[id].z << endl;
+            for(uint y = 0; y < n; ++y)
+              {
+                for(uint z = 0; z < n; ++z)
+                  {
+                    for(uint i = 0;i < natoms;++i)
+                      {
+                        uint id = natoms*t+i; 
+                        outfile << r[id].symbol <<  "  " << r[id].x + L[0] * x << "  " << r[id].y + L[1] * y << "  " << r[id].z + L[2] * z << endl;
+                      }
+                  }
+              }
           }
       }
       else if(TYPE[0] == 'M' && TYPE[1] == 'O' && TYPE[2] == 'L')
@@ -145,8 +156,8 @@ void Print(vector<Atom> &r, uint nsteps, uint natoms, const vector<float> & L, v
                  ayx += mol[id].PPol.yx + mol[id].IPol.yx ; azx += mol[id].PPol.zx + mol[id].IPol.zx; azy += mol[id].PPol.zy + mol[id].IPol.zy;
                }
           }
-        outfile <<  t * dt << " " <<  a   << " " <<  b  << " "  << c << "  " << a-b
-                           << " " <<  a1  << " " <<  b1 << " "  << c1 << "   " << a1-b1
+        outfile <<  t * dt << " " <<  a   << " " <<  b  << " "  << c << "  " << a - 0.5 * (b+c)
+                           << " " <<  a1  << " " <<  b1 << " "  << c1 << "   " << a1 - 0.5 * (b1+c1)
                            << " " <<  axy << " " << axz << " "  << ayz
                            << " " <<  ayx << " " << azx << " "  << azy  << endl;
         

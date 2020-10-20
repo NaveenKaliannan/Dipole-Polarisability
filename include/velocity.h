@@ -14,8 +14,11 @@ using namespace std;
 
 void computeatomicvelocity(vector<Atom> &r, uint nsteps, uint natoms, const vector<float> & L, float dt);
 
-void PrintKEs(vector<Atom> &r, uint nsteps, uint natoms, const vector<float> & L, float dt, string filename) ; 
 
-void Printcosine(vector<Atom> &r, uint nsteps, uint natoms, const vector<float> & L, float dt, string filename);
+float angle_btwn_3points(const vector<Atom> &r, uint i, uint j1, uint j2, const vector<float> & L ) ; 
+void PrintKEnCosine(vector<Atom> &r, uint nsteps, uint natoms, const vector<float> & L, float dt, string filename) ; 
+
+
+void Printwaterioncoordination(vector<Atom> &r, uint nsteps, uint natoms, const vector<float> & L, float dt, string filename) ;
 
 #endif

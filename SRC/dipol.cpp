@@ -24,10 +24,10 @@ void Induced_dipole(vector<Molecular> &mol, uint nsteps, uint nmol, const vector
   vector<Vector> Field (nmol);
   vector<Vector> rsd (nmol), zrsd (nmol), conj (nmol), vec(nmol);
 
-  for(uint t = 0; t < nsteps;t += 1 )
+  for(uint t = 0; t < nsteps;t += 30 )
     {
       FieldduetoPermanentMultipoles(mol, t, nmol, L, Field);
-      //FieldduetoExternalField(mol, t, nmol, E,  Field);
+      FieldduetoExternalField(mol, t, nmol, E,  Field);
       for(uint i = 0;i < nmol;++i)
         {
           idi = nmol*t+i;            
@@ -108,7 +108,7 @@ void Induced_dipole(vector<Molecular> &mol, uint nsteps, uint nmol, const vector
             } 
           if (eps < 0.000001)  { cout << t <<  "  " << iter << endl; iter = niter;}   
           if (iter == niter - 1)  { cout << "Frame " << t <<  " is not converged (dipole) " << endl;  }                                 
-        } 
+        }
     }
       
 }
@@ -119,7 +119,7 @@ void Induced_polarisability(vector<Molecular> &mol, uint nsteps, uint nmol, cons
   float eps = 0.0, b = 0.0, a = 0.0;
   vector<Matrix> tensor (nmol), dummy_ipolar (nmol);
 
-  for(uint t = 0; t < nsteps;t += 1 )
+  for(uint t = 0; t < nsteps;t += 30 )
     {
       // computing the induced polarisability via self-consistent field (scf)
       for(uint iter = 0;iter < 100;++iter)
@@ -171,7 +171,7 @@ void TensorduetoPolarisability(vector<Molecular> &mol, uint t, uint nmol, const 
   replica(L, ncell, PB_L, imageno);
   for(uint i = 0;i < nmol;++i)
     {
-      idi = nmol*t+i; 
+      idi = nmol*t+i;  
       for(uint j = 0;j < nmol;++j)
         {
           idj = nmol*t+j;
@@ -350,7 +350,7 @@ void FieldduetoPermanentMultipoles(vector<Molecular> &mol, uint t, uint nmol, co
   replica(L, ncell, PB_L, imageno);
   for(uint i = 0;i < nmol;++i)
     {
-      idi = nmol*t+i; 
+      idi = nmol*t+i;  
       for(uint j = 0;j < nmol;++j)
         {
           idj = nmol*t+j;

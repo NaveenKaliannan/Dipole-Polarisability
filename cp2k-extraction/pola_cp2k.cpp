@@ -24,7 +24,7 @@ int main ( int argc, char** argv )
     dipole_filename >> temp; 
     }
   dipole_filename >> mu_x >> temp >> mu_y >> temp >> mu_z ;
-  cout << (t * 1.0 ) - 1.0 << "  " <<  mu_x << "  " << mu_y << "   " << mu_z << "  " ;
+  cout << (t * 0.4 ) - 1.0 << "  " <<  abs(mu_x) << "  " << abs(mu_y) << "   " << abs(mu_z) << "  " ;
 
   ifstream alpha_filename(argv[3]);  
   double alpha_xx = 0, alpha_yy = 0, alpha_zz = 0;

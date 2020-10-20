@@ -50,45 +50,58 @@ int main ( int argc, char** argv )
   vector<Molecular> mol ;
   vector<Vector> E (nsteps);
 
-  readtrajectory(r, nsteps, natoms, xyzfilename, L);
+  readtrajectory_tinker(r, nsteps, natoms, xyzfilename, L);
   BringintoBox(r, nsteps, natoms, L);
-  AssignAtomicMass(r, nsteps, natoms);
   TransformAtomictoMolecular(r, nsteps, natoms, L, mol, nmol);
   Induced_dipole(mol, nsteps, nmol, L, 500, E);
   Induced_polarisability(mol, nsteps, nmol, L, 500, E);
+  Print(r, nsteps, natoms, L, mol, nmol, dt, "Total3.data", "DIP-T");
 
-  Print(r, nsteps, natoms, L, mol, nmol, dt, "sim.dat", "DIP-T");
+  /*Reading Trajectories
+  readtrajectory(r, nsteps, natoms, xyzfilename, L); 
+  readtrajectory_tinker(r, nsteps, natoms, xyzfilename, L); 
+  readtrajectory_tinkerhp(r, nsteps, natoms, xyzfilename, L);
+  readpsf(r, nsteps,  natoms, psffilename); 
+  */
 
-  //Printrdf(r, nsteps, natoms, L, dt, argv[9]);
-  //PrintKEs(r, nsteps, natoms, L, dt, argv[9]);
-  //Printcosine(r, nsteps, natoms, L, dt, argv[10]);
+  /*Applying PBC
+  BringintoBox(r, nsteps, natoms, L);
+  */
 
-  //Print_tinker(r, nsteps, natoms, L, mol, nmol, dt, "water.xyz", "TINKER");
+  /*Assign atomic mass to each atom
+  AssignAtomicMass(r, nsteps, natoms);
+  */
 
-  //AssignAtomicMass(r, nsteps, natoms);
-  //BringintoBox(r, nsteps, natoms, L);
-  //computeatomicvelocity(r, nsteps, natoms, L, dt);
-  //PrintKEs(r, nsteps, natoms, L, dt, argv[9]);
-  //Printcosine(r, nsteps, natoms, L, dt, argv[10]);
+  /*Transforming atomic to molecular or atomic to atomic
+  TransformAtomictoMolecular(r, nsteps, natoms, L, mol, nmol);
+  TransformAtomictoAtomic(r, nsteps, natoms, L, mol, nmol);
+  */
 
-  //TransformAtomictoMolecular(r, nsteps, natoms, L, mol, nmol);
-  //readExternalfield(E, nsteps, fieldfilename);
-  //Induced_dipole_pol(mol, nsteps, nmol, L, 500, E);
+  /*Computing molecular dipole [debye] and polarisability [angstrom3]
+  readExternalfield(E, nsteps, fieldfilename);
+  Induced_dipole(mol, nsteps, nmol, L, 500, E);
+  Induced_polarisability(mol, nsteps, nmol, L, 500, E);
+  Print(r, nsteps, natoms, L, mol, nmol, dt, "Permanet.data", "DIP-P");
+  Print(r, nsteps, natoms, L, mol, nmol, dt, "Induced.data", "DIP-I");
+  Print(r, nsteps, natoms, L, mol, nmol, dt, "Total.data", "DIP-T");
+  */
 
- // TransformAtomictoAtomic(r, nsteps, natoms, L, mol, nmol);
-  //TransformAtomictoMolecular(r, nsteps, natoms, L, mol, nmol);
-  //readpsf(r, nsteps,  natoms, psffilename);
-  //readmullikencharges(r, nsteps, natoms, "test" ) ;
+  /*Printing cosine, Kinetic energy, rdf
+  Printrdf(r, nsteps, natoms, L, dt, argv[9]);
+  PrintKEnCosine(r, nsteps, natoms, L, dt, argv[9]);
+  */
 
-  //Print(r, nsteps, natoms, L, mol, nmol, dt, "PBC-trajectory.xyz", "ATM");
-  //Print(r, nsteps, natoms, L, mol, nmol, dt, "COM.xyz", "MOL");
-  //Print(r, nsteps, natoms, L, mol, nmol, dt, "Permanet.data", "DIP-P");
-  //Print(r, nsteps, natoms, L, mol, nmol, dt, "Induced.data", "DIP-I");
 
-  //Print_tinker(r, nsteps, natoms, L, mol, nmol, dt, "water.xyz", "TINKER");
-  //Print(r, nsteps, natoms, L, mol, nmol, dt, "PBC-trajectory.xyz", "ATM");
-  //Print(r, nsteps, natoms, L, mol, nmol, dt, argv[9], "DIP-T");
-  //   EstimateCellSizenNumberofResidue();
+  /*Printing trajectories
+  Print(r, nsteps, natoms, L, mol, nmol, dt, "PBC-trajectory.xyz", "ATM");
+  Print(r, nsteps, natoms, L, mol, nmol, dt, "COM.xyz", "MOL");
+  Print_tinker(r, nsteps, natoms, L, mol, nmol, dt, "water.xyz", "TINKER");
+  Print_tinkerhp(r, nsteps, natoms, L, mol, nmol, dt, "../water2.arc", "TINKER");
+  */
+
+  /*Estimate the cell size and number of water and ions
+  EstimateCellSizenNumberofResidue();
+  */
 
   return 0;
 }
