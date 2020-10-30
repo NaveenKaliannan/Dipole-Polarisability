@@ -75,28 +75,29 @@ void parameters(Molecular &mol)
    Morita Hynes J. Phys. Chem. B 2002, 106, 673-685,
    Ni and Skinner  J. Chem. Phys. 143, 014502 (2015); https://doi.org/10.1063/1.4923462 
    Remi Khatib, J.Phys.Chem.C2016, 120, 18665−18673
-   Yuki nagata papers
-   Kenneth J Miller, Tholes, Siberstein and van Duijnen https://doi.org/10.1021/jp980221f research works
-   Munir S. Skaf and Sérgio M. Vechi J. Chem. Phys 119, 2181 (2003); https://doi.org/10.1063/1.1583677  
+
+   Munir S. Skaf and Sérgio M. Vechi J. Chem. Phys 119, 2181 (2003);
+
 
    Simulation of the Far Infrared Spectrum of Liquid Water and Steam Along the Coexistence Curve
    from the Triple Point to the Critical Point https://doi.org/10.1007/978-94-011-0183-7_10
 
-Pengyu Ren and Jay W. Ponder  Polarizable Atomic Multipole Water Model for Molecular Mechanics Simulation
-
    Pengyu Ren and Jay W. Ponder Polarizable Atomic Multipole Water Model for Molecular Mechanics Simulation
    https://pubs.acs.org/doi/pdf/10.1021/jp027815%2B
 
+
+   // Thole model 
    IMOLECULAR POLARCIZABILITLES CALCULATED WITH A MOIXEIEID DIPOLE INTERACTiON
    AnAtomDipoleInteractionModelforMolecularOpticalProperties
 
-    polarisabulity due to field: Flexible bent rod model with a saturatinginduced dipole moment to study theelectric linear dichroism of DNA fragments
 
+   // Exteded DID approach torri
    Extended dipole-induced dipole mechanism for generatingRaman and optical Kerr effect intensities oflow-frequency dynamics in liquids
 
+   // DID approach 
    Polarizability response in polar solvents:Molecular-dynamics simulations ofacetonitrile and chloroform
  
-   J Comput Chem. 2007 May ; 28(7): 1261–1274    Gaussian Induced Dipole Polarization Model
+   grid radii : J Comput Chem. 2007 May ; 28(7): 1261–1274    Gaussian Induced Dipole Polarization Model
 
    Development of Polarizable Gaussian Model for MolecularMechanical Calculations I: Atomic Polarizability Parameterization ToReproduceab InitioAnisotropy
 

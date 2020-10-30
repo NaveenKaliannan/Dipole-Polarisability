@@ -15,6 +15,9 @@
 #include "../include/pbc.h"
 #include "../include/assign.h"
 
+#define ncell  1
+#define rcut  40.0
+
 using namespace std;
 
 void Induced_dipole(vector<Molecular> &mol, uint nsteps, uint nmol, const vector<float> & L, uint niter, vector<Vector> &E)
@@ -24,7 +27,7 @@ void Induced_dipole(vector<Molecular> &mol, uint nsteps, uint nmol, const vector
   vector<Vector> Field (nmol);
   vector<Vector> rsd (nmol), zrsd (nmol), conj (nmol), vec(nmol);
 
-  for(uint t = 0; t < nsteps;t += 30 )
+  for(uint t = 0; t < nsteps;t += 1 )
     {
       FieldduetoPermanentMultipoles(mol, t, nmol, L, Field);
       FieldduetoExternalField(mol, t, nmol, E,  Field);
@@ -119,7 +122,7 @@ void Induced_polarisability(vector<Molecular> &mol, uint nsteps, uint nmol, cons
   float eps = 0.0, b = 0.0, a = 0.0;
   vector<Matrix> tensor (nmol), dummy_ipolar (nmol);
 
-  for(uint t = 0; t < nsteps;t += 30 )
+  for(uint t = 0; t < nsteps;t += 1 )
     {
       // computing the induced polarisability via self-consistent field (scf)
       for(uint iter = 0;iter < 100;++iter)
@@ -158,8 +161,8 @@ void Induced_polarisability(vector<Molecular> &mol, uint nsteps, uint nmol, cons
 //Field Tensor due to permanent and induced polarisability
 void TensorduetoPolarisability(vector<Molecular> &mol, uint t, uint nmol, const vector<float> & L, vector <Matrix> & C)
 {
-  uint idi = 0, idj = 0, ncell = 1;
-  float x = 0, y = 0, z = 0, rij = 0, rcut = 40;
+  uint idi = 0, idj = 0;
+  float x = 0, y = 0, z = 0, rij = 0;
   float u = 0.0, ar = 0.0, st1 = 0.0, st2 = 0.0, r3 = 0.0, r5 = 0.0;
   float mean_alpha1 = 0, mean_alpha2 = 0;
   vector<float> PB_L(6,0.0);
@@ -188,23 +191,31 @@ void TensorduetoPolarisability(vector<Molecular> &mol, uint t, uint nmol, const 
                 ar  = mol[idj].sl * pow(u,3.0)  ;   
                 st1 = 1.0 - (1.0 + ar + (ar*ar/2.0)) * exp(-ar);     
                 st2 = 1.0 - (1.0 + ar + (ar*ar/2.0) + (pow(ar,3.0)/6.0)) * exp(-ar);                   
-                //r3  = pow(rij, -3.0)  * (st1 + 0.0); 
-                //r5  = 3.0 * pow(rij, -5.0)  * (st2 + 0.0);
+                r3  = pow(rij, -3.0)  * (st1 + 0.0); 
+                r5  = 3.0 * pow(rij, -5.0)  * (st2 + 0.0);
 
-                // enhanced thole screening length agrees with Wu and Yang damping function
-                //r3  = pow(rij, -3.0)  * (st1 + 0.15); 
-                //r5  = 3.0 * pow(rij, -5.0)  * (st2 + 0.15);
+                /*
+                  without damping function 
+                  r3  = pow(rij, -3.0)  ; 
+                  r5  = 3.0 * pow(rij, -5.0) ;
+ 
+                  Thole damping function
+                  mean_alpha1 = (mol[idi].PPol.xx + mol[idi].PPol.yy + mol[idi].PPol.zz ) / 3.0;
+                  mean_alpha2 = (mol[idj].PPol.xx + mol[idj].PPol.yy + mol[idj].PPol.zz ) / 3.0;
+                  u = rij / pow(mean_alpha1 * mean_alpha2, 0.16666);
+                  ar  = mol[idj].sl * pow(u,3.0)  ;   
+                  st1 = 1.0 - (1.0 + ar + (ar*ar/2.0)) * exp(-ar);     
+                  st2 = 1.0 - (1.0 + ar + (ar*ar/2.0) + (pow(ar,3.0)/6.0)) * exp(-ar);                   
+                  r3  = pow(rij, -3.0)  * (st1 + 0.0); 
+                  r5  = 3.0 * pow(rij, -5.0)  * (st2 + 0.0);
 
-                // Wu and Yang damping function
-                float cdamp = 3.54 ; 
-                float r_vdwr = mol[idi].vdwr + mol[idj].vdwr ;
-                float WY1 =  pow( 1.0  - exp( -1.0 * cdamp * pow( rij / r_vdwr ,3)) , 2);
-                //r3  = pow(rij, -3.0)  * WY1 ; 
-                //r5  = 3.0 * pow(rij, -5.0)  * WY1;
-
-                // mixed damping function Wu Yang and Thole
-                r3  = pow(rij, -3.0) * WY1; 
-                r5  = 3.0 * pow(rij, -5.0) * (st2 + 0.15) ;
+                  Wu and Yang damping function 
+                  float cdamp = 3.54 ; 
+                  float r_vdwr = mol[idi].vdwr + mol[idj].vdwr ;
+                  float WY1 =  pow( 1.0  - exp( -1.0 * cdamp * pow( rij / r_vdwr ,3)) , 2);
+                  r3  = pow(rij, -3.0)  * WY1 ; 
+                  r5  = 3.0 * pow(rij, -5.0)  * WY1;
+                */
 
 
                 Tij.xx = -r3 + r5 * x * x ;
@@ -262,8 +273,8 @@ void FieldduetoExternalField(vector<Molecular> &mol, uint t, uint nmol, const ve
 //Field due to induced dipoles
 void Fieldduetodipole(vector<Molecular> &mol, uint t, uint nmol, const vector<float> & L, vector <Vector> & Field)
 {
-  uint idi = 0, idj = 0, ncell = 1;
-  float x = 0, y = 0, z = 0, rij = 0, rcut = 40;
+  uint idi = 0, idj = 0;
+  float x = 0, y = 0, z = 0, rij = 0;
   float u = 0.0, ar = 0.0, st1 = 0.0, st2 = 0.0, r3 = 0.0, r5 = 0.0, pc = 0.0, pd = 0.0;
   float mean_alpha1 = 0, mean_alpha2 = 0;
   vector<float> PB_L(6,0.0);
@@ -293,23 +304,31 @@ void Fieldduetodipole(vector<Molecular> &mol, uint t, uint nmol, const vector<fl
                 ar  = mol[idj].sl * pow(u,3.0)  ;   
                 st1 = 1.0 - (1.0 + ar + (ar*ar/2.0)) * exp(-ar);     
                 st2 = 1.0 - (1.0 + ar + (ar*ar/2.0) + (pow(ar,3.0)/6.0)) * exp(-ar);                   
-                //r3  = pow(rij, -3.0)  * (st1 + 0.0); 
-                //r5  = 3.0 * pow(rij, -5.0)  * (st2 + 0.0);
+                r3  = pow(rij, -3.0)  * (st1 + 0.0); 
+                r5  = 3.0 * pow(rij, -5.0)  * (st2 + 0.0);
 
-                // enhanced thole screening length agrees with Wu and Yang damping function
-                //r3  = pow(rij, -3.0)  * (st1 + 0.15); 
-                //r5  = 3.0 * pow(rij, -5.0)  * (st2 + 0.15);
+                /*
+                  without damping function 
+                  r3  = pow(rij, -3.0)  ; 
+                  r5  = 3.0 * pow(rij, -5.0) ;
+ 
+                  Thole damping function
+                  mean_alpha1 = (mol[idi].PPol.xx + mol[idi].PPol.yy + mol[idi].PPol.zz ) / 3.0;
+                  mean_alpha2 = (mol[idj].PPol.xx + mol[idj].PPol.yy + mol[idj].PPol.zz ) / 3.0;
+                  u = rij / pow(mean_alpha1 * mean_alpha2, 0.16666);
+                  ar  = mol[idj].sl * pow(u,3.0)  ;   
+                  st1 = 1.0 - (1.0 + ar + (ar*ar/2.0)) * exp(-ar);     
+                  st2 = 1.0 - (1.0 + ar + (ar*ar/2.0) + (pow(ar,3.0)/6.0)) * exp(-ar);                   
+                  r3  = pow(rij, -3.0)  * (st1 + 0.0); 
+                  r5  = 3.0 * pow(rij, -5.0)  * (st2 + 0.0);
 
-                // Wu and Yang damping function
-                float cdamp = 3.54 ; 
-                float r_vdwr = mol[idi].vdwr + mol[idj].vdwr ;
-                float WY1 =  pow( 1.0  - exp( -1.0 * cdamp * pow( rij / r_vdwr ,3)) , 2);
-                //r3  = pow(rij, -3.0)  * WY1 ; 
-                //r5  = 3.0 * pow(rij, -5.0)  * WY1;
-
-                // mixed damping function Wu Yang and Thole
-                r3  = pow(rij, -3.0) * WY1; 
-                r5  = 3.0 * pow(rij, -5.0) * (st2 + 0.15) ;
+                  Wu and Yang damping function 
+                  float cdamp = 3.54 ; 
+                  float r_vdwr = mol[idi].vdwr + mol[idj].vdwr ;
+                  float WY1 =  pow( 1.0  - exp( -1.0 * cdamp * pow( rij / r_vdwr ,3)) , 2);
+                  r3  = pow(rij, -3.0)  * WY1 ; 
+                  r5  = 3.0 * pow(rij, -5.0)  * WY1;
+                */
 
                 Tij.xx = -r3 + r5 * x * x ;
                 Tij.yy = -r3 + r5 * y * y ; 
@@ -338,8 +357,8 @@ void Fieldduetodipole(vector<Molecular> &mol, uint t, uint nmol, const vector<fl
 // Field due to permanent multipoles [charge, dipole, quadrupole]
 void FieldduetoPermanentMultipoles(vector<Molecular> &mol, uint t, uint nmol, const vector<float> & L, vector <Vector> & Field)
 {
-  uint idi = 0, idj = 0, ncell = 1;
-  float x = 0, y = 0, z = 0, rij = 0, rcut = 40;
+  uint idi = 0, idj = 0;
+  float x = 0, y = 0, z = 0, rij = 0;
   float u = 0.0, ar = 0.0, st1 = 0.0, st2 = 0.0, r3 = 0.0, r5 = 0.0, pc = 0.0, pd = 0.0;
   float mean_alpha1 = 0, mean_alpha2 = 0;
   vector<float> PB_L(6,0.0);
@@ -360,52 +379,66 @@ void FieldduetoPermanentMultipoles(vector<Molecular> &mol, uint t, uint nmol, co
               rij = mindis(x,y,z,PB_L);       
               if ((i != j && cell == 0 ) || (cell > 0 && rij < rcut))
               {
-                // S Grimme - Effect of the Damping Function in Dispersion Corrected Density Functional Theory
-                // A Universal Damping Function for Empirical Dispersion Correctionon Density Functional Theory
-                // vdw radii https://www.cgl.ucsf.edu/chimerax/docs/user/radii.html and Consistent van der Waals Radii for the Whole Main Group and Van der Waals Radii of Elements
-                //Set of van der Waals and Coulombic Radii of Protein  Atoms for Molecular and Solvent-Accessible Surface Calculation, Packing Evaluation, and Docking
-                // https://bip.weizmann.ac.il/course/structbioinfo/databases/CCDC_Mercury/appa_glossary.4.73.html Bondi, J.Phys.Chem., 68, 441, 1964
-                // https://www.pamoc.it/kw_dfd.html
-                // A consistent and accurate ab initioparametrization of density functionaldispersion correction (DFT-D) for the 94elements H-Pu
-                // Density Functional Theory Augmented with an Empirical Dispersion Term. Interaction Energies and Geometries of 80 Noncovalent Complexes Compared with Ab Initio Quantum Mechanics Calculations
-                // Damping functions in the effective fragmentpotential method
-                // On the performance of molecular polarization methods. II. Water and carbon tetrachloride close to a cation
-                // Gaussian and Exponeital damping function:  The polarizable point dipoles method withelectrostatic damping: Implementation on amodel system
-                // Becke-Johnson  (BJ)  damping  function: A generally applicable atomic-chargedependent London dispersion correction
-                // Thole damping:  Molecular and Atomic Polarizabilities: Thole’s Model Revisited
-                // Thole damping: Molecular polarizabilities calculated with a modified dipole interaction
-                // Empirical D3 Dispersion as a Replacement for ab Initio Dispersion Terms in Density Functional Theory-Based Symmetry-Adapted Perturbation Theory
-                // atomic radii Semiempirical GGA-Type Density Functional Constructed with a Long-Range Dispersion Correction
-                // Accurate Description of van der Waals Complexes by Density Functional Theory Including  Empirical Corrections
-                // The polarizable point dipoles method withelectrostatic damping: Implementation on amodel system
-                //Interatomic Methods for the Dispersion Energy Derived from the AdiabaticConnection Fluctuation-Dissipation Theorem
-                //Note: Fermic  and Hesselmann daming function goes to zero quickly at smaller r, not suitable here. 
-                // Wu and Yang damping function J. Chem. Phys. 2002, 116, 515-524. 
+                 /* vdw radii
+                   1.  https://www.cgl.ucsf.edu/chimerax/docs/user/radii.html
+                   2.  Consistent van der Waals Radii for the Whole Main Group and Van der Waals Radii of Elements
+                   3. Consistent Treatment of Inter- and Intramolecular Polarization in Molecular Mechanics Calculations
+                   4.  Set of van der Waals and Coulombic Radii of Protein  Atoms for Molecular and Solvent-Accessible Surface Calculation, Packing Evaluation, and Docking
+                   5. https://bip.weizmann.ac.il/course/structbioinfo/databases/CCDC_Mercury/appa_glossary.4.73.html
+                   6.  Bondi, J.Phys.Chem., 68, 441, 1964
+                   7. Semiempirical GGA-Type Density Functional Constructed with a Long-Range Dispersion Correction
+                 */
+                 /* Damping functions
+                   1. Wu and Yang damping function J. Chem. Phys. 2002, 116, 515-524 and Transferable ab initio intermolecular potentials. 1. Derivation from methanol dimer and trimer calculations
+                   2. Effect of the Damping Function in Dispersion Corrected Density Functional Theory
+                   3. A Universal Damping Function for Empirical Dispersion Correctionon Density Functional Theory
+                   4.  https://www.pamoc.it/kw_dfd.html
+                   5. Density Functional Theory Augmented with an Empirical Dispersion Term. Interaction Energies and Geometries of 80 Noncovalent Complexes Compared with Ab Initio Quantum Mechanics Calculations
+                   6. Damping functions in the effective fragmentpotential method
+                   7. On the performance of molecular polarization methods. II. Water and carbon tetrachloride close to a cation
+                   8. Gaussian and Exponeital damping function:  The polarizable point dipoles method withelectrostatic damping: Implementation on amodel system
+                   9.  Becke-Johnson  (BJ)  damping  function: A generally applicable atomic-chargedependent London dispersion correction
+                   10. Thole damping:  Molecular and Atomic Polarizabilities: Thole’s Model Revisited
+                   11. Thole damping: Molecular polarizabilities calculated with a modified dipole interaction
+                   12. sum of vdwradii: Empirical D3 Dispersion as a Replacement for ab Initio Dispersion Terms in Density Functional Theory-Based Symmetry-Adapted Perturbation Theory
+                   13. The polarizable point dipoles method withelectrostatic damping: Implementation on amodel system
+                   14. Interatomic Methods for the Dispersion Energy Derived from the AdiabaticConnection Fluctuation-Dissipation Theorem
+                   Note: Fermic  and Hesselmann daming function goes to zero quickly at smaller r, not suitable for here
+                 */
 
                 //Thole damping function
                 mean_alpha1 = (mol[idi].PPol.xx + mol[idi].PPol.yy + mol[idi].PPol.zz ) / 3.0;
                 mean_alpha2 = (mol[idj].PPol.xx + mol[idj].PPol.yy + mol[idj].PPol.zz ) / 3.0;
                 u = rij / pow(mean_alpha1 * mean_alpha2, 0.16666);
-                ar  = mol[idj].sl * pow(u,3.0)  ;   
+                ar  = mol[idj].sl * pow(u,3.0)  ;    
                 st1 = 1.0 - (1.0 + ar + (ar*ar/2.0)) * exp(-ar);     
                 st2 = 1.0 - (1.0 + ar + (ar*ar/2.0) + (pow(ar,3.0)/6.0)) * exp(-ar);                   
-                //r3  = pow(rij, -3.0)  * (st1 + 0.0); 
-                //r5  = 3.0 * pow(rij, -5.0)  * (st2 + 0.0);
+                r3  = pow(rij, -3.0)  * (st1 + 0.0); 
+                r5  = 3.0 * pow(rij, -5.0)  * (st2 + 0.0);
 
-                // enhanced thole screening length agrees with Wu and Yang damping function
-                //r3  = pow(rij, -3.0)  * (st1 + 0.15); 
-                //r5  = 3.0 * pow(rij, -5.0)  * (st2 + 0.15);
+                /*
+                  without damping function 
+                  r3  = pow(rij, -3.0)  ; 
+                  r5  = 3.0 * pow(rij, -5.0) ;
+ 
+                  Thole damping function
+                  mean_alpha1 = (mol[idi].PPol.xx + mol[idi].PPol.yy + mol[idi].PPol.zz ) / 3.0;
+                  mean_alpha2 = (mol[idj].PPol.xx + mol[idj].PPol.yy + mol[idj].PPol.zz ) / 3.0;
+                  u = rij / pow(mean_alpha1 * mean_alpha2, 0.16666);
+                  ar  = mol[idj].sl * pow(u,3.0)  ;   
+                  st1 = 1.0 - (1.0 + ar + (ar*ar/2.0)) * exp(-ar);     
+                  st2 = 1.0 - (1.0 + ar + (ar*ar/2.0) + (pow(ar,3.0)/6.0)) * exp(-ar);                   
+                  r3  = pow(rij, -3.0)  * (st1 + 0.0); 
+                  r5  = 3.0 * pow(rij, -5.0)  * (st2 + 0.0);
 
-                // Wu and Yang damping function
-                float cdamp = 3.54 ; 
-                float r_vdwr = mol[idi].vdwr + mol[idj].vdwr ;
-                float WY1 =  pow( 1.0  - exp( -1.0 * cdamp * pow( rij / r_vdwr ,3)) , 2);
-                //r3  = pow(rij, -3.0)  * WY1 ; 
-                //r5  = 3.0 * pow(rij, -5.0)  * WY1;
+                  Wu and Yang damping function 
+                  float cdamp = 3.54 ; 
+                  float r_vdwr = mol[idi].vdwr + mol[idj].vdwr ;
+                  float WY1 =  pow( 1.0  - exp( -1.0 * cdamp * pow( rij / r_vdwr ,3)) , 2);
+                  r3  = pow(rij, -3.0)  * WY1 ; 
+                  r5  = 3.0 * pow(rij, -5.0)  * WY1;
+                */
 
-                // mixed damping function Wu Yang and Thole
-                r3  = pow(rij, -3.0) * WY1; 
-                r5  = 3.0 * pow(rij, -5.0) * (st2 + 0.15) ;
 
                 // Field due to point charge and dipole (quadrupole not considered)
                 //point charge - http://www.physics.umd.edu/courses/Phys260/agashe/S10/notes/lecture18.pdf 

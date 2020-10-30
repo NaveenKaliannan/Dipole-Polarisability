@@ -85,7 +85,6 @@ struct Molecular
 
   Vector TD;    // dipole (total) 
   Matrix TPol;  // Polarisability matrix  (total)
-
 };
 
 

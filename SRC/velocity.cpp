@@ -14,13 +14,15 @@
 #include "../include/velocity.h"
 
 
+#define deltat 30
+
 using namespace std;
 
 
 /* computes atomic velocity via central difference scheme as CP2K (multiply with vAperfmstoamu converts to atomic unit )*/
 void computeatomicvelocity(vector<Atom> &r, uint nsteps, uint natoms, const vector<float> & L, float dt)
 {
-  for(uint t = 1; t < nsteps-1; ++t )
+  for(uint t = 1; t < nsteps-1;  t += deltat )
     { 
       for(uint i = 0;i < natoms;++i)
         {
@@ -178,7 +180,7 @@ void PrintKEnCosine(vector<Atom> &r, uint nsteps, uint natoms, const vector<floa
               count_oxygen += 1; 
             }
 
-          for(uint t = 1; t < nsteps-1; ++t )
+          for(uint t = 1; t < nsteps-1;  t += deltat )
             {
               uint id = natoms*t+i;
 
@@ -279,7 +281,7 @@ void PrintKEnCosine(vector<Atom> &r, uint nsteps, uint natoms, const vector<floa
 
   /* Total KE is in Atomic Unit in order to compare with CP2K data */
   ofstream outfile(filename);
-  for(uint t = 1; t < nsteps-1; ++t )
+  for(uint t = 1; t < nsteps-1;  t += deltat )
     {
       if(total_KE[t] == 0)        {total_KE[t]        = 1;}
       if(total_KE_cation[t] == 0) {total_KE_cation[t] = 1;}

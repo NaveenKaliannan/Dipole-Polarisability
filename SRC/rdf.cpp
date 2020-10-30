@@ -17,6 +17,8 @@
 using namespace std;
 
 
+#define deltat 100
+
 void Printrdf(vector<Atom> &r, uint nsteps, uint natoms, const vector<float> & L, float dt, string filename)
 {
   float x = 0, y = 0, z = 0, rij = 0, V = L[0] * L[1] * L[2], len = max(L[0], L[1]), RDF_h = 0.1, count = 0 ;
@@ -37,20 +39,20 @@ void Printrdf(vector<Atom> &r, uint nsteps, uint natoms, const vector<float> & L
   cout << "Enter number of \u03B2 species : " ;
   cin >>  no_of_residue_second ;
 
-  for(uint t = 0; t < nsteps; t += 5 )  
+  for(uint t = 0; t < nsteps; t += deltat )  
     {
       cout << t << endl;
       count += 1;
       for(uint RDF_i = 1;RDF_i < RDF_size - 1; ++RDF_i)
         {
           count_atoms = 0;
-          for(uint i = 0;i < natoms-1;++i)
+          for(uint i = 0;i < natoms;++i)
             {
               idi = natoms*t+i;          
-              for(uint j = i+1;j < natoms;++j)
+              for(uint j = 0;j < natoms;++j)
                 {
                   idj = natoms*t+j;
-                  if (r[idi].symbol[0] == 'F' && r[idj].symbol[0] == 'H' && i != j)
+                  if (r[idi].symbol[0] == 'M' && r[idj].symbol[0] == 'O' && i != j)
                     {                                       
                       x = min_distance(r[idj].x - r[idi].x, L[0]);
                       y = min_distance(r[idj].y - r[idi].y, L[1]);

@@ -21,7 +21,7 @@ tinker hp in heisenberg ./configure --enable-fft-fftw3_f03 --with-blaslib=/opt/i
 
 
 tinker hp compliation load mkl libraries module load numlib/imkl/2018.3.222-iimpi-2018b
-  then  ./configure  --prefix=/scratch/hpc-prf-wcat/naveenk/withoutfiled/bin --enable-fft-fftw3_f03 --with-blaslib=/opt/intel/mkl mkl=/opt/intel/mkl/ --with-fftlib=/opt/intel/mkl/include/fftw
+  then  ./configure  --prefix=/scratch/hpc-prf-wcat/naveenk/withfield/bin --enable-fft-fftw3_f03 --with-blaslib=/opt/intel/mkl mkl=/opt/intel/mkl/ --with-fftlib=/opt/intel/mkl/include/fftw; make -j 4 ; make install
  */
 
 

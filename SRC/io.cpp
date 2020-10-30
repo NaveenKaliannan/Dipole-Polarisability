@@ -91,14 +91,14 @@ void readExternalfield(vector<Vector> &E, uint nsteps, string fieldfilename)
 void Print(vector<Atom> &r, uint nsteps, uint natoms, const vector<float> & L, vector<Molecular> &mol, uint nmol, float dt, string filename, string TYPE)
 {
   ofstream outfile(filename);
-  for(uint t = 0; t < nsteps; t += 30 )
+  for(uint t = 0; t < nsteps; t += 1 )
     { 
       float a =0, b = 0, c = 0, a1 =0, b1 = 0, c1 = 0;
       float axy =0, axz = 0, ayz = 0, ayx =0, azx = 0, azy = 0;
 
       if(TYPE[0] == 'A' && TYPE[1] == 'T' && TYPE[2] == 'M')
       {
-        uint n = 2;
+        uint n = 1;
         outfile << natoms * pow(n,3) << endl ;
         outfile << "BOX Length " << L[0]*n << "  " << L[1]*n << "  " << L[2]*n << "\n";
         for(uint x = 0; x < 1; ++x)
@@ -156,10 +156,16 @@ void Print(vector<Atom> &r, uint nsteps, uint natoms, const vector<float> & L, v
                  ayx += mol[id].PPol.yx + mol[id].IPol.yx ; azx += mol[id].PPol.zx + mol[id].IPol.zx; azy += mol[id].PPol.zy + mol[id].IPol.zy;
                }
           }
-        outfile <<  t * dt << " " <<  a   << " " <<  b  << " "  << c << "  " << a - 0.5 * (b+c)
+
+outfile <<  t * dt / 1000.0 << " " <<  a   << " " <<  b  << " "  << c << "  " 
+                          << " " <<  a1  << " " <<  b1 << " "  << c1 << "   "
+                          << " " <<  axy << " " << axz << " "  << ayz
+                          << " " <<  ayx << " " << azx << " "  << azy  << endl;
+
+      /*  outfile <<  t * dt << " " <<  a   << " " <<  b  << " "  << c << "  " << a - 0.5 * (b+c)
                            << " " <<  a1  << " " <<  b1 << " "  << c1 << "   " << a1 - 0.5 * (b1+c1)
                            << " " <<  axy << " " << axz << " "  << ayz
-                           << " " <<  ayx << " " << azx << " "  << azy  << endl;
+                           << " " <<  ayx << " " << azx << " "  << azy  << endl; */
         
        // outfile << "#Time  " << t * dt << "\n" << "## Total Mol [string] " << nmol << " Total \u03BC  [Debye] in x y z " << a << "  " << b << "  " << c << "   "  <<  " Total \u03B1 [Angstrom] xx yy zz  " << a1 << "  " <<  b1  << "  " << c1  << endl;
         //outfile << "##Mol [string]  \u03BC  [Debye] in x y z \u03B1 [Angstrom] xx yy zz  \n";
