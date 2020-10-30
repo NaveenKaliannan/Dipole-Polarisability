@@ -14,7 +14,6 @@
 #include "../include/velocity.h"
 
 
-#define deltat 30
 
 using namespace std;
 

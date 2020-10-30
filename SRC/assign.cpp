@@ -239,6 +239,7 @@ void TransformAtomictoMolecular(vector<Atom> &r, uint nsteps,  uint natoms, cons
               mols.y = r[id].y;
               mols.z = r[id].z;
               mols.MOL = r[id].symbol;
+              mols.MOL = "Na";
               mols.m = r[id].atomicmass; 
               mols.sl = 0.3900 ; 
               mols.vdwr = 2.27 ;    
@@ -252,6 +253,7 @@ void TransformAtomictoMolecular(vector<Atom> &r, uint nsteps,  uint natoms, cons
               mols.y = r[id].y;
               mols.z = r[id].z;
               mols.MOL = r[id].symbol;
+              mols.MOL = "Mg";
               mols.m = r[id].atomicmass; 
               mols.sl = 0.1150 ;
               mols.vdwr = 1.364 ;     
@@ -265,6 +267,7 @@ void TransformAtomictoMolecular(vector<Atom> &r, uint nsteps,  uint natoms, cons
               mols.y = r[id].y;
               mols.z = r[id].z;
               mols.MOL = r[id].symbol;
+              mols.MOL = "Cl";
               mols.m = r[id].atomicmass;
               mols.sl = 0.3900 ; 
               mols.vdwr = 1.639 ;    
@@ -278,6 +281,7 @@ void TransformAtomictoMolecular(vector<Atom> &r, uint nsteps,  uint natoms, cons
               mols.y = r[id].y;
               mols.z = r[id].z;
               mols.MOL = r[id].symbol;
+              mols.MOL = "F";
               mols.m = r[id].atomicmass;
               mols.sl = 0.3900 ; 
               mols.vdwr = 1.47 ;    

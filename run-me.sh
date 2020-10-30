@@ -14,7 +14,7 @@ make
 
 
 ## mgcl2
-./exe ../$1 traj.psf 1000 1 15.6404 384 128 ../field_atomicunit tholedamping
+./exe ../$1 traj.psf 10000 1 15.6404 18 8 ../field_atomicunit tholedamping
 
 
 

@@ -18,6 +18,8 @@
 #define ncell  1
 #define rcut  40.0
 
+
+
 using namespace std;
 
 void Induced_dipole(vector<Molecular> &mol, uint nsteps, uint nmol, const vector<float> & L, uint niter, vector<Vector> &E)
@@ -27,7 +29,7 @@ void Induced_dipole(vector<Molecular> &mol, uint nsteps, uint nmol, const vector
   vector<Vector> Field (nmol);
   vector<Vector> rsd (nmol), zrsd (nmol), conj (nmol), vec(nmol);
 
-  for(uint t = 0; t < nsteps;t += 1 )
+  for(uint t = 0; t < nsteps;t += deltat )
     {
       FieldduetoPermanentMultipoles(mol, t, nmol, L, Field);
       FieldduetoExternalField(mol, t, nmol, E,  Field);
@@ -122,10 +124,10 @@ void Induced_polarisability(vector<Molecular> &mol, uint nsteps, uint nmol, cons
   float eps = 0.0, b = 0.0, a = 0.0;
   vector<Matrix> tensor (nmol), dummy_ipolar (nmol);
 
-  for(uint t = 0; t < nsteps;t += 1 )
+  for(uint t = 0; t < nsteps;t += deltat )
     {
       // computing the induced polarisability via self-consistent field (scf)
-      for(uint iter = 0;iter < 100;++iter)
+      for(uint iter = 0;iter < niter;++iter)
         {
           TensorduetoPolarisability(mol, t, nmol, L, tensor);
 
@@ -461,6 +463,131 @@ void FieldduetoPermanentMultipoles(vector<Molecular> &mol, uint t, uint nmol, co
             }
         }
     }
+}
+
+
+void PrintOpticalBirefringence(vector<Molecular> &mol, uint nsteps, uint nmol, const vector<float> & L, float dt, string filename)
+{
+  vector<float> total_OBF        (nsteps, 0.0),
+                total_OBF_cation (nsteps, 0.0),
+                total_OBF_anion  (nsteps, 0.0),
+                total_OBF_both   (nsteps, 0.0),
+                total_OBF_ions   (nsteps, 0.0), 
+                total_OBF_rem    (nsteps, 0.0);
+
+  float count = 0, count_cation = 0, count_anion = 0, count_both = 0, count_rem = 0, count_ions = 0 ;
+  float rij = 0, temp = 0, x = 0, y = 0, z = 0 ;
+  uint hbond_cation = 0, hbond_anion = 0;
+
+  for(uint i = 0;i < nmol;++i)
+    {
+      if(1) 
+        {
+          hbond_cation = 0, hbond_anion = 0;
+          for(uint j = 0;j < nmol;++j)
+            { 
+              uint idi = nmol*3500+i;  
+              uint idj = nmol*3500+j;
+
+              if(mol[i].MOL[0] == 'M' || mol[i].MOL[0] == 'N')
+                {
+                  x = min_distance(mol[idj].x - mol[idi].x, L[0]);
+                  y = min_distance(mol[idj].y - mol[idi].y, L[1]);
+                  z = min_distance(mol[idj].z - mol[idi].z, L[2]); 
+                  rij = mindis(x,y,z,L); 
+                  if(rij < 3.2 && rij > 0)
+                    {
+                      hbond_cation += 1;
+                    }      
+                }
+              if(mol[j].MOL[0] == 'C' || mol[j].MOL[0] == 'F')
+                {
+                  x = min_distance(mol[idj].x - mol[idi].x, L[0]);
+                  y = min_distance(mol[idj].y - mol[idi].y, L[1]);
+                  z = min_distance(mol[idj].z - mol[idi].z, L[2]); 
+                  rij = mindis(x,y,z,L); 
+                  if(rij < 3.2 && rij > 0)
+                    {
+                      hbond_anion += 1;
+                    }      
+                }
+            }
+
+          /*counting */
+          count += 1;
+          if(hbond_cation == 0 && hbond_anion == 0 && mol[i].MOL[0] == 'H' && mol[i].MOL[1] == '2' && mol[i].MOL[2] == 'O')
+            {
+              count_rem   += 1; 
+            }
+          else if(hbond_cation > 0 && hbond_anion > 0 && mol[i].MOL[0] == 'H' && mol[i].MOL[1] == '2' && mol[i].MOL[2] == 'O')
+            {
+              count_both  += 1; 
+            }
+          else if(hbond_cation == 0 && hbond_anion > 0 && mol[i].MOL[0] == 'H' && mol[i].MOL[1] == '2' && mol[i].MOL[2] == 'O')
+            {
+              count_anion += 1; 
+            }
+          else if(hbond_cation > 0 && hbond_anion == 0 && mol[i].MOL[0] == 'H' && mol[i].MOL[1] == '2' && mol[i].MOL[2] == 'O')
+            {
+              count_cation += 1; 
+            }
+
+          if((hbond_cation > 0 || hbond_anion > 0  || (hbond_cation + hbond_anion) > 0 ) && mol[i].MOL[0] == 'H' && mol[i].MOL[1] == '2' && mol[i].MOL[2] == 'O' )
+            {
+              count_ions += 1; 
+            }
+
+          for(uint t = 0; t < nsteps; t += deltat)
+            {
+              uint id = nmol*t+i;
+              temp          =  (mol[id].PPol.xx + mol[id].IPol.xx) - 0.5 * (mol[id].PPol.yy + mol[id].IPol.yy + mol[id].PPol.zz + mol[id].IPol.zz )  ; 
+              total_OBF[t] += temp ;
+
+              if(hbond_cation == 0 && hbond_anion == 0 && mol[i].MOL[0] == 'H' && mol[i].MOL[1] == '2' && mol[i].MOL[2] == 'O')
+                {
+                  total_OBF_rem[t] += temp ;
+                }
+              else if(hbond_cation > 0 && hbond_anion > 0 && mol[i].MOL[0] == 'H' && mol[i].MOL[1] == '2' && mol[i].MOL[2] == 'O')
+                {
+                  total_OBF_both[t] += temp ;
+                }
+              else if(hbond_cation == 0 && hbond_anion > 0 && mol[i].MOL[0] == 'H' && mol[i].MOL[1] == '2' && mol[i].MOL[2] == 'O')
+                {
+                  total_OBF_anion[t] += temp ;
+                }
+              else if(hbond_cation > 0 && hbond_anion == 0 && mol[i].MOL[0] == 'H' && mol[i].MOL[1] == '2' && mol[i].MOL[2] == 'O')
+                {
+                  total_OBF_cation[t] += temp ;
+                }
+
+               if((hbond_cation > 0 || hbond_anion > 0  || (hbond_cation + hbond_anion) > 0 ) && mol[i].MOL[0] == 'H' && mol[i].MOL[1] == '2' && mol[i].MOL[2] == 'O' )
+                {
+                  total_OBF_ions[t] += temp ;
+                }
+            }
+        } 
+    }
+
+  if(count == 0)        {count = 1;}
+  if(count_rem == 0)    {count_rem = 1;}
+  if(count_both == 0)   {count_both = 1;}
+  if(count_anion == 0)  {count_anion = 1;}
+  if(count_cation == 0) {count_cation = 1;}
+  if(count_ions == 0)   {count_ions = 1;} 
+
+  /* Total KE is in Atomic Unit in order to compare with CP2K data */
+  ofstream outfile(filename);
+  for(uint t = 0; t < nsteps; t += deltat)
+    {
+      outfile << t*dt << "  " << total_OBF[t]        / count        << "  " << 
+                                 total_OBF_cation[t] / count_cation << "  " << 
+                                 total_OBF_anion[t]  / count_anion  << "  " << 
+                                 total_OBF_both[t]   / count_both   << "  " << 
+                                 total_OBF_ions[t]   / count_ions   << "  " << 
+                                 total_OBF_rem[t]    / count_rem    << "  " <<  endl;
+    }
+  outfile.close();
+  outfile.clear();
 }
 
 

@@ -50,8 +50,12 @@ int main ( int argc, char** argv )
   vector<Molecular> mol ;
   vector<Vector> E (nsteps);
 
-  readtrajectory_tinkerhp(r, nsteps, natoms, xyzfilename, L);
-  Print(r, nsteps, natoms, L, mol, nmol, dt, "PBC-trajectory.xyz", "ATM");
+  readtrajectory(r, nsteps, natoms, xyzfilename, L);
+  TransformAtomictoMolecular(r, nsteps, natoms, L, mol, nmol);
+  Induced_dipole(mol, nsteps, nmol, L, 500, E);
+  Induced_polarisability(mol, nsteps, nmol, L, 500, E);
+  PrintOpticalBirefringence(mol, nsteps, nmol, L, dt, "test.data");
+  Print(r, nsteps, natoms, L, mol, nmol, dt, "Total.data", "DIP-T");
   //BringintoBox(r, nsteps, natoms, L);
   //Printrdf(r, nsteps, natoms, L, dt, argv[9]);
   //TransformAtomictoMolecular(r, nsteps, natoms, L, mol, nmol);
