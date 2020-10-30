@@ -575,7 +575,7 @@ void PrintOpticalBirefringence(vector<Molecular> &mol, uint nsteps, uint nmol, c
   if(count_cation == 0) {count_cation = 1;}
   if(count_ions == 0)   {count_ions = 1;} 
 
-  /* Total KE is in Atomic Unit in order to compare with CP2K data */
+  /* Optical birefringence is in angstrom3 and normalized to per molecule */
   ofstream outfile(filename);
   for(uint t = 0; t < nsteps; t += deltat)
     {
