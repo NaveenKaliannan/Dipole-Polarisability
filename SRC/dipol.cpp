@@ -495,7 +495,7 @@ void PrintOpticalBirefringence(vector<Molecular> &mol, uint nsteps, uint nmol, c
                   y = min_distance(mol[idj].y - mol[idi].y, L[1]);
                   z = min_distance(mol[idj].z - mol[idi].z, L[2]); 
                   rij = mindis(x,y,z,L); 
-                  if(rij < 3.2 && rij > 0)
+                  if(rij < 3.0 && rij > 0)
                     {
                       hbond_cation += 1;
                     }      
@@ -506,7 +506,7 @@ void PrintOpticalBirefringence(vector<Molecular> &mol, uint nsteps, uint nmol, c
                   y = min_distance(mol[idj].y - mol[idi].y, L[1]);
                   z = min_distance(mol[idj].z - mol[idi].z, L[2]); 
                   rij = mindis(x,y,z,L); 
-                  if(rij < 3.2 && rij > 0)
+                  if(rij < 3.0 && rij > 0)
                     {
                       hbond_anion += 1;
                     }      

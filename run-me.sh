@@ -14,7 +14,7 @@ make
 
 
 ## mgcl2
-./exe ../$1 traj.psf 10000 1 15.6404 18 8 ../field_atomicunit tholedamping
+./exe ../$1 traj.psf 5000 1 16.099 414 148 ../field_atomicunit KEncosine OpticalBirefringence dipol
 
 
 

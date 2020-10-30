@@ -8,7 +8,7 @@
 using namespace std;
 
 
-#define deltat 2
+#define deltat 100
 
 #define PI 3.14159265
 #define amu  1.66053906

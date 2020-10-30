@@ -99,7 +99,7 @@ void PrintKEnCosine(vector<Atom> &r, uint nsteps, uint natoms, const vector<floa
 
   computeatomicvelocity(r, nsteps, natoms, L, dt); 
   for(uint i = 0;i < natoms;++i)
-    { cout << i << endl;
+    { 
       if(r[i].symbol[0] == 'O' && r[i+1].symbol[0] == 'H' && r[i+2].symbol[0] == 'H') 
         {
 

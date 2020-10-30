@@ -156,9 +156,9 @@ void Print(vector<Atom> &r, uint nsteps, uint natoms, const vector<float> & L, v
                  ayx += mol[id].PPol.yx + mol[id].IPol.yx ; azx += mol[id].PPol.zx + mol[id].IPol.zx; azy += mol[id].PPol.zy + mol[id].IPol.zy;
                }
           }
-float div = nmol ; 
-outfile <<  t * dt << " " <<  a   << " " <<  b  << " "  << c << "  " <<  (a-0.5*(b+c) )/div
-                          << " " <<  a1  << " " <<  b1 << " "  << c1 << "   " << (a1-0.5*(b1+c1)) /div
+
+outfile <<  t * dt << " " <<  a   << " " <<  b  << " "  << c << "  " <<  (a-0.5*(b+c) )/nmol
+                          << " " <<  a1  << " " <<  b1 << " "  << c1 << "   " << (a1-0.5*(b1+c1)) /nmol
                           << " " <<  axy << " " << axz << " "  << ayz
                           << " " <<  ayx << " " << azx << " "  << azy  << endl;
 

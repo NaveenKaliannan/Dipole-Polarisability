@@ -57,6 +57,7 @@ int main ( int argc, char** argv )
   Induced_polarisability(mol, nsteps, nmol, L, 500, E);
   PrintOpticalBirefringence(mol, nsteps, nmol, L, dt, argv[10]);
   Print(r, nsteps, natoms, L, mol, nmol, dt,  argv[11], "DIP-T");
+  Print(r, nsteps, natoms, L, mol, nmol, dt, "COM.xyz", "MOL");
 
   /*Reading Trajectories
   readtrajectory(r, nsteps, natoms, xyzfilename, L); 
