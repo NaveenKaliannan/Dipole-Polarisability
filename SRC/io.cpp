@@ -37,6 +37,32 @@ void readtrajectory(vector<Atom> &r, uint nsteps, uint natoms, string xyzfilenam
   xyzfile.clear();
 }
 
+void readtrajectory_gro(vector<Atom> &r, uint nsteps, uint natoms, string xyzfilename, const vector<float> & L)
+{
+    string temp;
+    ifstream xyzfile(xyzfilename);
+    for(uint t = 0; t < nsteps; ++t )
+      {
+        getline(xyzfile, temp);
+        xyzfile >> natoms;
+        getline(xyzfile, temp);
+        for(uint i = 0;i < natoms;++i)
+          {
+            uint id = natoms*t+i;
+            xyzfile >> temp >> r[id].symbol >> temp >> r[id].x  >> r[id].y  >> r[id].z;
+            r[id].x *= 10;
+            r[id].y *= 10;
+            r[id].z *= 10;
+            //cout << t << "  " << i << "  " <<  r[id].symbol <<  "  " << r[id].x << "  " << r[id].y << "  " << r[id].z << endl;
+          }
+        xyzfile >> temp >>  temp >> temp;
+        getline(xyzfile, temp);
+     }
+  xyzfile.close();
+  xyzfile.clear();
+}
+
+
 
 //Reading the psf file
 void readpsf(vector<Atom> &r, uint nsteps,  uint natoms, string psffilename)

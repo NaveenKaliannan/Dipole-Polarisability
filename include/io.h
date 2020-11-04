@@ -95,6 +95,7 @@ void readtrajectory(vector<Atom> &r, uint nsteps, uint natoms, string xyzfilenam
 void readExternalfield(vector<Vector> &E, uint nsteps, string fieldfilename);
 void readpsf(vector<Atom> &r, uint nsteps,  uint natoms, string psffilename);
 void Print(vector<Atom> &r, uint nsteps, uint natoms, const vector<float> & L, vector<Molecular> &mol, uint nmol, float dt, string filename, string TYPE);
+void readtrajectory_gro(vector<Atom> &r, uint nsteps, uint natoms, string xyzfilename, const vector<float> & L) ; 
 
 void init_matrix_zero(Matrix &dummyM);
 void init_vector_zero(Vector & dummyv);

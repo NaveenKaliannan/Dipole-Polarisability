@@ -78,6 +78,8 @@ void PrintKEnCosine(vector<Atom> &r, uint nsteps, uint natoms, const vector<floa
   vector<float> total_KE (nsteps, 0.0), trans_KE (nsteps, 0.0), rot_KE (nsteps, 0.0),
                 total_KE_cation (nsteps, 0.0), trans_KE_cation (nsteps, 0.0), rot_KE_cation (nsteps, 0.0),
                 total_KE_anion (nsteps, 0.0), trans_KE_anion (nsteps, 0.0), rot_KE_anion (nsteps, 0.0),
+                total_KE_cation2 (nsteps, 0.0), trans_KE_cation2 (nsteps, 0.0), rot_KE_cation2 (nsteps, 0.0),
+                total_KE_anion2 (nsteps, 0.0), trans_KE_anion2 (nsteps, 0.0), rot_KE_anion2 (nsteps, 0.0),
                 total_KE_both (nsteps, 0.0), trans_KE_both (nsteps, 0.0), rot_KE_both (nsteps, 0.0),
                 total_KE_rem (nsteps, 0.0), trans_KE_rem (nsteps, 0.0), rot_KE_rem (nsteps, 0.0),
                 total_KE_ions (nsteps, 0.0), trans_KE_ions (nsteps, 0.0), rot_KE_ions (nsteps, 0.0),
@@ -91,8 +93,8 @@ void PrintKEnCosine(vector<Atom> &r, uint nsteps, uint natoms, const vector<floa
                 cosine_oxygen (nsteps, 0.0), cosine2_oxygen (nsteps, 0.0);
 
   float rij1 = 0, rij2 = 0, rij = 0, temp = 0, temp1 = 0, temp2 = 0, temp3 = 0, x = 0, y = 0, z = 0 ;
-  float count = 0, count_cation = 0, count_anion = 0, count_both = 0, count_rem = 0, count_ions = 0, count_oxygen = 0;
-  uint hbond_cation = 0, hbond_anion = 0, hbond_oxygen = 0;
+  float count = 0, count_cation = 0, count_anion = 0, count_cation2 = 0, count_anion2 = 0, count_both = 0, count_rem = 0, count_ions = 0, count_oxygen = 0;
+  uint hbond_cation = 0, hbond_anion = 0, hbond_cation2 = 0, hbond_anion2 = 0, hbond_oxygen = 0;
   float am_H = 1 * amu, am_O = 16 * amu, am_H2O = 18 * amu ;
   double com[3]; 
   double vec[3]; 
@@ -110,6 +112,8 @@ void PrintKEnCosine(vector<Atom> &r, uint nsteps, uint natoms, const vector<floa
               uint idi1 = natoms*3500+i+1;          
               uint idi2 = natoms*3500+i+2;                  
               uint idj = natoms*3500+j;
+ 
+              /*first solvation shell*/
               if(r[j].symbol[0] == 'M' || r[j].symbol[0] == 'N')
                 {
                   x = min_distance(r[idj].x - r[idi].x, L[0]);
@@ -137,6 +141,36 @@ void PrintKEnCosine(vector<Atom> &r, uint nsteps, uint natoms, const vector<floa
                       hbond_anion += 1;
                     }      
                 }
+
+              /*second solvation shell*/
+              if(r[j].symbol[0] == 'M' || r[j].symbol[0] == 'N')
+                {
+                  x = min_distance(r[idj].x - r[idi].x, L[0]);
+                  y = min_distance(r[idj].y - r[idi].y, L[1]);
+                  z = min_distance(r[idj].z - r[idi].z, L[2]); 
+                  rij = mindis(x,y,z,L); 
+                  if(rij < 6 && rij > 3.2)
+                    {
+                      hbond_cation2 += 1;
+                    }      
+                }
+              if(r[j].symbol[0] == 'C' || r[j].symbol[0] == 'F')
+                {
+                  x = min_distance(r[idj].x - r[idi1].x, L[0]);
+                  y = min_distance(r[idj].y - r[idi1].y, L[1]);
+                  z = min_distance(r[idj].z - r[idi1].z, L[2]); 
+                  rij1 = mindis(x,y,z,L);
+
+                  x = min_distance(r[idj].x - r[idi2].x, L[0]);
+                  y = min_distance(r[idj].y - r[idi2].y, L[1]);
+                  z = min_distance(r[idj].z - r[idi2].z, L[2]); 
+                  rij2 = mindis(x,y,z,L); 
+                  if( (rij1 < 4.2 && rij1 > 3.0) || (rij2 < 4.2 && rij2 > 3.0))
+                    {
+                      hbond_anion2 += 1;
+                    }      
+                }
+
               if(i != j  && r[j].symbol[0] == 'O' && r[j+1].symbol[0] == 'H' && r[j+2].symbol[0] == 'H')
                 {
                   x = min_distance(r[idj].x - r[idi].x, L[0]);
@@ -150,7 +184,7 @@ void PrintKEnCosine(vector<Atom> &r, uint nsteps, uint natoms, const vector<floa
                 }
             }
 
-          /*counting */
+          /*counting first solvation shell*/
           count += 1;
           if(hbond_cation == 0 && hbond_anion == 0)
             {
@@ -172,6 +206,17 @@ void PrintKEnCosine(vector<Atom> &r, uint nsteps, uint natoms, const vector<floa
           if(hbond_cation > 0 || hbond_anion > 0  || (hbond_cation + hbond_anion) > 0 )
             {
               count_ions += 1; 
+            }
+
+
+          /*counting second solvation shell*/
+          if(hbond_cation2 == 0 && hbond_anion2 > 0)
+            {
+              count_anion2 += 1; 
+            }
+          if(hbond_cation2 > 0 && hbond_anion2 == 0)
+            {
+              count_cation2 += 1; 
             }
 
           if(hbond_oxygen > 0 && hbond_cation == 0 && hbond_anion == 0)
@@ -215,6 +260,7 @@ void PrintKEnCosine(vector<Atom> &r, uint nsteps, uint natoms, const vector<floa
               cosine[t]        += temp; 
               cosine2[t]       += pow(temp,2.0);
 
+              /*first solvation shell*/
               if(hbond_cation == 0 && hbond_anion == 0)
                 {
                   trans_KE_rem[t]  += temp1 ;
@@ -248,6 +294,21 @@ void PrintKEnCosine(vector<Atom> &r, uint nsteps, uint natoms, const vector<floa
                   cosine2_cation[t]   += pow(temp,2.0) ; 
                 }
 
+              /*second solvation shell*/
+              if(hbond_cation2 == 0 && hbond_anion2 > 0)
+                {
+                  trans_KE_anion2[t]  += temp1 ;
+                  total_KE_anion2[t]  += temp2 ;
+                  rot_KE_anion2[t]    += temp3 ;
+                }
+              else if(hbond_cation2 > 0 && hbond_anion2 == 0)
+                {
+                  trans_KE_cation2[t]  += temp1 ;
+                  total_KE_cation2[t]  += temp2 ;
+                  rot_KE_cation2[t]    += temp3 ;
+                }
+
+
               if(hbond_cation > 0 || hbond_anion > 0  || (hbond_cation + hbond_anion) > 0 )
                 {
                   trans_KE_ions[t]  += temp1 ;
@@ -275,6 +336,8 @@ void PrintKEnCosine(vector<Atom> &r, uint nsteps, uint natoms, const vector<floa
   if(count_both == 0)   {count_both = 1;}
   if(count_anion == 0)  {count_anion = 1;}
   if(count_cation == 0) {count_cation = 1;}
+  if(count_anion2 == 0)  {count_anion2 = 1;}
+  if(count_cation2 == 0) {count_cation2 = 1;}
   if(count_ions == 0)   {count_ions = 1;}
   if(count_oxygen == 0) {count_oxygen = 1;}
 
@@ -285,6 +348,8 @@ void PrintKEnCosine(vector<Atom> &r, uint nsteps, uint natoms, const vector<floa
       if(total_KE[t] == 0)        {total_KE[t]        = 1;}
       if(total_KE_cation[t] == 0) {total_KE_cation[t] = 1;}
       if(total_KE_anion[t] == 0)  {total_KE_anion[t]  = 1;}
+      if(total_KE_cation2[t] == 0) {total_KE_cation2[t] = 1;}
+      if(total_KE_anion2[t] == 0)  {total_KE_anion2[t]  = 1;}
       if(total_KE_both[t] == 0)   {total_KE_both[t]   = 1;}
       if(total_KE_ions[t] == 0)   {total_KE_ions[t]   = 1;}
       if(total_KE_rem[t] == 0)    {total_KE_rem[t]    = 1;}
@@ -293,6 +358,10 @@ void PrintKEnCosine(vector<Atom> &r, uint nsteps, uint natoms, const vector<floa
       outfile << t*dt << "  " << total_KE[t]       << "  " << trans_KE[t] / total_KE[t]               << "  " << rot_KE[t] / total_KE[t]               << "   " << 
                                 total_KE_cation[t] << "  " << trans_KE_cation[t] / total_KE_cation[t] << "  " << rot_KE_cation[t] / total_KE_cation[t] << "   " <<
                                 total_KE_anion[t]  << "  " << trans_KE_anion[t] / total_KE_anion[t]   << "  " << rot_KE_anion[t] / total_KE_anion[t]   << "   " <<
+
+                                total_KE_cation2[t] << "  " << trans_KE_cation2[t] / total_KE_cation2[t] << "  " << rot_KE_cation2[t] / total_KE_cation2[t] << "   " <<
+                                total_KE_anion2[t]  << "  " << trans_KE_anion2[t] / total_KE_anion2[t]   << "  " << rot_KE_anion2[t] / total_KE_anion2[t]   << "   " <<
+
                                 total_KE_both[t]   << "  " << trans_KE_both[t] / total_KE_both[t]     << "  " << rot_KE_both[t] / total_KE_both[t]     << "   " <<
                                 total_KE_ions[t]   << "  " << trans_KE_ions[t] / total_KE_ions[t]     << "  " << rot_KE_ions[t] / total_KE_ions[t]     << "   " <<
                                 total_KE_oxygen[t] << "  " << trans_KE_oxygen[t] / total_KE_oxygen[t] << "  " << rot_KE_oxygen[t] / total_KE_oxygen[t] << "   " <<
