@@ -106,6 +106,7 @@ void PrintKEnCosine(vector<Atom> &r, uint nsteps, uint natoms, const vector<floa
         {
 
           hbond_cation = 0, hbond_anion = 0, hbond_oxygen = 0;
+          hbond_cation2 = 0, hbond_anion2 = 0;
           for(uint j = 0;j < natoms;++j)
             { 
               uint idi = natoms*3500+i;  
