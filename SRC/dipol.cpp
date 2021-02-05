@@ -153,7 +153,7 @@ void Induced_polarisability(vector<Molecular> &mol, uint nsteps, uint nmol, cons
               b += mol[idi].PPol.zz + mol[idi].IPol.zz ; 
             }
           eps = a - b  ; 
-          if (abs(eps) < 0.000001)  { cout << t <<  "  " << iter << endl; iter = niter;}   
+          if (abs(eps) < 0.0000001)  { cout << t <<  "  " << iter << endl; iter = niter;}   
           if (iter == niter - 1)  { cout << "Frame " << t <<  " is not converged (polarisability) " << endl;  }                                 
         } 
     }

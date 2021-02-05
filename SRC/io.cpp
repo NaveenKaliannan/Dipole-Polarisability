@@ -183,8 +183,8 @@ void Print(vector<Atom> &r, uint nsteps, uint natoms, const vector<float> & L, v
                }
           }
 
-outfile <<  t * dt << " " <<  a   << " " <<  b  << " "  << c << "  " <<  (a-0.5*(b+c) )/nmol
-                          << " " <<  a1  << " " <<  b1 << " "  << c1 << "   " << (a1-0.5*(b1+c1)) /nmol
+outfile <<  t * dt << " " <<  a   << " " <<  b  << " "  << c << "  " //<<  (a-0.5*(b+c) )/nmol
+                          << " " <<  a1  << " " <<  b1 << " "  << c1 //<< "   " << (a1-0.5*(b1+c1)) /nmol
                           << " " <<  axy << " " << axz << " "  << ayz
                           << " " <<  ayx << " " << azx << " "  << azy  << endl;
 

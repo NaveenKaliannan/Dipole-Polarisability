@@ -8,7 +8,7 @@
 using namespace std;
 
 
-#define deltat 100
+#define deltat 1
 
 #define PI 3.14159265
 #define amu  1.66053906
@@ -66,6 +66,12 @@ struct Atom
   string atomtype;
   float charge;
   float atomicmass;
+
+  /*only for water*/
+  uint totalhbonds;
+  uint totaldonorhbonds;
+  uint totalacceptorhbonds;
+  float gamma_d, gamma_a;
 };
 
 
@@ -87,6 +93,12 @@ struct Molecular
 
   Vector TD;    // dipole (total) 
   Matrix TPol;  // Polarisability matrix  (total)
+
+  /*only for water*/
+  uint totalhbonds;
+  uint totaldonorhbonds;
+  uint totalacceptorhbonds;
+  float gamma_d, gamma_a;
 };
 
 

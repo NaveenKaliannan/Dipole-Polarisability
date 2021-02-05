@@ -13,9 +13,120 @@
 #include "../include/io.h"
 #include "../include/assign.h"
 #include "../include/pbc.h"
+#include "../include/velocity.h"
 
 
 using namespace std;
+
+void Assigncoordinationforpurewater(vector<Atom> &r, uint nsteps, uint natoms, const vector<float> & L, float dt)
+{
+  float x = 0, y = 0, z = 0, rij = 0;
+  uint idi, idi1, idi2, idj, idj1, idj2, donor_hbond = 0, acceptor_hbond = 0;
+
+  for(uint t = 0; t < nsteps; ++t )
+    { 
+      for(uint i = 0;i < natoms;++i)
+        {
+          idi = natoms*t+i; 
+          idi1 = natoms*t+i+1;          
+          idi2 = natoms*t+i+2;    
+          donor_hbond = 0; 
+          acceptor_hbond = 0;
+                
+          if(r[idi].symbol[0] == 'O' && r[idi+1].symbol[0] == 'H' && r[idi+2].symbol[0] == 'H') 
+            {
+              for(uint j = 0;j < natoms;++j)
+                { 
+                  idj = natoms*t+j; 
+                  idj1 = natoms*t+j+1;          
+                  idj2 = natoms*t+j+2;                  
+                  if(idi != idj  && r[idj].symbol[0] == 'O' && r[idj+1].symbol[0] == 'H' && r[idj+2].symbol[0] == 'H')
+                    {
+                      x = min_distance(r[idj].x - r[idi].x, L[0]);
+                      y = min_distance(r[idj].y - r[idi].y, L[1]);
+                      z = min_distance(r[idj].z - r[idi].z, L[2]); 
+                      rij = mindis(x,y,z,L); 
+
+                      if( rij < 3.5  && rij > 0 && ( angle_btwn_3points(r,idi,idi1,idj, L) < 30 || angle_btwn_3points(r,idi,idi2,idj, L) < 30) )
+                        {
+                          donor_hbond += 1;
+
+                        }      
+                      if( rij < 3.5  && rij > 0 && ( angle_btwn_3points(r,idj,idj1,idi, L) < 30 || angle_btwn_3points(r,idj,idj2,idi, L) < 30) )
+                        {
+                          acceptor_hbond += 1;
+                        } 
+                    }
+                }           
+              r[idi].totalhbonds = donor_hbond + acceptor_hbond; 
+              r[idi].totaldonorhbonds = donor_hbond; 
+              r[idi].totalacceptorhbonds = acceptor_hbond; 
+            }
+        }
+    }
+}
+
+
+void Assigngammaforpurewater(vector<Atom> &r, uint nsteps, uint natoms, const vector<float> & L, float dt)
+{
+  float x = 0, y = 0, z = 0, rij = 0;
+  uint idi, idi1, idi2, idj, idj1, idj2;
+  float drij1 = 0, drij2 = 0, arij1 = 0, arij2 = 0;
+
+  for(uint t = 0; t < nsteps; ++t )
+    { 
+      for(uint i = 0;i < natoms;++i)
+        {
+          idi = natoms*t+i; 
+          idi1 = natoms*t+i+1;          
+          idi2 = natoms*t+i+2; 
+          drij1 = 0, drij2 = 0, arij1 = 0, arij2 = 0;
+                
+          if(r[idi].symbol[0] == 'O' && r[idi+1].symbol[0] == 'H' && r[idi+2].symbol[0] == 'H' && r[idi].totalhbonds == 4 && r[idi].totaldonorhbonds == 2 && r[idi].totalacceptorhbonds == 2 ) 
+            {
+              for(uint j = 0;j < natoms;++j)
+                { 
+                  idj = natoms*t+j; 
+                  idj1 = natoms*t+j+1;          
+                  idj2 = natoms*t+j+2;                  
+                  if(idi != idj  && r[idj].symbol[0] == 'O' && r[idj+1].symbol[0] == 'H' && r[idj+2].symbol[0] == 'H')
+                    {
+                      x = min_distance(r[idj].x - r[idi].x, L[0]);
+                      y = min_distance(r[idj].y - r[idi].y, L[1]);
+                      z = min_distance(r[idj].z - r[idi].z, L[2]); 
+                      rij = mindis(x,y,z,L); 
+
+                      if( rij < 3.5  && rij > 0 &&  angle_btwn_3points(r,idi,idi1,idj, L) < 30 )
+                        {
+                          drij1 = rij;
+                        }    
+                      if( rij < 3.5  && rij > 0 &&  angle_btwn_3points(r,idi,idi2,idj, L) < 30 )
+                        {
+                          drij2 = rij;
+                        }  
+  
+                      if( rij < 3.5  && rij > 0 &&  (angle_btwn_3points(r,idj,idj1,idi, L) < 30 || angle_btwn_3points(r,idj,idj2,idi, L) < 30 ) )
+                        {
+                          if(arij1 == 0)
+                            {
+                              arij1 = rij;
+                            }
+                          else if(arij1 != 0)
+                            {
+                              arij2 = rij;
+                            }
+                        } 
+                    }
+                }           
+              r[idi].gamma_d = max(drij1, drij2) / min(drij1, drij2); 
+              r[idi].gamma_a = max(arij1, arij2) / min(arij1, arij2); 
+              /*AIMD gamma ratio value for asymmetry and symmetry environment is 1.16 and 1.02*/
+            }
+        }
+    }
+}
+
+
 
 void AssignAtomicMass(vector<Atom> &r, uint nsteps, uint natoms)
 {
@@ -384,6 +495,14 @@ void TransformAtomictoMolecular(vector<Atom> &r, uint nsteps,  uint natoms, cons
               mols.PPol.zy =  HH_z * HH_y * A_xx + wb_z * wb_y * A_yy + Pv_z * Pv_y * A_zz
                             + HH_z * wb_y * A_xy + HH_z * Pv_y * A_xz + wb_z * Pv_y * A_yz 
                             + wb_z * HH_y * A_yx + Pv_z * HH_y * A_zx + Pv_z * wb_y * A_zy ;
+
+              /*only for water*/
+              mols.totalhbonds  = r[id].totalhbonds ; 
+              mols.totaldonorhbonds  = r[id].totaldonorhbonds ; 
+              mols.totalacceptorhbonds  = r[id].totalacceptorhbonds ; 
+              mols.gamma_d  = r[id].gamma_d ; 
+              mols.gamma_a  = r[id].gamma_a ; 
+
               mol.push_back(mols);
             }
         }

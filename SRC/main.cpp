@@ -23,6 +23,7 @@
 #include "../include/molar.h"
 #include "../include/rdf.h"
 #include "../include/assign.h"
+#include "../include/birefriengence.h"
 
 using namespace std;
 
@@ -50,15 +51,30 @@ int main ( int argc, char** argv )
   vector<Molecular> mol ;
   vector<Vector> E (nsteps);
 
-  readtrajectory(r, nsteps, natoms, xyzfilename, L);
-  PrintKEnCosine(r, nsteps, natoms, L, dt, argv[9]);
+  readtrajectory_gro(r, nsteps, natoms, xyzfilename, L);
+  BringintoBox(r, nsteps, natoms, L);
+  Assigncoordinationforpurewater(r, nsteps, natoms, L, dt); 
+  Assigngammaforpurewater(r, nsteps, natoms, L, dt); 
+  computeatomicvelocity(r, nsteps, natoms, L, dt); 
   TransformAtomictoMolecular(r, nsteps, natoms, L, mol, nmol);
-  Induced_dipole(mol, nsteps, nmol, L, 500, E);
   Induced_polarisability(mol, nsteps, nmol, L, 500, E);
-  PrintOpticalBirefringence(mol, nsteps, nmol, L, dt, argv[10]);
-  Print(r, nsteps, natoms, L, mol, nmol, dt,  argv[11], "DIP-T");
-  Print(r, nsteps, natoms, L, mol, nmol, dt, "COM.xyz", "MOL");
 
+  /*printing birefriengence total, permanent and induced components*/
+  Print_birefriengenceT_purewater(mol, nsteps, nmol, L, dt, argv[10]);
+  Print_birefriengenceP_purewater(mol, nsteps, nmol, L, dt, argv[10]);
+  Print_birefriengenceI_purewater(mol, nsteps, nmol, L, dt, argv[10]);
+
+  /*printing cosine and decomposed translation and roational KE*/
+  Print_KErot(r, nsteps, natoms, L, dt, argv[9]);
+  Print_KEtrans(r, nsteps, natoms, L, dt, argv[9]);
+  Print_Cosine2(r, nsteps, natoms, L, dt, argv[9]);
+  Print_Cosine(r, nsteps, natoms, L, dt, argv[9]);
+
+  /* assinging coordination number and asymmetry gamma parameter for pure water
+  Assigncoordinationforpurewater(r, nsteps, natoms, L, dt); 
+  Assigngammaforpurewater(r, nsteps, natoms, L, dt); 
+  */
+  
   /*Reading Trajectories
   readtrajectory(r, nsteps, natoms, xyzfilename, L); 
   readtrajectory_tinker(r, nsteps, natoms, xyzfilename, L); 
@@ -86,11 +102,21 @@ int main ( int argc, char** argv )
   Print(r, nsteps, natoms, L, mol, nmol, dt, "Permanet.data", "DIP-P");
   Print(r, nsteps, natoms, L, mol, nmol, dt, "Induced.data", "DIP-I");
   Print(r, nsteps, natoms, L, mol, nmol, dt, "Total.data", "DIP-T");
+
+
+  Print_birefriengenceT_purewater(mol, nsteps, nmol, L, dt, argv[10]);
+  Print_birefriengenceP_purewater(mol, nsteps, nmol, L, dt, argv[10]);
+  Print_birefriengenceI_purewater(mol, nsteps, nmol, L, dt, argv[10]);
   */
 
   /*Printing cosine, Kinetic energy, rdf
   Printrdf(r, nsteps, natoms, L, dt, argv[9]);
   PrintKEnCosine(r, nsteps, natoms, L, dt, argv[9]);
+
+  Print_KErot(r, nsteps, natoms, L, dt, argv[9]);
+  Print_KEtrans(r, nsteps, natoms, L, dt, argv[9]);
+  Print_Cosine2(r, nsteps, natoms, L, dt, argv[9]);
+  Print_Cosine(r, nsteps, natoms, L, dt, argv[9]);
   */
 
 

@@ -13,8 +13,9 @@ cmake .
 make
 
 
+./exe  ../$1 traj.psf 1 1 15.6404 384 128 ../field_atomicunit  
 ## mgcl2
-./exe ../$1 traj.psf 5000 1 16.099 414 148 ../field_atomicunit KEncosine OpticalBirefringence dipol
+##./exe ../$1 traj.psf 5000 1 16.099 414 148 ../field_atomicunit KEncosine OpticalBirefringence dipol
 
 
 
