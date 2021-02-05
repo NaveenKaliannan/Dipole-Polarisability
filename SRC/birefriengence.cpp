@@ -505,7 +505,7 @@ void Print_Cosine(vector<Atom> &r, uint nsteps, uint natoms, const vector<float>
           count += 1;
           if(r[idi].totalhbonds == 2)
             {
-              count_hbond2   += 1; 
+              count_hbond2   += 1;
             }
           if(r[idi].totalhbonds == 3)
             {
@@ -542,11 +542,11 @@ void Print_Cosine(vector<Atom> &r, uint nsteps, uint natoms, const vector<float>
           if(r[idi].totalhbonds == 4 && r[idi].totaldonorhbonds == 2 && r[idi].gamma_d > 1.16 && r[idi].gamma_a > 1.16)
             {
               count_hbond4_hgdhga   += 1; 
-            }
+            } 
 
           for(uint t = 1; t < nsteps-1;  t += deltat )
             {
-              uint id = natoms*t+i;
+              uint id = natoms*t+i; 
 
               /* cosine and cosine square theta */
               vec[0] =  mindis(r[id].x - r[id+1].x, r[id].y - r[id+1].y, r[id].z - r[id+1].z, L) * (r[id+1].x - r[id].x)
@@ -559,7 +559,7 @@ void Print_Cosine(vector<Atom> &r, uint nsteps, uint natoms, const vector<float>
                       + mindis(r[id].x - r[id+2].x, r[id].y - r[id+2].y, r[id].z - r[id+2].z, L) * (r[id+2].z - r[id].z) ;
 
               temp              =  vec[0] / pow(vec[0]*vec[0]+vec[1]*vec[1]+vec[2]*vec[2],0.5); 
-              total_OBF[t] += temp ;
+              total_OBF[t] += temp ; 
               if(r[idi].totalhbonds == 2)
                 {
                   total_OBF_hbond2[t]   += temp; 
@@ -619,7 +619,7 @@ void Print_Cosine(vector<Atom> &r, uint nsteps, uint natoms, const vector<float>
 
   /* Optical birefringence is in angstrom3 and normalized to per molecule */
   ofstream outfile(filename);
-  for(uint t = 0; t < nsteps; t += deltat)
+  for(uint t = 1; t < nsteps-1;  t += deltat )
     {
       outfile << t*dt << "  " << total_OBF[t]               / count        << "  " << 
                                  total_OBF_hbond2[t]        / count_hbond2 << "  " << 
@@ -782,7 +782,7 @@ void Print_Cosine2(vector<Atom> &r, uint nsteps, uint natoms, const vector<float
 
   /* Optical birefringence is in angstrom3 and normalized to per molecule */
   ofstream outfile(filename);
-  for(uint t = 0; t < nsteps; t += deltat)
+  for(uint t = 1; t < nsteps-1;  t += deltat )
     {
       outfile << t*dt << "  " << total_OBF[t]               / count        << "  " << 
                                  total_OBF_hbond2[t]        / count_hbond2 << "  " << 
@@ -950,7 +950,7 @@ void Print_KEtrans(vector<Atom> &r, uint nsteps, uint natoms, const vector<float
 
   /* Optical birefringence is in angstrom3 and normalized to per molecule */
   ofstream outfile(filename);
-  for(uint t = 0; t < nsteps; t += deltat)
+  for(uint t = 1; t < nsteps-1;  t += deltat )
     {
       outfile << t*dt << "  " << total_OBF[t]               / count        << "  " << 
                                  total_OBF_hbond2[t]        / count_hbond2 << "  " << 
@@ -1118,7 +1118,7 @@ void Print_KErot(vector<Atom> &r, uint nsteps, uint natoms, const vector<float> 
 
   /* Optical birefringence is in angstrom3 and normalized to per molecule */
   ofstream outfile(filename);
-  for(uint t = 0; t < nsteps; t += deltat)
+  for(uint t = 1; t < nsteps-1;  t += deltat )
     {
       outfile << t*dt << "  " << total_OBF[t]               / count        << "  " << 
                                  total_OBF_hbond2[t]        / count_hbond2 << "  " << 
