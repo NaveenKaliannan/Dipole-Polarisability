@@ -60,14 +60,14 @@ int main ( int argc, char** argv )
   //Induced_polarisability(mol, nsteps, nmol, L, 500, E);
 
   /*printing birefriengence total, permanent and induced components*/
-  //Print_birefriengenceT_purewater(mol, nsteps, nmol, L, dt, argv[9]);
-  //Print_birefriengenceP_purewater(mol, nsteps, nmol, L, dt, argv[10]);
-  //Print_birefriengenceI_purewater(mol, nsteps, nmol, L, dt, argv[11]);
+  Print_birefriengenceT_purewater(mol, nsteps, nmol, L, dt, argv[9]);
+  Print_birefriengenceP_purewater(mol, nsteps, nmol, L, dt, argv[10]);
+  Print_birefriengenceI_purewater(mol, nsteps, nmol, L, dt, argv[11]);
 
   /*printing cosine and decomposed translation and roational KE*/
-  //Print_KErot(r, nsteps, natoms, L, dt, argv[12]);
-  //Print_KEtrans(r, nsteps, natoms, L, dt, argv[13]);
-  //Print_Cosine2(r, nsteps, natoms, L, dt, argv[14]);
+  Print_KErot(r, nsteps, natoms, L, dt, argv[12]);
+  Print_KEtrans(r, nsteps, natoms, L, dt, argv[13]);
+  Print_Cosine2(r, nsteps, natoms, L, dt, argv[14]);
   Print_Cosine(r, nsteps, natoms, L, dt, argv[15]);
 
   /* assinging coordination number and asymmetry gamma parameter for pure water
