@@ -82,7 +82,7 @@ struct Molecular
   double vx,vy,vz; // center of mass velocity
   float q;      // Charge
   float m;      // mass
-  float sl;     //screening length thole
+  double sl;     //screening length thole
   float vdwr;     //vanderwall radii
 
   Vector PD;    // dipole (permanent) 

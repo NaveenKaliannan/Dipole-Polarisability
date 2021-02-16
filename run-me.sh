@@ -13,7 +13,20 @@ cmake .
 make
 
 
-./exe  ../$1 traj.psf 3600 1 15.6404 384 128 ../field_atomicunit  file1 file2 file3 file4 file5 file6 file7
+./exe ../$1 traj.psf 1 1 15.6404 7200 2400 ../field_atomicunit KEncosine OpticalBirefringence dipol
+##./exe ../$1 traj.psf 10000 1 16.099 3 3 ../field_atomicunit KEncosine OpticalBirefringence dipol
+
+
+declare -i n
+n=0
+for i in {1000..183000..400}
+do
+n+=1 
+##echo $n $i
+##./exe  ../../traj/water/blyp-d3-$i/OHH.xyz traj.psf 7000 1 15.6404 384 128 ../field_atomicunit  TBT$n.dat TBP$n.dat TBI$n.dat
+##taskset --cpu-list 1 ./exe ../../water/blyp-d3-$i/OHH.xyz traj.psf 10000 0.4 15.6404 384 128 ../field_atomicunit water$n cosine$n dipol$n
+done
+
 ## mgcl2
 ##./exe ../$1 traj.psf 5000 1 16.099 414 148 ../field_atomicunit KEncosine OpticalBirefringence dipol
 
@@ -26,13 +39,6 @@ make
 ##./exe ../naf.xyz traj.psf 2500 0.4 16.099 417 143 ../field_atomicunit water$n cosine$n
 ##./exe ../mgcl2.xyz traj.psf 2500 0.4 16.099 414 148 ../field_atomicunit water$n cosine$n
 
-declare -i n
-for i in {1000..183000..400}
-do
-n+=1 
-##echo $n $i
-##taskset --cpu-list 1 ./exe ../../water/blyp-d3-$i/OHH.xyz traj.psf 10000 0.4 15.6404 384 128 ../field_atomicunit water$n cosine$n dipol$n
-done
 
 
 

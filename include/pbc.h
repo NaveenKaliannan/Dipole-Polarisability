@@ -9,7 +9,7 @@
 using namespace std;
 
 void replica(const vector<float> & L, uint ncell, vector<float> & PB_L, vector<Vector_int> & imageno) ;
-void dist(vector<Molecular> &mol, uint idi, uint idj, const vector<float> & L,  vector<float> & PB_L, vector<Vector_int> & imageno, uint index,  float &x, float & y, float &z );
+void dist(vector<Molecular> &mol, uint idi, uint idj, const vector<float> & L,  vector<float> & PB_L, vector<Vector_int> & imageno, uint index,  double &x, double & y, double &z );
 void BringintoBox(vector<Atom> &r, uint nsteps,  uint natoms, const vector<float> & L) ; 
 
 #endif

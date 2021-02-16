@@ -92,6 +92,7 @@ void Print_birefriengenceT_purewater(vector<Molecular> &mol, uint nsteps, uint n
           for(uint t = 0; t < nsteps; t += deltat)
             {
               uint id = nmol*t+i;
+	      cout << t << endl;
               temp          =  (mol[id].PPol.xx + mol[id].IPol.xx) - 0.5 * (mol[id].PPol.yy + mol[id].IPol.yy + mol[id].PPol.zz + mol[id].IPol.zz )  ; 
               total_OBF[t] += temp ;
 
@@ -520,31 +521,31 @@ void Print_Cosine(vector<Atom> &r, uint nsteps, uint natoms, const vector<float>
             {
               count_hbond4   += 1; 
             }
-          if(mol[idi].totalhbonds == 4 && mol[idi].totaldonorhbonds == 2 && mol[idi].gamma_d < lgamma)
+          if(r[idi].totalhbonds == 4 && r[idi].totaldonorhbonds == 2 && r[idi].gamma_d < lgamma)
             {
               count_hbond4_lgd   += 1; 
             }
-          if(mol[idi].totalhbonds == 4 && mol[idi].totaldonorhbonds == 2 && mol[idi].gamma_d > hgamma)
+          if(r[idi].totalhbonds == 4 && r[idi].totaldonorhbonds == 2 && r[idi].gamma_d > hgamma)
             {
               count_hbond4_hgd   += 1; 
             }
-          if(mol[idi].totalhbonds == 4 && mol[idi].totaldonorhbonds == 2 && mol[idi].gamma_d < hgamma && mol[idi].gamma_d > lgamma)
+          if(r[idi].totalhbonds == 4 && r[idi].totaldonorhbonds == 2 && r[idi].gamma_d < hgamma && r[idi].gamma_d > lgamma)
             {
               count_hbond4_mgd   += 1; 
             }
-          if(mol[idi].totalhbonds == 4 && mol[idi].totaldonorhbonds == 2 && mol[idi].gamma_d < lgamma && mol[idi].gamma_a < lgamma)
+          if(r[idi].totalhbonds == 4 && r[idi].totaldonorhbonds == 2 && r[idi].gamma_d < lgamma && r[idi].gamma_a < lgamma)
             {
               count_hbond4_lgdlga   += 1; 
             }
-          if(mol[idi].totalhbonds == 4 && mol[idi].totaldonorhbonds == 2 && mol[idi].gamma_d > hgamma && mol[idi].gamma_a < lgamma)
+          if(r[idi].totalhbonds == 4 && r[idi].totaldonorhbonds == 2 && r[idi].gamma_d > hgamma && r[idi].gamma_a < lgamma)
             {
               count_hbond4_hgdlga   += 1; 
             }
-          if(mol[idi].totalhbonds == 4 && mol[idi].totaldonorhbonds == 2 && mol[idi].gamma_d < lgamma && mol[idi].gamma_a > hgamma)
+          if(r[idi].totalhbonds == 4 && r[idi].totaldonorhbonds == 2 && r[idi].gamma_d < lgamma && r[idi].gamma_a > hgamma)
             {
               count_hbond4_lgdhga   += 1; 
             }
-          if(mol[idi].totalhbonds == 4 && mol[idi].totaldonorhbonds == 2 && mol[idi].gamma_d > hgamma && mol[idi].gamma_a > hgamma)
+          if(r[idi].totalhbonds == 4 && r[idi].totaldonorhbonds == 2 && r[idi].gamma_d > hgamma && r[idi].gamma_a > hgamma)
             {
               count_hbond4_hgdhga   += 1; 
             } 
@@ -577,34 +578,34 @@ void Print_Cosine(vector<Atom> &r, uint nsteps, uint natoms, const vector<float>
                 {
                   total_OBF_hbond4[t]   += temp; 
                 }
-              if(mol[idi].totalhbonds == 4 && mol[idi].totaldonorhbonds == 2 && mol[idi].gamma_d < lgamma)
+              if(r[idi].totalhbonds == 4 && r[idi].totaldonorhbonds == 2 && r[idi].gamma_d < lgamma)
                 {
                   total_OBF_hbond4_lgd[t]   += temp; 
                 }
-              if(mol[idi].totalhbonds == 4 && mol[idi].totaldonorhbonds == 2 && mol[idi].gamma_d > hgamma)
+              if(r[idi].totalhbonds == 4 && r[idi].totaldonorhbonds == 2 && r[idi].gamma_d > hgamma)
                 {
                   total_OBF_hbond4_hgd[t]   += temp; 
                 }
-              if(mol[idi].totalhbonds == 4 && mol[idi].totaldonorhbonds == 2 && mol[idi].gamma_d < hgamma && mol[idi].gamma_d > lgamma)
+              if(r[idi].totalhbonds == 4 && r[idi].totaldonorhbonds == 2 && r[idi].gamma_d < hgamma && r[idi].gamma_d > lgamma)
                 {
                   total_OBF_hbond4_mgd[t]   += temp; 
                 }
-              if(mol[idi].totalhbonds == 4 && mol[idi].totaldonorhbonds == 2 && mol[idi].gamma_d < lgamma && mol[idi].gamma_a < lgamma)
+              if(r[idi].totalhbonds == 4 && r[idi].totaldonorhbonds == 2 && r[idi].gamma_d < lgamma && r[idi].gamma_a < lgamma)
                 {
                   total_OBF_hbond4_lgdlga[t]   += temp; 
                 }
-              if(mol[idi].totalhbonds == 4 && mol[idi].totaldonorhbonds == 2 && mol[idi].gamma_d > hgamma && mol[idi].gamma_a < lgamma)
+              if(r[idi].totalhbonds == 4 && r[idi].totaldonorhbonds == 2 && r[idi].gamma_d > hgamma && r[idi].gamma_a < lgamma)
                 {
                   total_OBF_hbond4_hgdlga[t]   += temp; 
                 }
-              if(mol[idi].totalhbonds == 4 && mol[idi].totaldonorhbonds == 2 && mol[idi].gamma_d < lgamma && mol[idi].gamma_a > hgamma)
+              if(r[idi].totalhbonds == 4 && r[idi].totaldonorhbonds == 2 && r[idi].gamma_d < lgamma && r[idi].gamma_a > hgamma)
                 {
                   total_OBF_hbond4_lgdhga[t]   += temp; 
                 }
-              if(mol[idi].totalhbonds == 4 && mol[idi].totaldonorhbonds == 2 && mol[idi].gamma_d > hgamma && mol[idi].gamma_a > hgamma)
+              if(r[idi].totalhbonds == 4 && r[idi].totaldonorhbonds == 2 && r[idi].gamma_d > hgamma && r[idi].gamma_a > hgamma)
                 {
                   total_OBF_hbond4_hgdhga[t]   += temp; 
-                }    
+                }     
             }
         }
     }
@@ -682,34 +683,34 @@ void Print_Cosine2(vector<Atom> &r, uint nsteps, uint natoms, const vector<float
             {
               count_hbond4   += 1; 
             }
-          if(mol[idi].totalhbonds == 4 && mol[idi].totaldonorhbonds == 2 && mol[idi].gamma_d < lgamma)
+          if(r[idi].totalhbonds == 4 && r[idi].totaldonorhbonds == 2 && r[idi].gamma_d < lgamma)
             {
               count_hbond4_lgd   += 1; 
             }
-          if(mol[idi].totalhbonds == 4 && mol[idi].totaldonorhbonds == 2 && mol[idi].gamma_d > hgamma)
+          if(r[idi].totalhbonds == 4 && r[idi].totaldonorhbonds == 2 && r[idi].gamma_d > hgamma)
             {
               count_hbond4_hgd   += 1; 
             }
-          if(mol[idi].totalhbonds == 4 && mol[idi].totaldonorhbonds == 2 && mol[idi].gamma_d < hgamma && mol[idi].gamma_d > lgamma)
+          if(r[idi].totalhbonds == 4 && r[idi].totaldonorhbonds == 2 && r[idi].gamma_d < hgamma && r[idi].gamma_d > lgamma)
             {
               count_hbond4_mgd   += 1; 
             }
-          if(mol[idi].totalhbonds == 4 && mol[idi].totaldonorhbonds == 2 && mol[idi].gamma_d < lgamma && mol[idi].gamma_a < lgamma)
+          if(r[idi].totalhbonds == 4 && r[idi].totaldonorhbonds == 2 && r[idi].gamma_d < lgamma && r[idi].gamma_a < lgamma)
             {
               count_hbond4_lgdlga   += 1; 
             }
-          if(mol[idi].totalhbonds == 4 && mol[idi].totaldonorhbonds == 2 && mol[idi].gamma_d > hgamma && mol[idi].gamma_a < lgamma)
+          if(r[idi].totalhbonds == 4 && r[idi].totaldonorhbonds == 2 && r[idi].gamma_d > hgamma && r[idi].gamma_a < lgamma)
             {
               count_hbond4_hgdlga   += 1; 
             }
-          if(mol[idi].totalhbonds == 4 && mol[idi].totaldonorhbonds == 2 && mol[idi].gamma_d < lgamma && mol[idi].gamma_a > hgamma)
+          if(r[idi].totalhbonds == 4 && r[idi].totaldonorhbonds == 2 && r[idi].gamma_d < lgamma && r[idi].gamma_a > hgamma)
             {
               count_hbond4_lgdhga   += 1; 
             }
-          if(mol[idi].totalhbonds == 4 && mol[idi].totaldonorhbonds == 2 && mol[idi].gamma_d > hgamma && mol[idi].gamma_a > hgamma)
+          if(r[idi].totalhbonds == 4 && r[idi].totaldonorhbonds == 2 && r[idi].gamma_d > hgamma && r[idi].gamma_a > hgamma)
             {
               count_hbond4_hgdhga   += 1; 
-            }
+            } 
 
           for(uint t = 1; t < nsteps-1;  t += deltat )
             {
@@ -741,31 +742,31 @@ void Print_Cosine2(vector<Atom> &r, uint nsteps, uint natoms, const vector<float
                 {
                   total_OBF_hbond4[t]   += temp; 
                 }
-              if(mol[idi].totalhbonds == 4 && mol[idi].totaldonorhbonds == 2 && mol[idi].gamma_d < lgamma)
+              if(r[idi].totalhbonds == 4 && r[idi].totaldonorhbonds == 2 && r[idi].gamma_d < lgamma)
                 {
                   total_OBF_hbond4_lgd[t]   += temp; 
                 }
-              if(mol[idi].totalhbonds == 4 && mol[idi].totaldonorhbonds == 2 && mol[idi].gamma_d > hgamma)
+              if(r[idi].totalhbonds == 4 && r[idi].totaldonorhbonds == 2 && r[idi].gamma_d > hgamma)
                 {
                   total_OBF_hbond4_hgd[t]   += temp; 
                 }
-              if(mol[idi].totalhbonds == 4 && mol[idi].totaldonorhbonds == 2 && mol[idi].gamma_d < hgamma && mol[idi].gamma_d > lgamma)
+              if(r[idi].totalhbonds == 4 && r[idi].totaldonorhbonds == 2 && r[idi].gamma_d < hgamma && r[idi].gamma_d > lgamma)
                 {
                   total_OBF_hbond4_mgd[t]   += temp; 
                 }
-              if(mol[idi].totalhbonds == 4 && mol[idi].totaldonorhbonds == 2 && mol[idi].gamma_d < lgamma && mol[idi].gamma_a < lgamma)
+              if(r[idi].totalhbonds == 4 && r[idi].totaldonorhbonds == 2 && r[idi].gamma_d < lgamma && r[idi].gamma_a < lgamma)
                 {
                   total_OBF_hbond4_lgdlga[t]   += temp; 
                 }
-              if(mol[idi].totalhbonds == 4 && mol[idi].totaldonorhbonds == 2 && mol[idi].gamma_d > hgamma && mol[idi].gamma_a < lgamma)
+              if(r[idi].totalhbonds == 4 && r[idi].totaldonorhbonds == 2 && r[idi].gamma_d > hgamma && r[idi].gamma_a < lgamma)
                 {
                   total_OBF_hbond4_hgdlga[t]   += temp; 
                 }
-              if(mol[idi].totalhbonds == 4 && mol[idi].totaldonorhbonds == 2 && mol[idi].gamma_d < lgamma && mol[idi].gamma_a > hgamma)
+              if(r[idi].totalhbonds == 4 && r[idi].totaldonorhbonds == 2 && r[idi].gamma_d < lgamma && r[idi].gamma_a > hgamma)
                 {
                   total_OBF_hbond4_lgdhga[t]   += temp; 
                 }
-              if(mol[idi].totalhbonds == 4 && mol[idi].totaldonorhbonds == 2 && mol[idi].gamma_d > hgamma && mol[idi].gamma_a > hgamma)
+              if(r[idi].totalhbonds == 4 && r[idi].totaldonorhbonds == 2 && r[idi].gamma_d > hgamma && r[idi].gamma_a > hgamma)
                 {
                   total_OBF_hbond4_hgdhga[t]   += temp; 
                 }   
@@ -848,34 +849,34 @@ void Print_KEtrans(vector<Atom> &r, uint nsteps, uint natoms, const vector<float
             {
               count_hbond4   += 1; 
             }
-          if(mol[idi].totalhbonds == 4 && mol[idi].totaldonorhbonds == 2 && mol[idi].gamma_d < lgamma)
+          if(r[idi].totalhbonds == 4 && r[idi].totaldonorhbonds == 2 && r[idi].gamma_d < lgamma)
             {
               count_hbond4_lgd   += 1; 
             }
-          if(mol[idi].totalhbonds == 4 && mol[idi].totaldonorhbonds == 2 && mol[idi].gamma_d > hgamma)
+          if(r[idi].totalhbonds == 4 && r[idi].totaldonorhbonds == 2 && r[idi].gamma_d > hgamma)
             {
               count_hbond4_hgd   += 1; 
             }
-          if(mol[idi].totalhbonds == 4 && mol[idi].totaldonorhbonds == 2 && mol[idi].gamma_d < hgamma && mol[idi].gamma_d > lgamma)
+          if(r[idi].totalhbonds == 4 && r[idi].totaldonorhbonds == 2 && r[idi].gamma_d < hgamma && r[idi].gamma_d > lgamma)
             {
               count_hbond4_mgd   += 1; 
             }
-          if(mol[idi].totalhbonds == 4 && mol[idi].totaldonorhbonds == 2 && mol[idi].gamma_d < lgamma && mol[idi].gamma_a < lgamma)
+          if(r[idi].totalhbonds == 4 && r[idi].totaldonorhbonds == 2 && r[idi].gamma_d < lgamma && r[idi].gamma_a < lgamma)
             {
               count_hbond4_lgdlga   += 1; 
             }
-          if(mol[idi].totalhbonds == 4 && mol[idi].totaldonorhbonds == 2 && mol[idi].gamma_d > hgamma && mol[idi].gamma_a < lgamma)
+          if(r[idi].totalhbonds == 4 && r[idi].totaldonorhbonds == 2 && r[idi].gamma_d > hgamma && r[idi].gamma_a < lgamma)
             {
               count_hbond4_hgdlga   += 1; 
             }
-          if(mol[idi].totalhbonds == 4 && mol[idi].totaldonorhbonds == 2 && mol[idi].gamma_d < lgamma && mol[idi].gamma_a > hgamma)
+          if(r[idi].totalhbonds == 4 && r[idi].totaldonorhbonds == 2 && r[idi].gamma_d < lgamma && r[idi].gamma_a > hgamma)
             {
               count_hbond4_lgdhga   += 1; 
             }
-          if(mol[idi].totalhbonds == 4 && mol[idi].totaldonorhbonds == 2 && mol[idi].gamma_d > hgamma && mol[idi].gamma_a > hgamma)
+          if(r[idi].totalhbonds == 4 && r[idi].totaldonorhbonds == 2 && r[idi].gamma_d > hgamma && r[idi].gamma_a > hgamma)
             {
               count_hbond4_hgdhga   += 1; 
-            }
+            } 
 
           for(uint t = 1; t < nsteps-1;  t += deltat )
             {
@@ -909,34 +910,34 @@ void Print_KEtrans(vector<Atom> &r, uint nsteps, uint natoms, const vector<float
                 {
                   total_OBF_hbond4[t]   += temp; 
                 }
-              if(mol[idi].totalhbonds == 4 && mol[idi].totaldonorhbonds == 2 && mol[idi].gamma_d < lgamma)
+              if(r[idi].totalhbonds == 4 && r[idi].totaldonorhbonds == 2 && r[idi].gamma_d < lgamma)
                 {
                   total_OBF_hbond4_lgd[t]   += temp; 
                 }
-              if(mol[idi].totalhbonds == 4 && mol[idi].totaldonorhbonds == 2 && mol[idi].gamma_d > hgamma)
+              if(r[idi].totalhbonds == 4 && r[idi].totaldonorhbonds == 2 && r[idi].gamma_d > hgamma)
                 {
                   total_OBF_hbond4_hgd[t]   += temp; 
                 }
-              if(mol[idi].totalhbonds == 4 && mol[idi].totaldonorhbonds == 2 && mol[idi].gamma_d < hgamma && mol[idi].gamma_d > lgamma)
+              if(r[idi].totalhbonds == 4 && r[idi].totaldonorhbonds == 2 && r[idi].gamma_d < hgamma && r[idi].gamma_d > lgamma)
                 {
                   total_OBF_hbond4_mgd[t]   += temp; 
                 }
-              if(mol[idi].totalhbonds == 4 && mol[idi].totaldonorhbonds == 2 && mol[idi].gamma_d < lgamma && mol[idi].gamma_a < lgamma)
+              if(r[idi].totalhbonds == 4 && r[idi].totaldonorhbonds == 2 && r[idi].gamma_d < lgamma && r[idi].gamma_a < lgamma)
                 {
                   total_OBF_hbond4_lgdlga[t]   += temp; 
                 }
-              if(mol[idi].totalhbonds == 4 && mol[idi].totaldonorhbonds == 2 && mol[idi].gamma_d > hgamma && mol[idi].gamma_a < lgamma)
+              if(r[idi].totalhbonds == 4 && r[idi].totaldonorhbonds == 2 && r[idi].gamma_d > hgamma && r[idi].gamma_a < lgamma)
                 {
                   total_OBF_hbond4_hgdlga[t]   += temp; 
                 }
-              if(mol[idi].totalhbonds == 4 && mol[idi].totaldonorhbonds == 2 && mol[idi].gamma_d < lgamma && mol[idi].gamma_a > hgamma)
+              if(r[idi].totalhbonds == 4 && r[idi].totaldonorhbonds == 2 && r[idi].gamma_d < lgamma && r[idi].gamma_a > hgamma)
                 {
                   total_OBF_hbond4_lgdhga[t]   += temp; 
                 }
-              if(mol[idi].totalhbonds == 4 && mol[idi].totaldonorhbonds == 2 && mol[idi].gamma_d > hgamma && mol[idi].gamma_a > hgamma)
+              if(r[idi].totalhbonds == 4 && r[idi].totaldonorhbonds == 2 && r[idi].gamma_d > hgamma && r[idi].gamma_a > hgamma)
                 {
                   total_OBF_hbond4_hgdhga[t]   += temp; 
-                }   
+                }    
             }
         }
     }
@@ -1016,34 +1017,34 @@ void Print_KErot(vector<Atom> &r, uint nsteps, uint natoms, const vector<float> 
             {
               count_hbond4   += 1; 
             }
-          if(mol[idi].totalhbonds == 4 && mol[idi].totaldonorhbonds == 2 && mol[idi].gamma_d < lgamma)
+          if(r[idi].totalhbonds == 4 && r[idi].totaldonorhbonds == 2 && r[idi].gamma_d < lgamma)
             {
               count_hbond4_lgd   += 1; 
             }
-          if(mol[idi].totalhbonds == 4 && mol[idi].totaldonorhbonds == 2 && mol[idi].gamma_d > hgamma)
+          if(r[idi].totalhbonds == 4 && r[idi].totaldonorhbonds == 2 && r[idi].gamma_d > hgamma)
             {
               count_hbond4_hgd   += 1; 
             }
-          if(mol[idi].totalhbonds == 4 && mol[idi].totaldonorhbonds == 2 && mol[idi].gamma_d < hgamma && mol[idi].gamma_d > lgamma)
+          if(r[idi].totalhbonds == 4 && r[idi].totaldonorhbonds == 2 && r[idi].gamma_d < hgamma && r[idi].gamma_d > lgamma)
             {
               count_hbond4_mgd   += 1; 
             }
-          if(mol[idi].totalhbonds == 4 && mol[idi].totaldonorhbonds == 2 && mol[idi].gamma_d < lgamma && mol[idi].gamma_a < lgamma)
+          if(r[idi].totalhbonds == 4 && r[idi].totaldonorhbonds == 2 && r[idi].gamma_d < lgamma && r[idi].gamma_a < lgamma)
             {
               count_hbond4_lgdlga   += 1; 
             }
-          if(mol[idi].totalhbonds == 4 && mol[idi].totaldonorhbonds == 2 && mol[idi].gamma_d > hgamma && mol[idi].gamma_a < lgamma)
+          if(r[idi].totalhbonds == 4 && r[idi].totaldonorhbonds == 2 && r[idi].gamma_d > hgamma && r[idi].gamma_a < lgamma)
             {
               count_hbond4_hgdlga   += 1; 
             }
-          if(mol[idi].totalhbonds == 4 && mol[idi].totaldonorhbonds == 2 && mol[idi].gamma_d < lgamma && mol[idi].gamma_a > hgamma)
+          if(r[idi].totalhbonds == 4 && r[idi].totaldonorhbonds == 2 && r[idi].gamma_d < lgamma && r[idi].gamma_a > hgamma)
             {
               count_hbond4_lgdhga   += 1; 
             }
-          if(mol[idi].totalhbonds == 4 && mol[idi].totaldonorhbonds == 2 && mol[idi].gamma_d > hgamma && mol[idi].gamma_a > hgamma)
+          if(r[idi].totalhbonds == 4 && r[idi].totaldonorhbonds == 2 && r[idi].gamma_d > hgamma && r[idi].gamma_a > hgamma)
             {
               count_hbond4_hgdhga   += 1; 
-            }
+            } 
 
           for(uint t = 1; t < nsteps-1;  t += deltat )
             {
@@ -1077,31 +1078,31 @@ void Print_KErot(vector<Atom> &r, uint nsteps, uint natoms, const vector<float> 
                 {
                   total_OBF_hbond4[t]   += temp; 
                 }
-              if(mol[idi].totalhbonds == 4 && mol[idi].totaldonorhbonds == 2 && mol[idi].gamma_d < lgamma)
+              if(r[idi].totalhbonds == 4 && r[idi].totaldonorhbonds == 2 && r[idi].gamma_d < lgamma)
                 {
                   total_OBF_hbond4_lgd[t]   += temp; 
                 }
-              if(mol[idi].totalhbonds == 4 && mol[idi].totaldonorhbonds == 2 && mol[idi].gamma_d > hgamma)
+              if(r[idi].totalhbonds == 4 && r[idi].totaldonorhbonds == 2 && r[idi].gamma_d > hgamma)
                 {
                   total_OBF_hbond4_hgd[t]   += temp; 
                 }
-              if(mol[idi].totalhbonds == 4 && mol[idi].totaldonorhbonds == 2 && mol[idi].gamma_d < hgamma && mol[idi].gamma_d > lgamma)
+              if(r[idi].totalhbonds == 4 && r[idi].totaldonorhbonds == 2 && r[idi].gamma_d < hgamma && r[idi].gamma_d > lgamma)
                 {
                   total_OBF_hbond4_mgd[t]   += temp; 
                 }
-              if(mol[idi].totalhbonds == 4 && mol[idi].totaldonorhbonds == 2 && mol[idi].gamma_d < lgamma && mol[idi].gamma_a < lgamma)
+              if(r[idi].totalhbonds == 4 && r[idi].totaldonorhbonds == 2 && r[idi].gamma_d < lgamma && r[idi].gamma_a < lgamma)
                 {
                   total_OBF_hbond4_lgdlga[t]   += temp; 
                 }
-              if(mol[idi].totalhbonds == 4 && mol[idi].totaldonorhbonds == 2 && mol[idi].gamma_d > hgamma && mol[idi].gamma_a < lgamma)
+              if(r[idi].totalhbonds == 4 && r[idi].totaldonorhbonds == 2 && r[idi].gamma_d > hgamma && r[idi].gamma_a < lgamma)
                 {
                   total_OBF_hbond4_hgdlga[t]   += temp; 
                 }
-              if(mol[idi].totalhbonds == 4 && mol[idi].totaldonorhbonds == 2 && mol[idi].gamma_d < lgamma && mol[idi].gamma_a > hgamma)
+              if(r[idi].totalhbonds == 4 && r[idi].totaldonorhbonds == 2 && r[idi].gamma_d < lgamma && r[idi].gamma_a > hgamma)
                 {
                   total_OBF_hbond4_lgdhga[t]   += temp; 
                 }
-              if(mol[idi].totalhbonds == 4 && mol[idi].totaldonorhbonds == 2 && mol[idi].gamma_d > hgamma && mol[idi].gamma_a > hgamma)
+              if(r[idi].totalhbonds == 4 && r[idi].totaldonorhbonds == 2 && r[idi].gamma_d > hgamma && r[idi].gamma_a > hgamma)
                 {
                   total_OBF_hbond4_hgdhga[t]   += temp; 
                 }   

@@ -16,7 +16,7 @@
 #include "../include/assign.h"
 
 #define ncell  1
-#define rcut  40.0
+#define rcut  7.5
 
 
 
@@ -25,7 +25,7 @@ using namespace std;
 void Induced_dipole(vector<Molecular> &mol, uint nsteps, uint nmol, const vector<float> & L, uint niter, vector<Vector> &E)
 {
   uint idi = 0, idj = 0;
-  float a = 0.0, sum = 0.0, b = 0.0, eps = 0.0;
+  double a = 0.0, sum = 0.0, b = 0.0, eps = 0.0;
   vector<Vector> Field (nmol);
   vector<Vector> rsd (nmol), zrsd (nmol), conj (nmol), vec(nmol);
 
@@ -121,7 +121,7 @@ void Induced_dipole(vector<Molecular> &mol, uint nsteps, uint nmol, const vector
 void Induced_polarisability(vector<Molecular> &mol, uint nsteps, uint nmol, const vector<float> & L, uint niter, vector<Vector> &E)
 {
   uint idi = 0, idj = 0;
-  float eps = 0.0, b = 0.0, a = 0.0;
+  double eps = 0.0, b = 0.0, a = 0.0;
   vector<Matrix> tensor (nmol), dummy_ipolar (nmol);
 
   for(uint t = 0; t < nsteps;t += deltat )
@@ -137,11 +137,11 @@ void Induced_polarisability(vector<Molecular> &mol, uint nsteps, uint nmol, cons
               idi = nmol*t+i;            
               a += mol[idi].PPol.xx + mol[idi].IPol.xx ; 
               a += mol[idi].PPol.yy + mol[idi].IPol.yy ;
-              a += mol[idi].PPol.zz + mol[idi].IPol.zz ; 
+              a += mol[idi].PPol.zz + mol[idi].IPol.zz ;  
             }            
           for(uint i = 0;i < nmol;++i)
             {
-              idi = nmol*t+i;            
+              idi = nmol*t+i;  
               Mat_Mat(mol[idi].PPol, tensor[i], mol[idi].IPol);
             }
           b = 0.0;
@@ -150,22 +150,23 @@ void Induced_polarisability(vector<Molecular> &mol, uint nsteps, uint nmol, cons
               idi = nmol*t+i;            
               b += mol[idi].PPol.xx + mol[idi].IPol.xx ; 
               b += mol[idi].PPol.yy + mol[idi].IPol.yy ;
-              b += mol[idi].PPol.zz + mol[idi].IPol.zz ; 
+              b += mol[idi].PPol.zz + mol[idi].IPol.zz ;  
             }
+
           eps = a - b  ; 
           if (abs(eps) < 0.0000001)  { cout << t <<  "  " << iter << endl; iter = niter;}   
           if (iter == niter - 1)  { cout << "Frame " << t <<  " is not converged (polarisability) " << endl;  }                                 
         } 
-    }
-      
+    }      
 }
+
 
 //Field Tensor due to permanent and induced polarisability
 void TensorduetoPolarisability(vector<Molecular> &mol, uint t, uint nmol, const vector<float> & L, vector <Matrix> & C)
 {
   uint idi = 0, idj = 0;
-  float x = 0, y = 0, z = 0, rij = 0;
-  float u = 0.0, ar = 0.0, st1 = 0.0, st2 = 0.0, r3 = 0.0, r5 = 0.0;
+  double x = 0, y = 0, z = 0, rij = 0;
+  double u = 0.0, ar = 0.0, st1 = 0.0, st2 = 0.0, r3 = 0.0, r5 = 0.0;
   float mean_alpha1 = 0, mean_alpha2 = 0;
   vector<float> PB_L(6,0.0);
   vector<Vector_int> imageno(pow(ncell,3));
@@ -184,18 +185,17 @@ void TensorduetoPolarisability(vector<Molecular> &mol, uint t, uint nmol, const 
             {
               dist(mol, idi, idj, L, PB_L, imageno, cell, x, y, z );
               rij = mindis(x,y,z,PB_L);       
-              if ((i != j && cell == 0 ) || (cell > 0 && rij < rcut))
+              if ((i != j && cell == 0 && rij < rcut ) || (cell > 0 && rij < rcut))
               {
-                //Thole damping function
-                mean_alpha1 = (mol[idi].PPol.xx + mol[idi].PPol.yy + mol[idi].PPol.zz ) / 3.0;
-                mean_alpha2 = (mol[idj].PPol.xx + mol[idj].PPol.yy + mol[idj].PPol.zz ) / 3.0;
-                u = rij / pow(mean_alpha1 * mean_alpha2, 0.16666);
-                ar  = mol[idj].sl * pow(u,3.0)  ;   
-                st1 = 1.0 - (1.0 + ar + (ar*ar/2.0)) * exp(-ar);     
-                st2 = 1.0 - (1.0 + ar + (ar*ar/2.0) + (pow(ar,3.0)/6.0)) * exp(-ar);                   
-                r3  = pow(rij, -3.0)  * (st1 + 0.0); 
-                r5  = 3.0 * pow(rij, -5.0)  * (st2 + 0.0);
-
+                  mean_alpha1 = (mol[idi].PPol.xx + mol[idi].PPol.yy + mol[idi].PPol.zz ) / 3.0;
+                  mean_alpha2 = (mol[idj].PPol.xx + mol[idj].PPol.yy + mol[idj].PPol.zz ) / 3.0;
+                  u = rij / pow(mean_alpha1 * mean_alpha2, 0.16666);
+                  ar  = mol[idj].sl * pow(u,3.0)  ;   
+                  ar = 2.4380 * rij ; 
+                  st1 = 1.0 - (1.0 + ar + (ar*ar/2.0)) * exp(-ar);     
+                  st2 = 1.0 - (1.0 + ar + (ar*ar/2.0) + (pow(ar,3.0)/6.0)) * exp(-ar);                   
+                  r3  = pow(rij, -3.0)  * (st1 + 0.0); 
+                  r5  = 3.0 * pow(rij, -5.0)  * (st2 + 0.0);
                 /*
                   without damping function 
                   r3  = pow(rij, -3.0)  ; 
@@ -258,6 +258,7 @@ void TensorduetoPolarisability(vector<Molecular> &mol, uint t, uint nmol, const 
 }
 
 
+
 // Field due to externally applied field
 void FieldduetoExternalField(vector<Molecular> &mol, uint t, uint nmol, const vector<Vector> &E,  vector <Vector> & Field)
 {
@@ -276,8 +277,8 @@ void FieldduetoExternalField(vector<Molecular> &mol, uint t, uint nmol, const ve
 void Fieldduetodipole(vector<Molecular> &mol, uint t, uint nmol, const vector<float> & L, vector <Vector> & Field)
 {
   uint idi = 0, idj = 0;
-  float x = 0, y = 0, z = 0, rij = 0;
-  float u = 0.0, ar = 0.0, st1 = 0.0, st2 = 0.0, r3 = 0.0, r5 = 0.0, pc = 0.0, pd = 0.0;
+  double x = 0, y = 0, z = 0, rij = 0;
+  double u = 0.0, ar = 0.0, st1 = 0.0, st2 = 0.0, r3 = 0.0, r5 = 0.0, pc = 0.0, pd = 0.0;
   float mean_alpha1 = 0, mean_alpha2 = 0;
   vector<float> PB_L(6,0.0);
   vector<Vector_int> imageno(pow(ncell,3));
@@ -297,7 +298,7 @@ void Fieldduetodipole(vector<Molecular> &mol, uint t, uint nmol, const vector<fl
             {
               dist(mol, idi, idj, L, PB_L, imageno, cell, x, y, z );
               rij = mindis(x,y,z,PB_L);       
-              if ((i != j && cell == 0 ) || (cell > 0 && rij < rcut))
+              if ((i != j && cell == 0 && rij < rcut  ) || (cell > 0 && rij < rcut))
               {
                 //Thole damping function
                 mean_alpha1 = (mol[idi].PPol.xx + mol[idi].PPol.yy + mol[idi].PPol.zz ) / 3.0;
@@ -307,7 +308,7 @@ void Fieldduetodipole(vector<Molecular> &mol, uint t, uint nmol, const vector<fl
                 st1 = 1.0 - (1.0 + ar + (ar*ar/2.0)) * exp(-ar);     
                 st2 = 1.0 - (1.0 + ar + (ar*ar/2.0) + (pow(ar,3.0)/6.0)) * exp(-ar);                   
                 r3  = pow(rij, -3.0)  * (st1 + 0.0); 
-                r5  = 3.0 * pow(rij, -5.0)  * (st2 + 0.0);
+                r5  = 3.0 * pow(rij, -5.0)  * (st2 + 0.0); 
 
                 /*
                   without damping function 
@@ -360,8 +361,8 @@ void Fieldduetodipole(vector<Molecular> &mol, uint t, uint nmol, const vector<fl
 void FieldduetoPermanentMultipoles(vector<Molecular> &mol, uint t, uint nmol, const vector<float> & L, vector <Vector> & Field)
 {
   uint idi = 0, idj = 0;
-  float x = 0, y = 0, z = 0, rij = 0;
-  float u = 0.0, ar = 0.0, st1 = 0.0, st2 = 0.0, r3 = 0.0, r5 = 0.0, pc = 0.0, pd = 0.0;
+  double x = 0, y = 0, z = 0, rij = 0;
+  double u = 0.0, ar = 0.0, st1 = 0.0, st2 = 0.0, r3 = 0.0, r5 = 0.0, pc = 0.0, pd = 0.0;
   float mean_alpha1 = 0, mean_alpha2 = 0;
   vector<float> PB_L(6,0.0);
   vector<Vector_int> imageno(pow(ncell,3));
@@ -379,7 +380,7 @@ void FieldduetoPermanentMultipoles(vector<Molecular> &mol, uint t, uint nmol, co
             {
               dist(mol, idi, idj, L, PB_L, imageno, cell, x, y, z );
               rij = mindis(x,y,z,PB_L);       
-              if ((i != j && cell == 0 ) || (cell > 0 && rij < rcut))
+              if ((i != j && cell == 0 && rij < rcut  ) || (cell > 0 && rij < rcut))
               {
                  /* vdw radii
                    1.  https://www.cgl.ucsf.edu/chimerax/docs/user/radii.html

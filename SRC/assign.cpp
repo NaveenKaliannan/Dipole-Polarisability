@@ -222,8 +222,10 @@ void parameters(Molecular &mol)
     {
       mol.q = 0.0000;
       mol.PPol.xx = 1.3227;mol.PPol.yy =  1.1191;mol.PPol.zz = 0.8808;
-      mol.PPol.xy = 0.0018;mol.PPol.xz = -0.0003;mol.PPol.yz = 0.0006;
-      mol.PPol.yx = 0.0016;mol.PPol.zx = -0.0002;mol.PPol.zy = 0.0006;
+      //mol.PPol.xy = 0.0018;mol.PPol.xz = -0.0003;mol.PPol.yz = 0.0006;
+      //mol.PPol.yx = 0.0016;mol.PPol.zx = -0.0002;mol.PPol.zy = 0.0006;
+      mol.PPol.xy = 0.0000;mol.PPol.xz = 0.0000;mol.PPol.yz = 0.0000;
+      mol.PPol.yx = 0.0000;mol.PPol.zx = 0.0000;mol.PPol.zy = 0.0000;
 
       mol.IPol.xx = 0.0000;mol.IPol.yy = 0.0000;mol.IPol.zz = 0.0000;
       mol.IPol.xy = 0.0000;mol.IPol.xz = 0.0000;mol.IPol.yz = 0.0000;
@@ -402,7 +404,7 @@ void TransformAtomictoMolecular(vector<Atom> &r, uint nsteps,  uint natoms, cons
           // H2O
           if(r[id].symbol[0] == 'O' && r[id+1].symbol[0] == 'H' && r[id+2].symbol[0] == 'H')
             { 
-              const float am_H = 1.00784 * amu, am_O = 15.999 * amu, am_H2O = 18.015 * amu ;
+              const double am_H = 1.00784 * amu, am_O = 15.999 * amu, am_H2O = (2 * am_H +  am_O);
               double wb_x = 0,wb_y = 0,wb_z = 0;           // bisector vector H2O
               double wb1_x = 0,wb1_y = 0,wb1_z = 0;        // bisector vector OH1
               double wb2_x = 0,wb2_y = 0,wb2_z = 0;        // bisector vector OH2

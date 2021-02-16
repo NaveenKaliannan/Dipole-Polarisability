@@ -17,15 +17,15 @@
 using namespace std;
 
 /*Calculates the distance between two atoms in different unit cell*/
-void dist(vector<Molecular> &mol, uint idi, uint idj, const vector<float> & L,  vector<float> & PB_L, vector<Vector_int> & imageno, uint index,  float &x, float & y, float &z )
+void dist(vector<Molecular> &mol, uint idi, uint idj, const vector<float> & L,  vector<float> & PB_L, vector<Vector_int> & imageno, uint index,  double &x, double & y, double &z )
 {
   x = min_distance(mol[idj].x - mol[idi].x, L[0]);
   y = min_distance(mol[idj].y - mol[idi].y, L[1]);
-  z = min_distance(mol[idj].z - mol[idi].z, L[2]);
+  z = min_distance(mol[idj].z - mol[idi].z, L[2]);  
 
   x = x + imageno[index].x * L[0];
   y = y + imageno[index].y * L[1];
-  z = z + imageno[index].z * L[2];
+  z = z + imageno[index].z * L[2]; 
 
   if(x > 0 && abs(x) > PB_L[3] ) { x  -= PB_L[0] ; }
   if(y > 0 && abs(y) > PB_L[4] ) { y  -= PB_L[1] ; }

@@ -43,6 +43,11 @@ int main ( int argc, char** argv )
   L[0] = atof(argv[5]);
   L[1] = atof(argv[5]);
   L[2] = atof(argv[5]);
+
+  L[0] = 45;
+  L[1] = 45;
+  L[2] = 80;
+
   natoms = atoi(argv[6]);
   nmol = atoi(argv[7]);
   fieldfilename = argv[8];
@@ -51,13 +56,13 @@ int main ( int argc, char** argv )
   vector<Molecular> mol ;
   vector<Vector> E (nsteps);
 
-  readtrajectory(r, nsteps, natoms, xyzfilename, L);
+  readtrajectory_gro(r, nsteps, natoms, xyzfilename, L);
   BringintoBox(r, nsteps, natoms, L);
   Assigncoordinationforpurewater(r, nsteps, natoms, L, dt); 
   Assigngammaforpurewater(r, nsteps, natoms, L, dt); 
   computeatomicvelocity(r, nsteps, natoms, L, dt); 
-  //TransformAtomictoMolecular(r, nsteps, natoms, L, mol, nmol);
-  //Induced_polarisability(mol, nsteps, nmol, L, 500, E);
+  TransformAtomictoMolecular(r, nsteps, natoms, L, mol, nmol);
+  Induced_polarisability(mol, nsteps, nmol, L, 500, E);
 
   /*printing birefriengence total, permanent and induced components*/
   Print_birefriengenceT_purewater(mol, nsteps, nmol, L, dt, argv[9]);
@@ -69,6 +74,13 @@ int main ( int argc, char** argv )
   Print_KEtrans(r, nsteps, natoms, L, dt, argv[13]);
   Print_Cosine2(r, nsteps, natoms, L, dt, argv[14]);
   Print_Cosine(r, nsteps, natoms, L, dt, argv[15]);
+
+
+  /*printing cosine and decomposed translation and roational KE*/
+  //Print_KErot(r, nsteps, natoms, L, dt, argv[12]);
+  //Print_KEtrans(r, nsteps, natoms, L, dt, argv[13]);
+  //Print_Cosine2(r, nsteps, natoms, L, dt, argv[14]);
+  //Print_Cosine(r, nsteps, natoms, L, dt, argv[15]);
 
   /* assinging coordination number and asymmetry gamma parameter for pure water
   Assigncoordinationforpurewater(r, nsteps, natoms, L, dt); 
