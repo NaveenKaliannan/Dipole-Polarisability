@@ -109,10 +109,10 @@ void PrintKEnCosine(vector<Atom> &r, uint nsteps, uint natoms, const vector<floa
           hbond_cation2 = 0, hbond_anion2 = 0;
           for(uint j = 0;j < natoms;++j)
             { 
-              uint idi = natoms*3500+i;  
-              uint idi1 = natoms*3500+i+1;          
-              uint idi2 = natoms*3500+i+2;                  
-              uint idj = natoms*3500+j;
+              uint idi = natoms*1+i;  
+              uint idi1 = natoms*1+i+1;          
+              uint idi2 = natoms*1+i+2;                  
+              uint idj = natoms*1+j;
  
               /*first solvation shell*/
               if(r[j].symbol[0] == 'M' || r[j].symbol[0] == 'N')
@@ -142,6 +142,22 @@ void PrintKEnCosine(vector<Atom> &r, uint nsteps, uint natoms, const vector<floa
                       hbond_anion += 1;
                     }      
                 }
+              if(r[j].symbol[0] == 'S')
+                {
+                  x = min_distance(r[idj].x - r[idi1].x, L[0]);
+                  y = min_distance(r[idj].y - r[idi1].y, L[1]);
+                  z = min_distance(r[idj].z - r[idi1].z, L[2]); 
+                  rij1 = mindis(x,y,z,L);
+
+                  x = min_distance(r[idj].x - r[idi2].x, L[0]);
+                  y = min_distance(r[idj].y - r[idi2].y, L[1]);
+                  z = min_distance(r[idj].z - r[idi2].z, L[2]); 
+                  rij2 = mindis(x,y,z,L); 
+                  if( (rij1 < 3.75 && rij1 > 0) || (rij2 < 3.75 && rij2 > 0))
+                    {
+                      hbond_anion += 1; 
+                    }      
+                }
 
               /*second solvation shell*/
               if(r[j].symbol[0] == 'M' || r[j].symbol[0] == 'N')
@@ -167,6 +183,22 @@ void PrintKEnCosine(vector<Atom> &r, uint nsteps, uint natoms, const vector<floa
                   z = min_distance(r[idj].z - r[idi2].z, L[2]); 
                   rij2 = mindis(x,y,z,L); 
                   if( (rij1 < 4.2 && rij1 > 3.0) || (rij2 < 4.2 && rij2 > 3.0))
+                    {
+                      hbond_anion2 += 1;
+                    }      
+                }
+              if(r[j].symbol[0] == 'S')
+                {
+                  x = min_distance(r[idj].x - r[idi1].x, L[0]);
+                  y = min_distance(r[idj].y - r[idi1].y, L[1]);
+                  z = min_distance(r[idj].z - r[idi1].z, L[2]); 
+                  rij1 = mindis(x,y,z,L);
+
+                  x = min_distance(r[idj].x - r[idi2].x, L[0]);
+                  y = min_distance(r[idj].y - r[idi2].y, L[1]);
+                  z = min_distance(r[idj].z - r[idi2].z, L[2]); 
+                  rij2 = mindis(x,y,z,L);  
+                  if( (rij1 < 6 && rij1 > 3.75) || (rij2 < 6 && rij2 > 3.75))
                     {
                       hbond_anion2 += 1;
                     }      

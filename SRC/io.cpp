@@ -183,7 +183,7 @@ void Print(vector<Atom> &r, uint nsteps, uint natoms, const vector<float> & L, v
                }
           }
 
-outfile <<  t * dt << " " <<  a   << " " <<  b  << " "  << c << "  " //<<  (a-0.5*(b+c) )/nmol
+outfile <<  t * dt  << " " <<  a   << " " <<  b  << " "  << c << "  " //<<  (a-0.5*(b+c) )/nmol
                           << " " <<  a1  << " " <<  b1 << " "  << c1 //<< "   " << (a1-0.5*(b1+c1)) /nmol
                           << " " <<  axy << " " << axz << " "  << ayz
                           << " " <<  ayx << " " << azx << " "  << azy  << endl;
@@ -200,7 +200,7 @@ outfile <<  t * dt << " " <<  a   << " " <<  b  << " "  << c << "  " //<<  (a-0.
             uint id = nmol*t+i;
              if(TYPE[4] == 'P')
                {
-                 outfile << mol[id].MOL <<  "  " << mol[id].PD.x << "  " << mol[id].PD.y << "  " << mol[id].PD.z << "  "<< mol[id].PPol.xx << "  " << mol[id].PPol.yy << "  " << mol[id].PPol.zz << endl;
+              //   outfile << mol[id].MOL <<  "  " << mol[id].PD.x << "  " << mol[id].PD.y << "  " << mol[id].PD.z << "  "<< mol[id].PPol.xx << "  " << mol[id].PPol.yy << "  " << mol[id].PPol.zz << endl;
                }
              else if(TYPE[4] == 'I')
                {
@@ -208,8 +208,8 @@ outfile <<  t * dt << " " <<  a   << " " <<  b  << " "  << c << "  " //<<  (a-0.
                }
              else if(TYPE[4] == 'T')
                {
-                 outfile << mol[id].MOL <<  "  " << mol[id].PD.x << "  " << mol[id].PD.y << "  " << mol[id].PD.z << "  "<< mol[id].PPol.xx << "  " << mol[id].PPol.yy << "  " << mol[id].PPol.zz << endl;
-                 outfile << mol[id].MOL <<  "  " << mol[id].PD.x + mol[id].ID.x << "  " << mol[id].PD.y + mol[id].ID.y << "  " << mol[id].PD.z + mol[id].ID.z << "  "<< mol[id].PPol.xx + mol[id].IPol.xx << "  " << mol[id].PPol.yy + mol[id].IPol.yy << "  " << mol[id].PPol.zz + mol[id].IPol.zz << endl;
+             //    outfile << mol[id].MOL <<  "  " << mol[id].PD.x << "  " << mol[id].PD.y << "  " << mol[id].PD.z << "  "<< mol[id].PPol.xx << "  " << mol[id].PPol.yy << "  " << mol[id].PPol.zz << endl;
+            //     outfile << mol[id].MOL <<  "  " << mol[id].PD.x + mol[id].ID.x << "  " << mol[id].PD.y + mol[id].ID.y << "  " << mol[id].PD.z + mol[id].ID.z << "  "<< mol[id].PPol.xx + mol[id].IPol.xx << "  " << mol[id].PPol.yy + mol[id].IPol.yy << "  " << mol[id].PPol.zz + mol[id].IPol.zz << endl;
                }
           }
       }
@@ -283,6 +283,23 @@ void Mat_Mat(const Matrix & A, const Matrix & B, Matrix & C)
   C.zx = A.zx * B.xx + A.zy * B.yx + A.zz * B.zx;
   C.zy = A.zx * B.xy + A.zy * B.yy + A.zz * B.zy;
   C.zz = A.zx * B.xz + A.zy * B.yz + A.zz * B.zz;
+}
+
+//https://www.somewhereville.com/2006/04/
+void Thirdranktensor_vec(const rank3tensor & A, const Vector & b, Matrix & C)
+{
+  C.xx = A.xxx * b.x + A.xxy * b.y + A.xxz * b.z;
+  C.xy = A.xyx * b.x + A.xyy * b.y + A.xyz * b.z;
+  C.xz = A.xzx * b.x + A.xzy * b.y + A.xzz * b.z;
+
+  C.yx = A.yxx * b.x + A.yxy * b.y + A.yxz * b.z;
+  C.yy = A.yyx * b.x + A.yyy * b.y + A.yyz * b.z;
+  C.yz = A.yzx * b.x + A.yzy * b.y + A.yzz * b.z;
+
+  C.zx = A.zxx * b.x + A.zxy * b.y + A.zxz * b.z;
+  C.zy = A.zyx * b.x + A.zyy * b.y + A.zyz * b.z;
+  C.zz = A.zzx * b.x + A.zzy * b.y + A.zzz * b.z;
+
 }
 
 

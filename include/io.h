@@ -8,7 +8,7 @@
 using namespace std;
 
 
-#define deltat 40
+#define deltat 1
 
 #define PI 3.14159265
 #define amu  1.66053906
@@ -17,11 +17,12 @@ using namespace std;
 #define polfieldtodebye   17.14131  // E-30 (angstrom3 to m3) * 5.142 E11 (field a.u. to V/m or J C-1 m-1) * 8.85418 E-12 * 4 * 3.14 (permentivty of free space C2 m-1 J-1) / 3.336E-30 (coversion from C.m to debye)
 #define polpointchargetodebye 4.8021  // E-30 (angstrom3 to m3) * 1.602E-19 (elementary charge C) / E-20 (angstrom2 to m2) * 3.336E-30 (coversion from C.m to debye)
 #define amu3toangstrom3 0.148035889  // pow(0.52917720859,3)
+#define amu5toangstrom5 0.041495944  // pow(0.52917720859,5) 1 au = 0.320662E-52 C3m3 J-2 = (0.320662E-52 C3m3 J-2 * 1.602E-19 C * E50 (conversion from m5 to angstrom5) (1/(4*4*3.14*3.14*8.85418 E-12*8.85418 E-12))) angstrom**5
 #define angstrom3toamu3  6.75511  // pow(0.52917720859,-3)
 #define pointchargedistancetodebye 4.8021  // E-10 (angstrom to m) * 1.602E-19 (elementary charge C) / 3.336E-30 (coversion from C.m to debye)  = 16.02E-30 / 3.336 E-30
 #define amutodebye  	 2.541161873  //  0.52917720859 * E-10 (angstrom to m) * 1.602E-19 (elementary charge C) / 3.336E-30 (coversion from C.m to debye)  = 16.02E-30 / 3.336 E-30
 
-#define amufieldtoangstrom  3.57637  //  5.14220652 E11 (field a.u. to V/m or J C-1 m-1) * 8.85418 E-12 * 4 * PI (permentivty of free space C2 m-1 J-1) = 57.2935 C m-2
+#define amufieldtoangstrom2  3.57637  //  5.14220652 E11 (field a.u. to V/m or J C-1 m-1) * 8.85418 E-12 * 4 * PI (permentivty of free space C2 m-1 J-1) = 57.2935 C m-2
                                               //  57.2935 E-20 C angstrom-2 / 16.02E-20 
 
 #define amufieldtokcalpermol 1185.8592256  // 5.14220652 E11 (field a.u. to V/m or J C-1 m-1) *  1.602E-19 C 
@@ -31,6 +32,15 @@ using namespace std;
 
 #define Kfactor 332.0637 // 8.98 E9 (permetivity of free space Nm2C-2 or JmC-2) * (1.602E-19 C) * (1.602E-19 C) / (A2)  
                         //= 8.98 E9 * sqr(1.602E-19) * 6.023E23 (to per mol) * E-3 (J to KJ) * E10 (m to angstrom)  KJ/(mol. Angstrom) = 1389.552 KJ per mol per angstrom * 0.239006 =  332.0637 Kcal per mol per angstrom
+
+struct rank3tensor
+{
+  double xxx,yyy,zzz,
+         xxy,xxz,yyx,yyz,zzx,zzy,
+         yxx,zxx,xyy,zyy,xzz,yzz,
+         xyx,xzx,yxy,yzy,zxz,zyz,
+         xyz,xzy,yxz,yzx,zxy,zyx;
+};
 
 struct Matrix
 {
@@ -94,6 +104,8 @@ struct Molecular
   Vector TD;    // dipole (total) 
   Matrix TPol;  // Polarisability matrix  (total)
 
+  rank3tensor hyperpol;
+
   /*only for water*/
   uint totalhbonds;
   uint totaldonorhbonds;
@@ -116,5 +128,6 @@ void init_Vector_zero(vector<Vector> & dipole, uint nsteps, uint nmol);
 
 void Mat_vec(const Matrix & A, const Vector & b, Vector & dummy);
 void Mat_Mat(const Matrix & A, const Matrix & B, Matrix & C) ;
+void Thirdranktensor_vec(const rank3tensor & A, const Vector & b, Matrix & C) ;
 
 #endif

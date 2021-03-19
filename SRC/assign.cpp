@@ -216,20 +216,94 @@ void parameters(Molecular &mol)
 
    The mulliken charges were used and parameterized with the help of CP2K program
 */
+      /*iso*/
+      mol.hyperpol.xxx = -0.0000;
+      mol.hyperpol.yyy = -0.0000;
+      mol.hyperpol.zzz = -0.0000;    
+      /*xxy*/
+      mol.hyperpol.xxy = -0.0000;
+      mol.hyperpol.yxx = -0.0000;
+      mol.hyperpol.xyx = -0.0000;
+      /*xxz*/
+      mol.hyperpol.xxz = -0.0000;
+      mol.hyperpol.zxx = -0.0000;
+      mol.hyperpol.xzx = -0.0000;
+      /*yyx*/
+      mol.hyperpol.yyx = -0.0000;
+      mol.hyperpol.xyy = -0.0000;
+      mol.hyperpol.yxy = -0.0000;
+      /*yyz*/
+      mol.hyperpol.yyz = -0.0000;
+      mol.hyperpol.zyy = -0.0000;
+      mol.hyperpol.yzy = -0.0000;
+      /*zzx*/
+      mol.hyperpol.zzx = -0.0000;
+      mol.hyperpol.xzz = -0.0000;
+      mol.hyperpol.zxz = -0.0000;
+      /*zzy*/
+      mol.hyperpol.zzy = -0.0000;
+      mol.hyperpol.yzz = -0.0000;
+      mol.hyperpol.zyz = -0.0000;
+      /*xyz*/
+      mol.hyperpol.xyz = -0.0000;
+      mol.hyperpol.xzy = -0.0000;
+      mol.hyperpol.yxz = -0.0000;
+      mol.hyperpol.yzx = -0.0000;
+      mol.hyperpol.zxy = -0.0000;
+      mol.hyperpol.zyx = -0.0000;
 
   // Atomic Polarisability [Angstrom3]
   if(mol.MOL[0] == 'H' && mol.MOL[1] == '2' && mol.MOL[2] == 'O')
     {
       mol.q = 0.0000;
-      mol.PPol.xx = 1.3227;mol.PPol.yy =  1.1191;mol.PPol.zz = 0.8808;
+      //mol.PPol.xx = 1.3227;mol.PPol.yy =  1.1191;mol.PPol.zz = 0.8808;
       //mol.PPol.xy = 0.0018;mol.PPol.xz = -0.0003;mol.PPol.yz = 0.0006;
       //mol.PPol.yx = 0.0016;mol.PPol.zx = -0.0002;mol.PPol.zy = 0.0006;
-      mol.PPol.xy = 0.0000;mol.PPol.xz = 0.0000;mol.PPol.yz = 0.0000;
-      mol.PPol.yx = 0.0000;mol.PPol.zx = 0.0000;mol.PPol.zy = 0.0000;
+
+      mol.PPol.xx = 1.244366;mol.PPol.yy =  1.067983;mol.PPol.zz = 0.817208;
+      mol.PPol.xy = 0.0000;mol.PPol.xz = -0.0000;mol.PPol.yz = 0.0000;
+      mol.PPol.yx = 0.0000;mol.PPol.zx = -0.0000;mol.PPol.zy = 0.0000;
+
 
       mol.IPol.xx = 0.0000;mol.IPol.yy = 0.0000;mol.IPol.zz = 0.0000;
       mol.IPol.xy = 0.0000;mol.IPol.xz = 0.0000;mol.IPol.yz = 0.0000;
       mol.IPol.yx = 0.0000;mol.IPol.zx = 0.0000;mol.IPol.zy = 0.0000; 
+
+      /*iso atomic unit -12.730*/
+      mol.hyperpol.xxx = -0.0000;
+      mol.hyperpol.yyy = -0.5282; 
+      mol.hyperpol.zzz = -0.0000;    
+      /*xxy  atomic unit -16.445 */
+      mol.hyperpol.xxy = -0.6824; 
+      mol.hyperpol.yxx = -0.6824;
+      mol.hyperpol.xyx = -0.6824;
+      /*xxz*/
+      mol.hyperpol.xxz = -0.0000;
+      mol.hyperpol.zxx = -0.0000;
+      mol.hyperpol.xzx = -0.0000;
+      /*yyx*/
+      mol.hyperpol.yyx = -0.0000;
+      mol.hyperpol.xyy = -0.0000;
+      mol.hyperpol.yxy = -0.0000;
+      /*yyz*/
+      mol.hyperpol.yyz = -0.0000;
+      mol.hyperpol.zyy = -0.0000;
+      mol.hyperpol.yzy = -0.0000;
+      /*zzx*/
+      mol.hyperpol.zzx = -0.0000;
+      mol.hyperpol.xzz = -0.0000;
+      mol.hyperpol.zxz = -0.0000;
+      /*zzy  atomic unit -5.5365 */
+      mol.hyperpol.zzy = -0.2297;
+      mol.hyperpol.yzz = -0.2297;
+      mol.hyperpol.zyz = -0.2297;
+      /*xyz*/
+      mol.hyperpol.xyz = -0.0000;
+      mol.hyperpol.xzy = -0.0000;
+      mol.hyperpol.yxz = -0.0000;
+      mol.hyperpol.yzx = -0.0000;
+      mol.hyperpol.zxy = -0.0000;
+      mol.hyperpol.zyx = -0.0000; 
     }
   else if(mol.MOL[0] == 'H')
     {
@@ -415,6 +489,14 @@ void TransformAtomictoMolecular(vector<Atom> &r, uint nsteps,  uint natoms, cons
               mols.y = ( r[id].y * am_O + r[id+1].y * am_H + r[id+2].y * am_H ) / am_H2O ;
               mols.z = ( r[id].z * am_O + r[id+1].z * am_H + r[id+2].z * am_H ) / am_H2O ;
 
+              /* input format for DALTON
+                cout << "BASIS \ncc-pVTZ\nH2O\n\n    2    0\n        8.    1 " << endl;
+                cout << "O " << (r[id].x - mols.x)  * 1.89 << "  " <<  (r[id].y - mols.y)  * 1.89 << "  " << (r[id].z - mols.z)  * 1.89 << endl;
+                cout << "        1.    2"<< endl;
+                cout << "H1 " << (r[id+1].x - mols.x) * 1.89  << "  " <<  (r[id+1].y - mols.y)  * 1.89  << "  " << (r[id+1].z - mols.z) * 1.89  << endl;
+                cout << "H2 " << (r[id+2].x - mols.x) * 1.89  << "  " <<  (r[id+2].y - mols.y)  * 1.89 << "  " << (r[id+2].z - mols.z) * 1.89 << endl;
+              */
+
               // water bisector vector, Minimum image convention was applied
               wb1_x = min_distance(r[id+1].x - r[id].x, L[0]) ;
               wb1_y = min_distance(r[id+1].y - r[id].y, L[1]) ;
@@ -464,7 +546,7 @@ void TransformAtomictoMolecular(vector<Atom> &r, uint nsteps,  uint natoms, cons
               mols.sl = 0.39 ; 
               mols.vdwr = 1.7 ; 
 
-              // Permanent polarisability [Angstrom]
+              // Permanent polarisability [Angstrom3]
               parameters(mols);
               float A_xx = mols.PPol.xx, A_yy = mols.PPol.yy, A_zz = mols.PPol.zz,
                     A_xy = mols.PPol.xy, A_xz = mols.PPol.xz, A_yz = mols.PPol.yz,
@@ -497,6 +579,275 @@ void TransformAtomictoMolecular(vector<Atom> &r, uint nsteps,  uint natoms, cons
               mols.PPol.zy =  HH_z * HH_y * A_xx + wb_z * wb_y * A_yy + Pv_z * Pv_y * A_zz
                             + HH_z * wb_y * A_xy + HH_z * Pv_y * A_xz + wb_z * Pv_y * A_yz 
                             + wb_z * HH_y * A_yx + Pv_z * HH_y * A_zx + Pv_z * wb_y * A_zy ;
+
+              // Permanent hyperpolarizability [Angstrom5]
+              float xxx = mols.hyperpol.xxx,
+                    yyy = mols.hyperpol.yyy,
+                    zzz = mols.hyperpol.zzz,   
+
+                    xxy = mols.hyperpol.xxy,
+                    yxx = mols.hyperpol.yxx,
+                    xyx = mols.hyperpol.xyx,
+
+                    xxz = mols.hyperpol.xxz,
+                    zxx = mols.hyperpol.zxx,
+                    xzx = mols.hyperpol.xzx,
+
+                    yyx = mols.hyperpol.yyx,
+                    xyy = mols.hyperpol.xyy,
+                    yxy = mols.hyperpol.yxy,
+      
+                    yyz = mols.hyperpol.yyz,
+                    zyy = mols.hyperpol.zyy,
+                    yzy = mols.hyperpol.yzy,
+      
+                    zzx = mols.hyperpol.zzx,
+                    xzz = mols.hyperpol.xzz,
+                    zxz = mols.hyperpol.zxz,
+      
+                    zzy = mols.hyperpol.zzy,
+                    yzz = mols.hyperpol.yzz,
+                    zyz = mols.hyperpol.zyz,
+      
+                    xyz = mols.hyperpol.xyz,
+                    xzy = mols.hyperpol.xzy,
+                    yxz = mols.hyperpol.yxz,
+                    yzx = mols.hyperpol.yzx,
+                    zxy = mols.hyperpol.zxy,
+                    zyx = mols.hyperpol.zyx;  
+
+
+              mols.hyperpol.xxx =  wb_x * wb_x * wb_x * yyy +
+                                   HH_x * HH_x * wb_x * xxy +
+                                   wb_x * HH_x * HH_x * yxx +
+                                   HH_x * wb_x * HH_x * xyx +
+                                   Pv_x * Pv_x * wb_x * zzy +
+                                   wb_x * Pv_x * Pv_x * yzz +
+                                   Pv_x * wb_x * Pv_x * zyz ;
+
+              mols.hyperpol.yyy =  wb_y * wb_y * wb_y * yyy +
+                                   HH_y * HH_y * wb_y * xxy +
+                                   wb_y * HH_y * HH_y * yxx +
+                                   HH_y * wb_y * HH_y * xyx +
+                                   Pv_y * Pv_y * wb_y * zzy +
+                                   wb_y * Pv_y * Pv_y * yzz +
+                                   Pv_y * wb_y * Pv_y * zyz ;
+
+              mols.hyperpol.zzz =  wb_z * wb_z * wb_z * yyy +
+                                   HH_z * HH_z * wb_z * xxy +
+                                   wb_z * HH_z * HH_z * yxx +
+                                   HH_z * wb_z * HH_z * xyx +
+                                   Pv_z * Pv_z * wb_z * zzy +
+                                   wb_z * Pv_z * Pv_z * yzz +
+                                   Pv_z * wb_z * Pv_z * zyz ;
+
+              mols.hyperpol.xxy =  wb_x * wb_x * wb_y * yyy +
+                                   HH_x * HH_x * wb_y * xxy +
+                                   wb_x * HH_x * HH_y * yxx +
+                                   HH_x * wb_x * HH_y * xyx +
+                                   Pv_x * Pv_x * wb_y * zzy +
+                                   wb_x * Pv_x * Pv_y * yzz +
+                                   Pv_x * wb_x * Pv_y * zyz ;
+
+              mols.hyperpol.yxx =  wb_y * wb_x * wb_x * yyy +
+                                   HH_y * HH_x * wb_x * xxy +
+                                   wb_y * HH_x * HH_x * yxx +
+                                   HH_y * wb_x * HH_x * xyx +
+                                   Pv_y * Pv_x * wb_x * zzy +
+                                   wb_y * Pv_x * Pv_x * yzz +
+                                   Pv_y * wb_x * Pv_x * zyz ;
+
+              mols.hyperpol.xyx =  wb_x * wb_y * wb_x * yyy +
+                                   HH_x * HH_y * wb_x * xxy +
+                                   wb_x * HH_y * HH_x * yxx +
+                                   HH_x * wb_y * HH_x * xyx +
+                                   Pv_x * Pv_y * wb_x * zzy +
+                                   wb_x * Pv_y * Pv_x * yzz +
+                                   Pv_x * wb_y * Pv_x * zyz ;
+
+              mols.hyperpol.xxz =  wb_x * wb_x * wb_z * yyy +
+                                   HH_x * HH_x * wb_z * xxy +
+                                   wb_x * HH_x * HH_z * yxx +
+                                   HH_x * wb_x * HH_z * xyx +
+                                   Pv_x * Pv_x * wb_z * zzy +
+                                   wb_x * Pv_x * Pv_z * yzz +
+                                   Pv_x * wb_x * Pv_z * zyz ;
+
+              mols.hyperpol.zxx =  wb_z * wb_x * wb_x * yyy +
+                                   HH_z * HH_x * wb_x * xxy +
+                                   wb_z * HH_x * HH_x * yxx +
+                                   HH_z * wb_x * HH_x * xyx +
+                                   Pv_z * Pv_x * wb_x * zzy +
+                                   wb_z * Pv_x * Pv_x * yzz +
+                                   Pv_z * wb_x * Pv_x * zyz ;
+
+              mols.hyperpol.xzx =  wb_x * wb_z * wb_x * yyy +
+                                   HH_x * HH_z * wb_x * xxy +
+                                   wb_x * HH_z * HH_x * yxx +
+                                   HH_x * wb_z * HH_x * xyx +
+                                   Pv_x * Pv_z * wb_x * zzy +
+                                   wb_x * Pv_z * Pv_x * yzz +
+                                   Pv_x * wb_z * Pv_x * zyz ;
+
+
+              mols.hyperpol.yyx =  wb_y * wb_y * wb_x * yyy +
+                                   HH_y * HH_y * wb_x * xxy +
+                                   wb_y * HH_y * HH_x * yxx +
+                                   HH_y * wb_y * HH_x * xyx +
+                                   Pv_y * Pv_y * wb_x * zzy +
+                                   wb_y * Pv_y * Pv_x * yzz +
+                                   Pv_y * wb_y * Pv_x * zyz ;
+
+              mols.hyperpol.xyy =  wb_x * wb_y * wb_y * yyy +
+                                   HH_x * HH_y * wb_y * xxy +
+                                   wb_x * HH_y * HH_y * yxx +
+                                   HH_x * wb_y * HH_y * xyx +
+                                   Pv_x * Pv_y * wb_y * zzy +
+                                   wb_x * Pv_y * Pv_y * yzz +
+                                   Pv_x * wb_y * Pv_y * zyz ;
+
+              mols.hyperpol.yxy =  wb_y * wb_x * wb_y * yyy +
+                                   HH_y * HH_x * wb_y * xxy +
+                                   wb_y * HH_x * HH_y * yxx +
+                                   HH_y * wb_x * HH_y * xyx +
+                                   Pv_y * Pv_x * wb_y * zzy +
+                                   wb_y * Pv_x * Pv_y * yzz +
+                                   Pv_y * wb_x * Pv_y * zyz ;
+
+              mols.hyperpol.yyz =  wb_y * wb_y * wb_z * yyy +
+                                   HH_y * HH_y * wb_z * xxy +
+                                   wb_y * HH_y * HH_z * yxx +
+                                   HH_y * wb_y * HH_z * xyx +
+                                   Pv_y * Pv_y * wb_z * zzy +
+                                   wb_y * Pv_y * Pv_z * yzz +
+                                   Pv_y * wb_y * Pv_z * zyz ;
+
+              mols.hyperpol.zyy =  wb_z * wb_y * wb_y * yyy +
+                                   HH_z * HH_y * wb_y * xxy +
+                                   wb_z * HH_y * HH_y * yxx +
+                                   HH_z * wb_y * HH_y * xyx +
+                                   Pv_z * Pv_y * wb_y * zzy +
+                                   wb_z * Pv_y * Pv_y * yzz +
+                                   Pv_z * wb_y * Pv_y * zyz ;
+
+              mols.hyperpol.yzy =  wb_y * wb_z * wb_y * yyy +
+                                   HH_y * HH_z * wb_y * xxy +
+                                   wb_y * HH_z * HH_y * yxx +
+                                   HH_y * wb_z * HH_y * xyx +
+                                   Pv_y * Pv_z * wb_y * zzy +
+                                   wb_y * Pv_z * Pv_y * yzz +
+                                   Pv_y * wb_z * Pv_y * zyz ;
+
+              mols.hyperpol.zzx =  wb_z * wb_z * wb_x * yyy +
+                                   HH_z * HH_z * wb_x * xxy +
+                                   wb_z * HH_z * HH_x * yxx +
+                                   HH_z * wb_z * HH_x * xyx +
+                                   Pv_z * Pv_z * wb_x * zzy +
+                                   wb_z * Pv_z * Pv_x * yzz +
+                                   Pv_z * wb_z * Pv_x * zyz ;
+
+              mols.hyperpol.xzz =  wb_x * wb_z * wb_z * yyy +
+                                   HH_x * HH_z * wb_z * xxy +
+                                   wb_x * HH_z * HH_z * yxx +
+                                   HH_x * wb_z * HH_z * xyx +
+                                   Pv_x * Pv_z * wb_z * zzy +
+                                   wb_x * Pv_z * Pv_z * yzz +
+                                   Pv_x * wb_z * Pv_z * zyz ;
+
+              mols.hyperpol.zxz =  wb_z * wb_x * wb_z * yyy +
+                                   HH_z * HH_x * wb_z * xxy +
+                                   wb_z * HH_x * HH_z * yxx +
+                                   HH_z * wb_x * HH_z * xyx +
+                                   Pv_z * Pv_x * wb_z * zzy +
+                                   wb_z * Pv_x * Pv_z * yzz +
+                                   Pv_z * wb_x * Pv_z * zyz ;
+
+              mols.hyperpol.zzy =  wb_z * wb_z * wb_y * yyy +
+                                   HH_z * HH_z * wb_y * xxy +
+                                   wb_z * HH_z * HH_y * yxx +
+                                   HH_z * wb_z * HH_y * xyx +
+                                   Pv_z * Pv_z * wb_y * zzy +
+                                   wb_z * Pv_z * Pv_y * yzz +
+                                   Pv_z * wb_z * Pv_y * zyz ;
+
+              mols.hyperpol.yzz =  wb_y * wb_z * wb_z * yyy +
+                                   HH_y * HH_z * wb_z * xxy +
+                                   wb_y * HH_z * HH_z * yxx +
+                                   HH_y * wb_z * HH_z * xyx +
+                                   Pv_y * Pv_z * wb_z * zzy +
+                                   wb_y * Pv_z * Pv_z * yzz +
+                                   Pv_y * wb_z * Pv_z * zyz ;
+
+              mols.hyperpol.zyz =  wb_z * wb_y * wb_z * yyy +
+                                   HH_z * HH_y * wb_z * xxy +
+                                   wb_z * HH_y * HH_z * yxx +
+                                   HH_z * wb_y * HH_z * xyx +
+                                   Pv_z * Pv_y * wb_z * zzy +
+                                   wb_z * Pv_y * Pv_z * yzz +
+                                   Pv_z * wb_y * Pv_z * zyz ;
+
+              mols.hyperpol.xyz =  wb_x * wb_y * wb_z * yyy +
+                                   HH_x * HH_y * wb_z * xxy +
+                                   wb_x * HH_y * HH_z * yxx +
+                                   HH_x * wb_y * HH_z * xyx +
+                                   Pv_x * Pv_y * wb_z * zzy +
+                                   wb_x * Pv_y * Pv_z * yzz +
+                                   Pv_x * wb_y * Pv_z * zyz ;
+
+              mols.hyperpol.xzy =  wb_x * wb_z * wb_y * yyy +
+                                   HH_x * HH_z * wb_y * xxy +
+                                   wb_x * HH_z * HH_y * yxx +
+                                   HH_x * wb_z * HH_y * xyx +
+                                   Pv_x * Pv_z * wb_y * zzy +
+                                   wb_x * Pv_z * Pv_y * yzz +
+                                   Pv_x * wb_z * Pv_y * zyz ;
+
+              mols.hyperpol.yxz =  wb_y * wb_x * wb_z * yyy +
+                                   HH_y * HH_x * wb_z * xxy +
+                                   wb_y * HH_x * HH_z * yxx +
+                                   HH_y * wb_x * HH_z * xyx +
+                                   Pv_y * Pv_x * wb_z * zzy +
+                                   wb_y * Pv_x * Pv_z * yzz +
+                                   Pv_y * wb_x * Pv_z * zyz ;
+
+              mols.hyperpol.yzx =  wb_y * wb_z * wb_x * yyy +
+                                   HH_y * HH_z * wb_x * xxy +
+                                   wb_y * HH_z * HH_x * yxx +
+                                   HH_y * wb_z * HH_x * xyx +
+                                   Pv_y * Pv_z * wb_x * zzy +
+                                   wb_y * Pv_z * Pv_x * yzz +
+                                   Pv_y * wb_z * Pv_x * zyz ;
+
+              mols.hyperpol.zxy =  wb_z * wb_x * wb_y * yyy +
+                                   HH_z * HH_x * wb_y * xxy +
+                                   wb_z * HH_x * HH_y * yxx +
+                                   HH_z * wb_x * HH_y * xyx +
+                                   Pv_z * Pv_x * wb_y * zzy +
+                                   wb_z * Pv_x * Pv_y * yzz +
+                                   Pv_z * wb_x * Pv_y * zyz ;
+
+              mols.hyperpol.zyx =  wb_z * wb_y * wb_x * yyy +
+                                   HH_z * HH_y * wb_x * xxy +
+                                   wb_z * HH_y * HH_x * yxx +
+                                   HH_z * wb_y * HH_x * xyx +
+                                   Pv_z * Pv_y * wb_x * zzy +
+                                   wb_z * Pv_y * Pv_x * yzz +
+                                   Pv_z * wb_y * Pv_x * zyz ;
+              /*
+              cout << " xxx = " <<  mols.hyperpol.xxx <<  " yyy = " <<  mols.hyperpol.yyy << " zzz = " <<  mols.hyperpol.zzz <<  "\n" 
+                   << " xxy = " <<  mols.hyperpol.xxy <<  " yxx = " <<  mols.hyperpol.yxx << " xyx = " <<  mols.hyperpol.xyx <<  "\n"
+                   << " xxz = " <<  mols.hyperpol.xxz <<  " zxx = " <<  mols.hyperpol.zxx << " xzx = " <<  mols.hyperpol.xzx <<  "\n"
+                   << " yyx = " <<  mols.hyperpol.yyx <<  " xyy = " <<  mols.hyperpol.xyy << " yxy = " <<  mols.hyperpol.yxy <<  "\n"
+                   << " yyz = " <<  mols.hyperpol.yyz <<  " zyy = " <<  mols.hyperpol.zyy << " yzy = " <<  mols.hyperpol.yzy <<  "\n"
+                   << " zzx = " <<  mols.hyperpol.zzx <<  " xzz = " <<  mols.hyperpol.xzz << " zxz = " <<  mols.hyperpol.zxz <<  "\n"
+                   << " zzy = " <<  mols.hyperpol.zzy <<  " yzz = " <<  mols.hyperpol.yzz << " zyz = " <<  mols.hyperpol.zyz <<  "\n"
+                   << " xyz = " <<  mols.hyperpol.xyz <<  " xzy = " <<  mols.hyperpol.xzy << " yxz = " <<  mols.hyperpol.yxz <<  "\n"
+                   << " yzx = " <<  mols.hyperpol.yzx <<  " zxy = " <<  mols.hyperpol.zxy << " zyx = " <<  mols.hyperpol.zyx <<  "\n" << endl;
+              
+              cout << t << " " << mols.hyperpol.xxx << " " << mols.hyperpol.yyy << " " << mols.hyperpol.zzz << " " << mols.hyperpol.xxy << " " << mols.hyperpol.xxz << "  " <<
+                           " " << mols.hyperpol.yyx << " " << mols.hyperpol.yyz << " " << mols.hyperpol.zzx << " " << mols.hyperpol.zzy << " " << mols.hyperpol.xyz << "  " << mols.hyperpol.yzx <<  endl;
+
+              */
 
               /*only for water*/
               mols.totalhbonds  = r[id].totalhbonds ; 

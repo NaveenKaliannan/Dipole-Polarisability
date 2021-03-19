@@ -123,14 +123,33 @@ void Induced_polarisability(vector<Molecular> &mol, uint nsteps, uint nmol, cons
   uint idi = 0, idj = 0;
   double eps = 0.0, b = 0.0, a = 0.0;
   vector<Matrix> tensor (nmol), dummy_ipolar (nmol);
+  vector<Vector> Field (nmol);
 
   for(uint t = 0; t < nsteps;t += deltat )
     {
+      TensorduetoExternalField(mol, t, nmol, E,  Field);
+      for(uint i = 0;i < nmol;++i)
+        {
+          idi = nmol*t+i;  
+          Thirdranktensor_vec(mol[idi].hyperpol, Field[i], mol[idi].IPol );
+        }
+cout << "without field " << endl;
+        cout << mol[idi].PPol.xx << "  " << mol[idi].PPol.xy << "  " << mol[idi].PPol.xz << " \n" <<
+                mol[idi].PPol.yx << "  " << mol[idi].PPol.yy << "  " << mol[idi].PPol.yz << " \n" <<
+                mol[idi].PPol.zx << "  " << mol[idi].PPol.zy << "  " << mol[idi].PPol.zz << endl;
+cout << "with field " << endl;
+        cout << mol[idi].PPol.xx + mol[idi].IPol.xx << "  " << mol[idi].PPol.xy + mol[idi].IPol.xy << "  " << mol[idi].PPol.xz + mol[idi].IPol.xz << " \n" <<
+                mol[idi].PPol.yx + mol[idi].IPol.yx << "  " << mol[idi].PPol.yy + mol[idi].IPol.yy << "  " << mol[idi].PPol.yz + mol[idi].IPol.yz << " \n" <<
+                mol[idi].PPol.zx + mol[idi].IPol.zx << "  " << mol[idi].PPol.zy + mol[idi].IPol.zy << "  " << mol[idi].PPol.zz + mol[idi].IPol.zz << endl;  
+
+
+
+
+
       // computing the induced polarisability via self-consistent field (scf)
       for(uint iter = 0;iter < niter;++iter)
         {
           TensorduetoPolarisability(mol, t, nmol, L, tensor);
-
           a = 0.0;
           for(uint i = 0;i < nmol;++i)
             {
@@ -156,8 +175,25 @@ void Induced_polarisability(vector<Molecular> &mol, uint nsteps, uint nmol, cons
           eps = a - b  ; 
           if (abs(eps) < 0.0000001)  { cout << t <<  "  " << iter << endl; iter = niter;}   
           if (iter == niter - 1)  { cout << "Frame " << t <<  " is not converged (polarisability) " << endl;  }                                 
-        } 
+        }
+
+ 
     }      
+}
+
+
+
+// Tensor due to externally applied field
+void TensorduetoExternalField(vector<Molecular> &mol, uint t, uint nmol, const vector<Vector> &E,  vector <Vector> & Field)
+{
+  uint idi = 0;
+  for(uint i = 0;i < nmol;++i)
+    {
+      idi = nmol*t+i;  
+      Field[i].x += amufieldtoangstrom2 * E[t].x ;
+      Field[i].y += amufieldtoangstrom2 * E[t].y ;
+      Field[i].z += amufieldtoangstrom2 * E[t].z ;
+    }
 }
 
 
@@ -271,6 +307,7 @@ void FieldduetoExternalField(vector<Molecular> &mol, uint t, uint nmol, const ve
       Field[i].z += polfieldtodebye * E[t].z ;
     }
 }
+
 
 
 //Field due to induced dipoles
