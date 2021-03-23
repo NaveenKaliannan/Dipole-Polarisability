@@ -288,18 +288,17 @@ void Mat_Mat(const Matrix & A, const Matrix & B, Matrix & C)
 //https://www.somewhereville.com/2006/04/
 void Thirdranktensor_vec(const rank3tensor & A, const Vector & b, Matrix & C)
 {
-  C.xx = A.xxx * b.x + A.xxy * b.y + A.xxz * b.z;
-  C.xy = A.xyx * b.x + A.xyy * b.y + A.xyz * b.z;
-  C.xz = A.xzx * b.x + A.xzy * b.y + A.xzz * b.z;
+  C.xx += A.xxx * b.x + A.xxy * b.y + A.xxz * b.z;
+  C.xy += A.xyx * b.x + A.xyy * b.y + A.xyz * b.z;
+  C.xz += A.xzx * b.x + A.xzy * b.y + A.xzz * b.z;
 
-  C.yx = A.yxx * b.x + A.yxy * b.y + A.yxz * b.z;
-  C.yy = A.yyx * b.x + A.yyy * b.y + A.yyz * b.z;
-  C.yz = A.yzx * b.x + A.yzy * b.y + A.yzz * b.z;
+  C.yx += A.yxx * b.x + A.yxy * b.y + A.yxz * b.z;
+  C.yy += A.yyx * b.x + A.yyy * b.y + A.yyz * b.z;
+  C.yz += A.yzx * b.x + A.yzy * b.y + A.yzz * b.z;
 
-  C.zx = A.zxx * b.x + A.zxy * b.y + A.zxz * b.z;
-  C.zy = A.zyx * b.x + A.zyy * b.y + A.zyz * b.z;
-  C.zz = A.zzx * b.x + A.zzy * b.y + A.zzz * b.z;
-
+  C.zx += A.zxx * b.x + A.zxy * b.y + A.zxz * b.z;
+  C.zy += A.zyx * b.x + A.zyy * b.y + A.zyz * b.z;
+  C.zz += A.zzx * b.x + A.zzy * b.y + A.zzz * b.z;
 }
 
 

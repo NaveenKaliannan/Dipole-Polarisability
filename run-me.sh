@@ -13,7 +13,7 @@ cmake .
 make
 
 
-./exe ../$1 traj.psf 1 1 15.56 3 1 ../field_atomicunit KEncosine OpticalBirefringence dipol
+./exe ../$1 traj.psf 10000 1 15.56  18 8 ../field_atomicunit KEncosine OpticalBirefringence dipol
 ##./exe ../$1 traj.psf 10000 1 16.099 3 3 ../field_atomicunit KEncosine OpticalBirefringence dipol
 
 

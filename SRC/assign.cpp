@@ -260,7 +260,7 @@ void parameters(Molecular &mol)
       //mol.PPol.xy = 0.0018;mol.PPol.xz = -0.0003;mol.PPol.yz = 0.0006;
       //mol.PPol.yx = 0.0016;mol.PPol.zx = -0.0002;mol.PPol.zy = 0.0006;
 
-      mol.PPol.xx = 1.244366;mol.PPol.yy =  1.067983;mol.PPol.zz = 0.817208;
+      mol.PPol.xx = 1.26215;mol.PPol.yy =  1.10312;mol.PPol.zz = 0.90777;
       mol.PPol.xy = 0.0000;mol.PPol.xz = -0.0000;mol.PPol.yz = 0.0000;
       mol.PPol.yx = 0.0000;mol.PPol.zx = -0.0000;mol.PPol.zy = 0.0000;
 
@@ -475,6 +475,20 @@ void TransformAtomictoMolecular(vector<Atom> &r, uint nsteps,  uint natoms, cons
               parameters(mols);
               mol.push_back(mols); 
             }
+          //SO4
+          if(r[id].symbol[0] == 'S' && r[id+1].symbol[0] == 'O' && r[id+2].symbol[0] == 'O' && r[id+3].symbol[0] == 'O')
+            {
+              const float am_S = 32.065 * amu, am_O = 16 * amu, am_SO4 = 96.06 * amu ;
+              mols.x = ( r[id-1].x * am_O + r[id].x * am_S + r[id+1].x * am_O + r[id+2].x * am_O + r[id+3].x * am_O ) / am_SO4 ;
+              mols.y = ( r[id-1].y * am_O + r[id].y * am_S + r[id+1].y * am_O + r[id+2].y * am_O + r[id+3].y * am_O ) / am_SO4 ;
+              mols.z = ( r[id-1].z * am_O + r[id].z * am_S + r[id+1].z * am_O + r[id+2].z * am_O + r[id+3].z * am_O ) / am_SO4 ;              
+              mols.MOL = "SO4";
+              mols.m = 96.06;
+              mols.sl = 0.3900 ;
+              mols.vdwr = 1.47 ;
+              parameters(mols);
+              mol.push_back(mols);
+            }
           // H2O
           if(r[id].symbol[0] == 'O' && r[id+1].symbol[0] == 'H' && r[id+2].symbol[0] == 'H')
             { 
@@ -489,13 +503,13 @@ void TransformAtomictoMolecular(vector<Atom> &r, uint nsteps,  uint natoms, cons
               mols.y = ( r[id].y * am_O + r[id+1].y * am_H + r[id+2].y * am_H ) / am_H2O ;
               mols.z = ( r[id].z * am_O + r[id+1].z * am_H + r[id+2].z * am_H ) / am_H2O ;
 
-              /* input format for DALTON
+               /*input format for DALTON 
                 cout << "BASIS \ncc-pVTZ\nH2O\n\n    2    0\n        8.    1 " << endl;
                 cout << "O " << (r[id].x - mols.x)  * 1.89 << "  " <<  (r[id].y - mols.y)  * 1.89 << "  " << (r[id].z - mols.z)  * 1.89 << endl;
                 cout << "        1.    2"<< endl;
                 cout << "H1 " << (r[id+1].x - mols.x) * 1.89  << "  " <<  (r[id+1].y - mols.y)  * 1.89  << "  " << (r[id+1].z - mols.z) * 1.89  << endl;
                 cout << "H2 " << (r[id+2].x - mols.x) * 1.89  << "  " <<  (r[id+2].y - mols.y)  * 1.89 << "  " << (r[id+2].z - mols.z) * 1.89 << endl;
-              */
+             */
 
               // water bisector vector, Minimum image convention was applied
               wb1_x = min_distance(r[id+1].x - r[id].x, L[0]) ;

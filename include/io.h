@@ -21,6 +21,7 @@ using namespace std;
 #define angstrom3toamu3  6.75511  // pow(0.52917720859,-3)
 #define pointchargedistancetodebye 4.8021  // E-10 (angstrom to m) * 1.602E-19 (elementary charge C) / 3.336E-30 (coversion from C.m to debye)  = 16.02E-30 / 3.336 E-30
 #define amutodebye  	 2.541161873  //  0.52917720859 * E-10 (angstrom to m) * 1.602E-19 (elementary charge C) / 3.336E-30 (coversion from C.m to debye)  = 16.02E-30 / 3.336 E-30
+#define debyetoangstrom 0.20823
 
 #define amufieldtoangstrom2  3.57637  //  5.14220652 E11 (field a.u. to V/m or J C-1 m-1) * 8.85418 E-12 * 4 * PI (permentivty of free space C2 m-1 J-1) = 57.2935 C m-2
                                               //  57.2935 E-20 C angstrom-2 / 16.02E-20 

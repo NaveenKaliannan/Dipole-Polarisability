@@ -16,7 +16,7 @@
 #include "../include/assign.h"
 
 #define ncell  1
-#define rcut  7.5
+#define rcut  7
 
 
 
@@ -127,25 +127,6 @@ void Induced_polarisability(vector<Molecular> &mol, uint nsteps, uint nmol, cons
 
   for(uint t = 0; t < nsteps;t += deltat )
     {
-      TensorduetoExternalField(mol, t, nmol, E,  Field);
-      for(uint i = 0;i < nmol;++i)
-        {
-          idi = nmol*t+i;  
-          Thirdranktensor_vec(mol[idi].hyperpol, Field[i], mol[idi].IPol );
-        }
-cout << "without field " << endl;
-        cout << mol[idi].PPol.xx << "  " << mol[idi].PPol.xy << "  " << mol[idi].PPol.xz << " \n" <<
-                mol[idi].PPol.yx << "  " << mol[idi].PPol.yy << "  " << mol[idi].PPol.yz << " \n" <<
-                mol[idi].PPol.zx << "  " << mol[idi].PPol.zy << "  " << mol[idi].PPol.zz << endl;
-cout << "with field " << endl;
-        cout << mol[idi].PPol.xx + mol[idi].IPol.xx << "  " << mol[idi].PPol.xy + mol[idi].IPol.xy << "  " << mol[idi].PPol.xz + mol[idi].IPol.xz << " \n" <<
-                mol[idi].PPol.yx + mol[idi].IPol.yx << "  " << mol[idi].PPol.yy + mol[idi].IPol.yy << "  " << mol[idi].PPol.yz + mol[idi].IPol.yz << " \n" <<
-                mol[idi].PPol.zx + mol[idi].IPol.zx << "  " << mol[idi].PPol.zy + mol[idi].IPol.zy << "  " << mol[idi].PPol.zz + mol[idi].IPol.zz << endl;  
-
-
-
-
-
       // computing the induced polarisability via self-consistent field (scf)
       for(uint iter = 0;iter < niter;++iter)
         {
@@ -155,8 +136,8 @@ cout << "with field " << endl;
             {
               idi = nmol*t+i;            
               a += mol[idi].PPol.xx + mol[idi].IPol.xx ; 
-              a += mol[idi].PPol.yy + mol[idi].IPol.yy ;
-              a += mol[idi].PPol.zz + mol[idi].IPol.zz ;  
+              a += mol[idi].PPol.yy + mol[idi].IPol.yy ; 
+              a += mol[idi].PPol.zz + mol[idi].IPol.zz ; 
             }            
           for(uint i = 0;i < nmol;++i)
             {
@@ -167,23 +148,39 @@ cout << "with field " << endl;
           for(uint i = 0;i < nmol;++i)
             {
               idi = nmol*t+i;            
-              b += mol[idi].PPol.xx + mol[idi].IPol.xx ; 
-              b += mol[idi].PPol.yy + mol[idi].IPol.yy ;
+              b += mol[idi].PPol.xx + mol[idi].IPol.xx ;   
+              b += mol[idi].PPol.yy + mol[idi].IPol.yy ; 
               b += mol[idi].PPol.zz + mol[idi].IPol.zz ;  
             }
 
           eps = a - b  ; 
-          if (abs(eps) < 0.0000001)  { cout << t <<  "  " << iter << endl; iter = niter;}   
+          if (abs(eps) < 0.000001)  { cout << t <<  "  " << iter << endl; iter = niter;}   
           if (iter == niter - 1)  { cout << "Frame " << t <<  " is not converged (polarisability) " << endl;  }                                 
         }
+    }      
+}
 
- 
+void Induced_polarisabilityduehyperpolarizability(vector<Molecular> &mol, uint nsteps, uint nmol, const vector<float> & L, uint niter, vector<Vector> &E)
+{
+  uint idi = 0, idj = 0;
+  double eps = 0.0, b = 0.0, a = 0.0;
+  vector<Vector> Field (nmol);
+
+  for(uint t = 0; t < nsteps;t += deltat )
+    {
+      TensorduetoPermanentMultipoles(mol, t, nmol, L, Field);
+      TensorduetoExternalField(mol, t, nmol, E,  Field);
+      for(uint i = 0;i < nmol;++i)
+        {
+          idi = nmol*t+i;  
+          Thirdranktensor_vec(mol[idi].hyperpol, Field[i], mol[idi].IPol );
+        }
     }      
 }
 
 
 
-// Tensor due to externally applied field
+// Tensor change due to externally applied field
 void TensorduetoExternalField(vector<Molecular> &mol, uint t, uint nmol, const vector<Vector> &E,  vector <Vector> & Field)
 {
   uint idi = 0;
@@ -195,6 +192,68 @@ void TensorduetoExternalField(vector<Molecular> &mol, uint t, uint nmol, const v
       Field[i].z += amufieldtoangstrom2 * E[t].z ;
     }
 }
+
+
+// Tensor change due to permanent multipoles [charge, dipole, quadrupole]
+void TensorduetoPermanentMultipoles(vector<Molecular> &mol, uint t, uint nmol, const vector<float> & L, vector <Vector> & Field)
+{
+  uint idi = 0, idj = 0;
+  double x = 0, y = 0, z = 0, rij = 0;
+  double u = 0.0, ar = 0.0, st1 = 0.0, st2 = 0.0, r3 = 0.0, r5 = 0.0, pc = 0.0, pd = 0.0;
+  float mean_alpha1 = 0, mean_alpha2 = 0;
+  vector<float> PB_L(6,0.0);
+  vector<Vector_int> imageno(pow(ncell,3));
+
+  Vector dipole;
+  Matrix Tij;
+  init_Vector_zero(Field, 1, nmol); 
+
+  replica(L, ncell, PB_L, imageno);
+  for(uint i = 0;i < nmol;++i)
+    {
+      idi = nmol*t+i;  
+      for(uint j = 0;j < nmol;++j)
+        {
+          idj = nmol*t+j;
+          for(uint cell = 0; cell < pow(ncell,3); ++cell)
+            {
+              dist(mol, idi, idj, L, PB_L, imageno, cell, x, y, z );
+              rij = mindis(x,y,z,PB_L);       
+              if ((i != j && cell == 0 && rij < rcut  ) || (cell > 0 && rij < rcut))
+              {               
+                r3  = pow(rij, -3.0)  ; 
+                r5  = 3.0 * pow(rij, -5.0) ;
+
+                pc =  debyetoangstrom * mol[idj].q * pointchargedistancetodebye;
+                pd =  debyetoangstrom * ((mol[idj].PD.x + mol[idj].ID.x ) * x + (mol[idj].PD.y + mol[idj].ID.y ) * y + (mol[idj].PD.z + mol[idj].ID.z ) * z ) ; 
+
+                Field[i].x += x * ( r3 * pc + r5 * pd ) ;
+                Field[i].y += y * ( r3 * pc + r5 * pd ) ;
+                Field[i].z += z * ( r3 * pc + r5 * pd ) ;
+
+                Tij.xx = -r3 + r5 * x * x ;
+                Tij.yy = -r3 + r5 * y * y ; 
+                Tij.zz = -r3 + r5 * z * z ;
+                Tij.xy =  0  + r5 * x * y ;  
+                Tij.xz =  0  + r5 * x * z ;
+                Tij.yz =  0  + r5 * y * z ; 
+                Tij.yx =  0  + r5 * y * x ;    
+                Tij.zx =  0  + r5 * z * x ;
+                Tij.zy =  0  + r5 * z * y ; 
+
+                dipole.x = debyetoangstrom * (mol[idj].PD.x + mol[idj].ID.x ); 
+                dipole.y = debyetoangstrom * (mol[idj].PD.y + mol[idj].ID.y ); 
+                dipole.z = debyetoangstrom * (mol[idj].PD.z + mol[idj].ID.z ); 
+
+                Field[i].x += Tij.xx * dipole.x + Tij.xy * dipole.y + Tij.xz * dipole.z;
+                Field[i].y += Tij.yx * dipole.x + Tij.yy * dipole.y + Tij.yz * dipole.z;
+                Field[i].z += Tij.zx * dipole.x + Tij.zy * dipole.y + Tij.zz * dipole.z;
+              }                          
+            }
+        }
+    }
+}
+
 
 
 //Field Tensor due to permanent and induced polarisability
@@ -223,15 +282,8 @@ void TensorduetoPolarisability(vector<Molecular> &mol, uint t, uint nmol, const 
               rij = mindis(x,y,z,PB_L);       
               if ((i != j && cell == 0 && rij < rcut ) || (cell > 0 && rij < rcut))
               {
-                  mean_alpha1 = (mol[idi].PPol.xx + mol[idi].PPol.yy + mol[idi].PPol.zz ) / 3.0;
-                  mean_alpha2 = (mol[idj].PPol.xx + mol[idj].PPol.yy + mol[idj].PPol.zz ) / 3.0;
-                  u = rij / pow(mean_alpha1 * mean_alpha2, 0.16666);
-                  ar  = mol[idj].sl * pow(u,3.0)  ;   
-                  ar = 2.4380 * rij ; 
-                  st1 = 1.0 - (1.0 + ar + (ar*ar/2.0)) * exp(-ar);     
-                  st2 = 1.0 - (1.0 + ar + (ar*ar/2.0) + (pow(ar,3.0)/6.0)) * exp(-ar);                   
-                  r3  = pow(rij, -3.0)  * (st1 + 0.0); 
-                  r5  = 3.0 * pow(rij, -5.0)  * (st2 + 0.0);
+                r3  = pow(rij, -3.0)  ; 
+                r5  = 3.0 * pow(rij, -5.0) ;
                 /*
                   without damping function 
                   r3  = pow(rij, -3.0)  ; 
@@ -269,10 +321,10 @@ void TensorduetoPolarisability(vector<Molecular> &mol, uint t, uint nmol, const 
                 polar.xx = mol[idj].PPol.xx + mol[idj].IPol.xx ;
                 polar.yy = mol[idj].PPol.yy + mol[idj].IPol.yy ; 
                 polar.zz = mol[idj].PPol.zz + mol[idj].IPol.zz ;
-                polar.xy = mol[idj].PPol.xy + mol[idj].IPol.xy  ;  
+                polar.xy = mol[idj].PPol.xy + mol[idj].IPol.xy ;  
                 polar.xz = mol[idj].PPol.xz + mol[idj].IPol.xz ;
+                polar.yx = mol[idj].PPol.yx + mol[idj].IPol.yx ;    
                 polar.yz = mol[idj].PPol.yz + mol[idj].IPol.yz ; 
-                polar.yx = mol[idj].PPol.yx + mol[idj].IPol.yx  ;    
                 polar.zx = mol[idj].PPol.zx + mol[idj].IPol.zx ;
                 polar.zy = mol[idj].PPol.zy + mol[idj].IPol.zy ;
 
@@ -337,15 +389,8 @@ void Fieldduetodipole(vector<Molecular> &mol, uint t, uint nmol, const vector<fl
               rij = mindis(x,y,z,PB_L);       
               if ((i != j && cell == 0 && rij < rcut  ) || (cell > 0 && rij < rcut))
               {
-                //Thole damping function
-                mean_alpha1 = (mol[idi].PPol.xx + mol[idi].PPol.yy + mol[idi].PPol.zz ) / 3.0;
-                mean_alpha2 = (mol[idj].PPol.xx + mol[idj].PPol.yy + mol[idj].PPol.zz ) / 3.0;
-                u = rij / pow(mean_alpha1 * mean_alpha2, 0.16666);
-                ar  = mol[idj].sl * pow(u,3.0)  ;   
-                st1 = 1.0 - (1.0 + ar + (ar*ar/2.0)) * exp(-ar);     
-                st2 = 1.0 - (1.0 + ar + (ar*ar/2.0) + (pow(ar,3.0)/6.0)) * exp(-ar);                   
-                r3  = pow(rij, -3.0)  * (st1 + 0.0); 
-                r5  = 3.0 * pow(rij, -5.0)  * (st2 + 0.0); 
+                r3  = pow(rij, -3.0)  ; 
+                r5  = 3.0 * pow(rij, -5.0) ;
 
                 /*
                   without damping function 
@@ -447,14 +492,8 @@ void FieldduetoPermanentMultipoles(vector<Molecular> &mol, uint t, uint nmol, co
                  */
 
                 //Thole damping function
-                mean_alpha1 = (mol[idi].PPol.xx + mol[idi].PPol.yy + mol[idi].PPol.zz ) / 3.0;
-                mean_alpha2 = (mol[idj].PPol.xx + mol[idj].PPol.yy + mol[idj].PPol.zz ) / 3.0;
-                u = rij / pow(mean_alpha1 * mean_alpha2, 0.16666);
-                ar  = mol[idj].sl * pow(u,3.0)  ;    
-                st1 = 1.0 - (1.0 + ar + (ar*ar/2.0)) * exp(-ar);     
-                st2 = 1.0 - (1.0 + ar + (ar*ar/2.0) + (pow(ar,3.0)/6.0)) * exp(-ar);                   
-                r3  = pow(rij, -3.0)  * (st1 + 0.0); 
-                r5  = 3.0 * pow(rij, -5.0)  * (st2 + 0.0);
+                r3  = pow(rij, -3.0)  ; 
+                r5  = 3.0 * pow(rij, -5.0) ;
 
                 /*
                   without damping function 
