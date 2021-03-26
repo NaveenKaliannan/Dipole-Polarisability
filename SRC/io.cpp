@@ -302,3 +302,18 @@ void Thirdranktensor_vec(const rank3tensor & A, const Vector & b, Matrix & C)
 }
 
 
+//https://csmbrannon.net/2015/08/10/fourth-order-tensor-tutorial-excerpts-voigt-and-mandel-representations-as-well-as-isotropy-topics/
+void Fourthranktensor_vec(const rank4tensor & A, const Vector & b, Matrix & C)
+{
+  double Exx, Eyy, Ezz;
+  Exx = b.x * b.x ;
+  Eyy = b.y * b.y ;
+  Ezz = b.z * b.z ;
+
+  C.xx += A.xxxx * Exx + A.xxyy * Eyy + A.xxzz * Ezz;
+  C.yy += A.yyxx * Exx + A.yyyy * Eyy + A.yyzz * Ezz;
+  C.zz += A.zzxx * Exx + A.zzyy * Eyy + A.zzzz * Ezz;
+
+}
+
+

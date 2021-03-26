@@ -174,6 +174,10 @@ void Induced_polarisabilityduehyperpolarizability(vector<Molecular> &mol, uint n
         {
           idi = nmol*t+i;  
           Thirdranktensor_vec(mol[idi].hyperpol, Field[i], mol[idi].IPol );
+cout << t << "  " << mol[idi].PPol.xx  + mol[idi].IPol.xx << "  " << mol[idi].PPol.yy  + mol[idi].IPol.yy << "  " << mol[idi].PPol.zz  + mol[idi].IPol.zz << "  " 
+                  << mol[idi].PPol.xy  + mol[idi].IPol.xy << "  " << mol[idi].PPol.xz  + mol[idi].IPol.xz << "  " << mol[idi].PPol.yx  + mol[idi].IPol.yx << "  " 
+                  << mol[idi].PPol.yz  + mol[idi].IPol.yz << "  " << mol[idi].PPol.zx  + mol[idi].IPol.zx << "  " << mol[idi].PPol.zy  + mol[idi].IPol.zy << endl;
+          
         }
     }      
 }

@@ -43,6 +43,14 @@ struct rank3tensor
          xyz,xzy,yxz,yzx,zxy,zyx;
 };
 
+
+struct rank4tensor
+{
+  double xxxx, xxyy, xxzz,
+         yyxx, yyyy, yyzz,
+         zzxx, zzyy, zzzz;
+};
+
 struct Matrix
 {
   double xx,xy,xz,
@@ -106,6 +114,7 @@ struct Molecular
   Matrix TPol;  // Polarisability matrix  (total)
 
   rank3tensor hyperpol;
+  rank4tensor shyperpol;
 
   /*only for water*/
   uint totalhbonds;
