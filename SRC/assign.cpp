@@ -270,7 +270,7 @@ void parameters(Molecular &mol)
       //mol.PPol.xy = 0.0018;mol.PPol.xz = -0.0003;mol.PPol.yz = 0.0006;
       //mol.PPol.yx = 0.0016;mol.PPol.zx = -0.0002;mol.PPol.zy = 0.0006;
 
-      mol.PPol.xx = 1.26215;mol.PPol.yy =  1.10312;mol.PPol.zz = 0.90777;
+      mol.PPol.xx = 1.244366;mol.PPol.yy =  1.067983;mol.PPol.zz = 0.817208;
       mol.PPol.xy = 0.0000;mol.PPol.xz = -0.0000;mol.PPol.yz = 0.0000;
       mol.PPol.yx = 0.0000;mol.PPol.zx = -0.0000;mol.PPol.zy = 0.0000;
 
@@ -315,15 +315,15 @@ void parameters(Molecular &mol)
       mol.hyperpol.zxy = -0.0000;
       mol.hyperpol.zyx = -0.0000; 
 
-      mol.shyperpol.xxxx = 269.8054;
-      mol.shyperpol.yyyy = 126.5123;
-      mol.shyperpol.zzzz = 8.0962;
-      mol.shyperpol.xxyy = 180.8921;
-      mol.shyperpol.xxzz = 93.0972;
-      mol.shyperpol.yyxx = 180.8921;
-      mol.shyperpol.yyzz = 35.4941;
-      mol.shyperpol.zzxx = 93.0972;
-      mol.shyperpol.zzyy = 35.4941;
+      mol.shyperpol.xxxx = 269.8054*0.01162004;
+      mol.shyperpol.yyyy = 126.5123*0.01162004;
+      mol.shyperpol.zzzz = 8.0962*0.01162004;
+      mol.shyperpol.xxyy = 180.8921*0.01162004;
+      mol.shyperpol.xxzz = 93.0972*0.01162004;
+      mol.shyperpol.yyxx = 180.8921*0.01162004;
+      mol.shyperpol.yyzz = 35.4941*0.01162004;
+      mol.shyperpol.zzxx = 93.0972*0.01162004;
+      mol.shyperpol.zzyy = 35.4941*0.01162004;
     }
   else if(mol.MOL[0] == 'H')
     {
@@ -1082,7 +1082,7 @@ void TransformAtomictoMolecular(vector<Atom> &r, uint nsteps,  uint natoms, cons
                                     Pv_z * wb_z * wb_y * Pv_y * zzyy +
                                     Pv_z * wb_z * Pv_y * wb_y * zzyy ;
 
-              cout << t+1 << " " << mols.shyperpol.xxxx << " " << mols.shyperpol.yyyy << "  " << mols.shyperpol.zzzz << "  " << mols.shyperpol.xxyy << "  " << mols.shyperpol.xxzz << "  " << mols.shyperpol.yyxx << "  " << mols.shyperpol.yyzz << "  " << mols.shyperpol.zzxx << "  " << mols.shyperpol.zzyy  << "  "  <<  endl;
+             // cout << t+1 << " " << mols.shyperpol.xxxx << " " << mols.shyperpol.yyyy << "  " << mols.shyperpol.zzzz << "  " << mols.shyperpol.xxyy << "  " << mols.shyperpol.xxzz << "  " << mols.shyperpol.yyxx << "  " << mols.shyperpol.yyzz << "  " << mols.shyperpol.zzxx << "  " << mols.shyperpol.zzyy  << "  "  <<  endl;
 
 
               //cout << t << "\n xxxx =  " << mols.shyperpol.xxxx << "\n yyyy =  " << mols.shyperpol.yyyy << "\n zzzz =  " << mols.shyperpol.zzzz << "\n xxyy =  " << mols.shyperpol.xxyy << "\n xxzz =  " << mols.shyperpol.xxzz << "\n yyxx =  " << mols.shyperpol.yyxx << "\n yyzz =  " << mols.shyperpol.yyzz << "\n zzxx =  " << mols.shyperpol.zzxx << "\n zzyy =  " << mols.shyperpol.zzyy  << "  "  <<  endl;

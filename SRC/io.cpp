@@ -306,9 +306,9 @@ void Thirdranktensor_vec(const rank3tensor & A, const Vector & b, Matrix & C)
 void Fourthranktensor_vec(const rank4tensor & A, const Vector & b, Matrix & C)
 {
   double Exx, Eyy, Ezz;
-  Exx = b.x * b.x ;
-  Eyy = b.y * b.y ;
-  Ezz = b.z * b.z ;
+  Exx = 0.5 * b.x * b.x ;
+  Eyy = 0.5 * b.y * b.y ;
+  Ezz = 0.5 * b.z * b.z ;
 
   C.xx += A.xxxx * Exx + A.xxyy * Eyy + A.xxzz * Ezz;
   C.yy += A.yyxx * Exx + A.yyyy * Eyy + A.yyzz * Ezz;

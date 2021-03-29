@@ -139,5 +139,6 @@ void init_Vector_zero(vector<Vector> & dipole, uint nsteps, uint nmol);
 void Mat_vec(const Matrix & A, const Vector & b, Vector & dummy);
 void Mat_Mat(const Matrix & A, const Matrix & B, Matrix & C) ;
 void Thirdranktensor_vec(const rank3tensor & A, const Vector & b, Matrix & C) ;
+void Fourthranktensor_vec(const rank4tensor & A, const Vector & b, Matrix & C);
 
 #endif
