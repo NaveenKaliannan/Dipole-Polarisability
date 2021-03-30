@@ -354,7 +354,8 @@ void parameters(Molecular &mol)
   else if( ( mol.MOL[0] == 'M' || mol.MOL[0] == 'm' ) && ( mol.MOL[1] == 'G' || mol.MOL[1] == 'g' ))
     {
       mol.q = +2;
-      mol.PPol.xx = 0.0800;mol.PPol.yy = 0.0800;mol.PPol.zz = 0.0800;
+      //mol.PPol.xx = 0.0800;mol.PPol.yy = 0.0800;mol.PPol.zz = 0.0800;
+      mol.PPol.xx = 0.041140;mol.PPol.yy = 0.041140;mol.PPol.zz = 0.041140;
       mol.PPol.xy = 0.0000;mol.PPol.xz = 0.0000;mol.PPol.yz = 0.0000;
       mol.PPol.yx = 0.0000;mol.PPol.zx = 0.0000;mol.PPol.zy = 0.0000;
       mol.PD.x    = 0.0000;mol.PD.y    = 0.0000;mol.PD.z    = 0.0000;
@@ -363,11 +364,23 @@ void parameters(Molecular &mol)
       mol.IPol.xy = 0.0000;mol.IPol.xz = 0.0000;mol.IPol.yz = 0.0000;
       mol.IPol.yx = 0.0000;mol.IPol.zx = 0.0000;mol.IPol.zy = 0.0000; 
       mol.ID.x    = 0.0000;mol.ID.y    = 0.0000;mol.ID.z    = 0.0000;
+
+      mol.shyperpol.xxxx = 0.9305*0.01162004;
+      mol.shyperpol.yyyy = 0.9305*0.01162004;
+      mol.shyperpol.zzzz = 0.9305*0.01162004;
+      mol.shyperpol.xxyy = 0.3102*0.01162004;
+      mol.shyperpol.xxzz = 0.3102*0.01162004;
+      mol.shyperpol.yyxx = 0.3102*0.01162004;
+      mol.shyperpol.yyzz = 0.3102*0.01162004;
+      mol.shyperpol.zzxx = 0.3102*0.01162004;
+      mol.shyperpol.zzyy = 0.3102*0.01162004;
+
     }
   else if( ( mol.MOL[0] == 'C' || mol.MOL[0] == 'c' ) && ( mol.MOL[1] == 'L' || mol.MOL[1] == 'l' ))
     {
       mol.q = -1;
-      mol.PPol.xx = 4.0000;mol.PPol.yy = 4.0000;mol.PPol.zz = 4.0000;
+      //mol.PPol.xx = 4.0000;mol.PPol.yy = 4.0000;mol.PPol.zz = 4.0000;
+      mol.PPol.xx = 1.590515;mol.PPol.yy = 1.590515;mol.PPol.zz = 1.590515;
       mol.PPol.xy = 0.0000;mol.PPol.xz = 0.0000;mol.PPol.yz = 0.0000;
       mol.PPol.yx = 0.0000;mol.PPol.zx = 0.0000;mol.PPol.zy = 0.0000;
       mol.PD.x    = 0.0000;mol.PD.y    = 0.0000;mol.PD.z    = 0.0000;
@@ -376,6 +389,17 @@ void parameters(Molecular &mol)
       mol.IPol.xy = 0.0000;mol.IPol.xz = 0.0000;mol.IPol.yz = 0.0000;
       mol.IPol.yx = 0.0000;mol.IPol.zx = 0.0000;mol.IPol.zy = 0.0000; 
       mol.ID.x    = 0.0000;mol.ID.y    = 0.0000;mol.ID.z    = 0.0000;
+
+      mol.shyperpol.xxxx = -0.0661*0.01162004;
+      mol.shyperpol.yyyy = -0.0661*0.01162004;
+      mol.shyperpol.zzzz = -0.0661*0.01162004;
+      mol.shyperpol.xxyy = -0.0210*0.01162004;
+      mol.shyperpol.xxzz = -0.0210*0.01162004;
+      mol.shyperpol.yyxx = -0.0210*0.01162004;
+      mol.shyperpol.yyzz = -0.0210*0.01162004;
+      mol.shyperpol.zzxx = -0.0210*0.01162004;
+      mol.shyperpol.zzyy = -0.0210*0.01162004;
+
     }
   else if( ( mol.MOL[0] == 'N' || mol.MOL[0] == 'n' ) && ( mol.MOL[1] == 'A' || mol.MOL[1] == 'a' ))
     {

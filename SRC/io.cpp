@@ -312,7 +312,7 @@ void Fourthranktensor_vec(const rank4tensor & A, const Vector & b, Matrix & C)
 
   C.xx += A.xxxx * Exx + A.xxyy * Eyy + A.xxzz * Ezz;
   C.yy += A.yyxx * Exx + A.yyyy * Eyy + A.yyzz * Ezz;
-  C.zz += A.zzxx * Exx + A.zzyy * Eyy + A.zzzz * Ezz;
+  C.zz += A.zzxx * Exx + A.zzyy * Eyy + A.zzzz * Ezz; 
 
 }
 

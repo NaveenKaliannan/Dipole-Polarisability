@@ -55,8 +55,8 @@ int main ( int argc, char** argv )
   BringintoBox(r, nsteps, natoms, L);
   readExternalfield(E, nsteps, fieldfilename);
   TransformAtomictoMolecular(r, nsteps, natoms, L, mol, nmol);
-  Induced_dipole(mol, nsteps, nmol, L, 500, E);
-  Induced_polarisability(mol, nsteps, nmol, L, 500, E);
+  //Induced_dipole(mol, nsteps, nmol, L, 500, E);
+  //Induced_polarisability(mol, nsteps, nmol, L, 500, E);
   Induced_polarisabilityduehyperpolarizability(mol, nsteps, nmol, L, 500, E);
   PrintOpticalBirefringence(mol, nsteps, nmol, L, dt, argv[9]);
 

@@ -175,9 +175,9 @@ void Induced_polarisabilityduehyperpolarizability(vector<Molecular> &mol, uint n
           idi = nmol*t+i;  
           Thirdranktensor_vec(mol[idi].hyperpol, Field[i], mol[idi].IPol );
           Fourthranktensor_vec(mol[idi].shyperpol, Field[i], mol[idi].IPol );
-//cout << t+1 << "  " << mol[idi].PPol.xx  + mol[idi].IPol.xx << "  " << mol[idi].PPol.yy  + mol[idi].IPol.yy << "  " << mol[idi].PPol.zz  + mol[idi].IPol.zz << "  " 
-//                  << mol[idi].PPol.xy  + mol[idi].IPol.xy << "  " << mol[idi].PPol.xz  + mol[idi].IPol.xz << "  " << mol[idi].PPol.yx  + mol[idi].IPol.yx << "  " 
-//                  << mol[idi].PPol.yz  + mol[idi].IPol.yz << "  " << mol[idi].PPol.zx  + mol[idi].IPol.zx << "  " << mol[idi].PPol.zy  + mol[idi].IPol.zy << endl;         
+cout << t+1 << "  " << mol[idi].PPol.xx  + mol[idi].IPol.xx << "  " << mol[idi].PPol.yy  + mol[idi].IPol.yy << "  " << mol[idi].PPol.zz  + mol[idi].IPol.zz << "  " 
+                  << mol[idi].PPol.xy  + mol[idi].IPol.xy << "  " << mol[idi].PPol.xz  + mol[idi].IPol.xz << "  " << mol[idi].PPol.yx  + mol[idi].IPol.yx << "  " 
+                  << mol[idi].PPol.yz  + mol[idi].IPol.yz << "  " << mol[idi].PPol.zx  + mol[idi].IPol.zx << "  " << mol[idi].PPol.zy  + mol[idi].IPol.zy << endl;         
         }
     }      
 }
@@ -191,7 +191,7 @@ void TensorduetoExternalField(vector<Molecular> &mol, uint t, uint nmol, const v
   for(uint i = 0;i < nmol;++i)
     {
       idi = nmol*t+i;  
-      Field[i].x += amufieldtoangstrom2 * E[t].x ;
+      Field[i].x += amufieldtoangstrom2 * E[t].x ; 
       Field[i].y += amufieldtoangstrom2 * E[t].y ;
       Field[i].z += amufieldtoangstrom2 * E[t].z ;
     }
