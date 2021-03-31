@@ -266,13 +266,13 @@ void parameters(Molecular &mol)
   if(mol.MOL[0] == 'H' && mol.MOL[1] == '2' && mol.MOL[2] == 'O')
     {
       mol.q = 0.0000;
-      //mol.PPol.xx = 1.3227;mol.PPol.yy =  1.1191;mol.PPol.zz = 0.8808;
-      //mol.PPol.xy = 0.0018;mol.PPol.xz = -0.0003;mol.PPol.yz = 0.0006;
-      //mol.PPol.yx = 0.0016;mol.PPol.zx = -0.0002;mol.PPol.zy = 0.0006;
+      mol.PPol.xx = 1.3227;mol.PPol.yy =  1.1191;mol.PPol.zz = 0.8808;
+      mol.PPol.xy = 0.0018;mol.PPol.xz = -0.0003;mol.PPol.yz = 0.0006;
+      mol.PPol.yx = 0.0016;mol.PPol.zx = -0.0002;mol.PPol.zy = 0.0006;
 
-      mol.PPol.xx = 1.244366;mol.PPol.yy =  1.067983;mol.PPol.zz = 0.817208;
-      mol.PPol.xy = 0.0000;mol.PPol.xz = -0.0000;mol.PPol.yz = 0.0000;
-      mol.PPol.yx = 0.0000;mol.PPol.zx = -0.0000;mol.PPol.zy = 0.0000;
+      //mol.PPol.xx = 1.244366;mol.PPol.yy =  1.067983;mol.PPol.zz = 0.817208;
+      //mol.PPol.xy = 0.0000;mol.PPol.xz = -0.0000;mol.PPol.yz = 0.0000;
+      //mol.PPol.yx = 0.0000;mol.PPol.zx = -0.0000;mol.PPol.zy = 0.0000;
 
 
       mol.IPol.xx = 0.0000;mol.IPol.yy = 0.0000;mol.IPol.zz = 0.0000;
@@ -315,15 +315,15 @@ void parameters(Molecular &mol)
       mol.hyperpol.zxy = -0.0000;
       mol.hyperpol.zyx = -0.0000; 
 
-      mol.shyperpol.xxxx = 269.8054*0.01162004;
+      mol.shyperpol.xxxx = 269.8054*0.01162004;//3.5 times experimetal values
       mol.shyperpol.yyyy = 126.5123*0.01162004;
-      mol.shyperpol.zzzz = 8.0962*0.01162004;
+      mol.shyperpol.zzzz = 8.096200*0.01162004;
       mol.shyperpol.xxyy = 180.8921*0.01162004;
-      mol.shyperpol.xxzz = 93.0972*0.01162004;
+      mol.shyperpol.xxzz = 93.09720*0.01162004;
       mol.shyperpol.yyxx = 180.8921*0.01162004;
-      mol.shyperpol.yyzz = 35.4941*0.01162004;
-      mol.shyperpol.zzxx = 93.0972*0.01162004;
-      mol.shyperpol.zzyy = 35.4941*0.01162004;
+      mol.shyperpol.yyzz = 35.49410*0.01162004;
+      mol.shyperpol.zzxx = 93.09720*0.01162004;
+      mol.shyperpol.zzyy = 35.49410*0.01162004;
     }
   else if(mol.MOL[0] == 'H')
     {
@@ -354,8 +354,8 @@ void parameters(Molecular &mol)
   else if( ( mol.MOL[0] == 'M' || mol.MOL[0] == 'm' ) && ( mol.MOL[1] == 'G' || mol.MOL[1] == 'g' ))
     {
       mol.q = +2;
-      //mol.PPol.xx = 0.0800;mol.PPol.yy = 0.0800;mol.PPol.zz = 0.0800;
-      mol.PPol.xx = 0.041140;mol.PPol.yy = 0.041140;mol.PPol.zz = 0.041140;
+      mol.PPol.xx = 0.0800;mol.PPol.yy = 0.0800;mol.PPol.zz = 0.0800;
+      //mol.PPol.xx = 0.041140;mol.PPol.yy = 0.041140;mol.PPol.zz = 0.041140;
       mol.PPol.xy = 0.0000;mol.PPol.xz = 0.0000;mol.PPol.yz = 0.0000;
       mol.PPol.yx = 0.0000;mol.PPol.zx = 0.0000;mol.PPol.zy = 0.0000;
       mol.PD.x    = 0.0000;mol.PD.y    = 0.0000;mol.PD.z    = 0.0000;
@@ -379,8 +379,8 @@ void parameters(Molecular &mol)
   else if( ( mol.MOL[0] == 'C' || mol.MOL[0] == 'c' ) && ( mol.MOL[1] == 'L' || mol.MOL[1] == 'l' ))
     {
       mol.q = -1;
-      //mol.PPol.xx = 4.0000;mol.PPol.yy = 4.0000;mol.PPol.zz = 4.0000;
-      mol.PPol.xx = 1.590515;mol.PPol.yy = 1.590515;mol.PPol.zz = 1.590515;
+      mol.PPol.xx = 4.0000;mol.PPol.yy = 4.0000;mol.PPol.zz = 4.0000;
+      //mol.PPol.xx = 1.590515;mol.PPol.yy = 1.590515;mol.PPol.zz = 1.590515;
       mol.PPol.xy = 0.0000;mol.PPol.xz = 0.0000;mol.PPol.yz = 0.0000;
       mol.PPol.yx = 0.0000;mol.PPol.zx = 0.0000;mol.PPol.zy = 0.0000;
       mol.PD.x    = 0.0000;mol.PD.y    = 0.0000;mol.PD.z    = 0.0000;

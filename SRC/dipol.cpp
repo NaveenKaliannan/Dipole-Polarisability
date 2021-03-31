@@ -160,7 +160,8 @@ void Induced_polarisability(vector<Molecular> &mol, uint nsteps, uint nmol, cons
     }      
 }
 
-void Induced_polarisabilityduehyperpolarizability(vector<Molecular> &mol, uint nsteps, uint nmol, const vector<float> & L, uint niter, vector<Vector> &E)
+
+void Induced_polarisabilityduetohyperpolarizability(vector<Molecular> &mol, uint nsteps, uint nmol, const vector<float> & L, uint niter, vector<Vector> &E)
 {
   uint idi = 0, idj = 0;
   double eps = 0.0, b = 0.0, a = 0.0;
@@ -175,13 +176,45 @@ void Induced_polarisabilityduehyperpolarizability(vector<Molecular> &mol, uint n
           idi = nmol*t+i;  
           Thirdranktensor_vec(mol[idi].hyperpol, Field[i], mol[idi].IPol );
           Fourthranktensor_vec(mol[idi].shyperpol, Field[i], mol[idi].IPol );
-cout << t+1 << "  " << mol[idi].PPol.xx  + mol[idi].IPol.xx << "  " << mol[idi].PPol.yy  + mol[idi].IPol.yy << "  " << mol[idi].PPol.zz  + mol[idi].IPol.zz << "  " 
-                  << mol[idi].PPol.xy  + mol[idi].IPol.xy << "  " << mol[idi].PPol.xz  + mol[idi].IPol.xz << "  " << mol[idi].PPol.yx  + mol[idi].IPol.yx << "  " 
-                  << mol[idi].PPol.yz  + mol[idi].IPol.yz << "  " << mol[idi].PPol.zx  + mol[idi].IPol.zx << "  " << mol[idi].PPol.zy  + mol[idi].IPol.zy << endl;         
         }
     }      
 }
 
+void Induced_polarisabilityduetofirsthyperpolarizability(vector<Molecular> &mol, uint nsteps, uint nmol, const vector<float> & L, uint niter, vector<Vector> &E)
+{
+  uint idi = 0, idj = 0;
+  double eps = 0.0, b = 0.0, a = 0.0;
+  vector<Vector> Field (nmol);
+
+  for(uint t = 0; t < nsteps;t += deltat )
+    {
+      TensorduetoPermanentMultipoles(mol, t, nmol, L, Field);
+      TensorduetoExternalField(mol, t, nmol, E,  Field);
+      for(uint i = 0;i < nmol;++i)
+        {
+          idi = nmol*t+i;  
+          Thirdranktensor_vec(mol[idi].hyperpol, Field[i], mol[idi].IPol );
+        }
+    }      
+}
+
+void Induced_polarisabilityduetosecondhyperpolarizability(vector<Molecular> &mol, uint nsteps, uint nmol, const vector<float> & L, uint niter, vector<Vector> &E)
+{
+  uint idi = 0, idj = 0;
+  double eps = 0.0, b = 0.0, a = 0.0;
+  vector<Vector> Field (nmol);
+
+  for(uint t = 0; t < nsteps;t += deltat )
+    {
+      TensorduetoPermanentMultipoles(mol, t, nmol, L, Field);
+      TensorduetoExternalField(mol, t, nmol, E,  Field);
+      for(uint i = 0;i < nmol;++i)
+        {
+          idi = nmol*t+i;  
+          Fourthranktensor_vec(mol[idi].shyperpol, Field[i], mol[idi].IPol );
+        }
+    }      
+}
 
 
 // Tensor change due to externally applied field
@@ -198,7 +231,7 @@ void TensorduetoExternalField(vector<Molecular> &mol, uint t, uint nmol, const v
 }
 
 
-// Tensor change due to permanent multipoles [charge, dipole, quadrupole]
+// Tensor change due to permanent multipoles [charge, dipole]
 void TensorduetoPermanentMultipoles(vector<Molecular> &mol, uint t, uint nmol, const vector<float> & L, vector <Vector> & Field)
 {
   uint idi = 0, idj = 0;
