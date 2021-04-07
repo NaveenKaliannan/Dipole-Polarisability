@@ -611,7 +611,6 @@ void TransformAtomictoMolecular(vector<Atom> &r, uint nsteps,  uint natoms, cons
                     A_xy = mols.PPol.xy, A_xz = mols.PPol.xz, A_yz = mols.PPol.yz,
                     A_yx = mols.PPol.yx, A_zx = mols.PPol.zx, A_zy = mols.PPol.zy;
 
-
 //------------------------------  variable polarizability model-------------------------//
               uint hbond_cation = 0, hbond_anion = 0;   
            float rij1 = 0, rij2 = 0, rij = 0, temp = 0, temp1 = 0, temp2 = 0, temp3 = 0, x = 0, y = 0, z = 0 ;
@@ -676,6 +675,11 @@ void TransformAtomictoMolecular(vector<Atom> &r, uint nsteps,  uint natoms, cons
               A_xy = 0.0005, A_xz = 0.0000, A_yz = 0.0000,
               A_yx = 0.0005, A_zx = 0.0000, A_zy = 0.0000;
             }
+
+              // pure liquid water
+              A_xx = 1.3725, A_yy = 1.1580, A_zz = 0.9127,
+              A_xy = 0.0002, A_xz = 0.0000, A_yz = 0.0001,
+              A_yx = 0.0002, A_zx = 0.0000, A_zy = 0.0001;
 
 //------------------------------  variable polarizability model-------------------------//
      

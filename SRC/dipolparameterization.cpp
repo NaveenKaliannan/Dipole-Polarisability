@@ -283,7 +283,6 @@ void parameterizationpolarizability(vector<Atom> &r, uint nsteps,  uint natoms, 
 
 
 
-
 void printsinglewatercoordinates(vector<Atom> &r, uint nsteps,  uint natoms, const vector<float> & L)
 {
 

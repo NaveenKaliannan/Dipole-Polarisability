@@ -52,11 +52,18 @@ int main ( int argc, char** argv )
   vector<Molecular> mol ;
   vector<Vector> E (nsteps);
 
-  readtrajectory(r, nsteps, natoms, xyzfilename, L);
-  readExternalfield(E, nsteps, fieldfilename);
+  readtrajectory_gro(r, nsteps, natoms, xyzfilename, L);
   BringintoBox(r, nsteps, natoms, L);
-  TransformAtomictoMolecular(r, nsteps, natoms, L, mol, nmol); 
-  Print(r, nsteps, natoms, L, mol, nmol, dt, "Permanet.data", "DIP-P");
+  readExternalfield(E, nsteps, fieldfilename);
+  TransformAtomictoMolecular(r, nsteps, natoms, L, mol, nmol);
+  PrintOpticalBirefringence(mol, nsteps, nmol, L, dt, argv[9]);
+  Induced_dipole(mol, nsteps, nmol, L, 500, E);
+  Induced_polarisability(mol, nsteps, nmol, L, 500, E);
+  PrintOpticalBirefringence(mol, nsteps, nmol, L, dt, argv[10]);
+  Induced_polarisabilityduetofirsthyperpolarizability(mol, nsteps, nmol, L, 500, E);
+  PrintOpticalBirefringence(mol, nsteps, nmol, L, dt, argv[11]);
+  Induced_polarisabilityduetosecondhyperpolarizability(mol, nsteps, nmol, L, 500, E);
+  PrintOpticalBirefringence(mol, nsteps, nmol, L, dt, argv[12]);
 
 /*
   PrintOpticalBirefringence(mol, nsteps, nmol, L, dt, argv[9]);
