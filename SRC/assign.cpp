@@ -454,6 +454,7 @@ void TransformAtomictoAtomic(vector<Atom> &r, uint nsteps,  uint natoms, const v
 }
 
 
+
 // Transforming atomic to molecular assigns dipole moment, center of mass and permanent polarisabilites to the variables
 void TransformAtomictoMolecular(vector<Atom> &r, uint nsteps,  uint natoms, const vector<float> & L, vector<Molecular> &mol, uint nmol)
 {
@@ -608,7 +609,76 @@ void TransformAtomictoMolecular(vector<Atom> &r, uint nsteps,  uint natoms, cons
               parameters(mols);
               float A_xx = mols.PPol.xx, A_yy = mols.PPol.yy, A_zz = mols.PPol.zz,
                     A_xy = mols.PPol.xy, A_xz = mols.PPol.xz, A_yz = mols.PPol.yz,
-                    A_yx = mols.PPol.yx, A_zx = mols.PPol.zx, A_zy = mols.PPol.zy;     
+                    A_yx = mols.PPol.yx, A_zx = mols.PPol.zx, A_zy = mols.PPol.zy;
+
+
+//------------------------------  variable polarizability model-------------------------//
+              uint hbond_cation = 0, hbond_anion = 0;   
+           float rij1 = 0, rij2 = 0, rij = 0, temp = 0, temp1 = 0, temp2 = 0, temp3 = 0, x = 0, y = 0, z = 0 ;
+          for(uint j = 0;j < natoms;++j)
+            { 
+              uint idi = natoms*t+i;  
+              uint idi1 = natoms*t+i+1;          
+              uint idi2 = natoms*t+i+2;                  
+              uint idj = natoms*t+j;
+ 
+              /*first solvation shell*/
+              if(r[j].symbol[0] == 'M' || r[j].symbol[0] == 'N')
+                {
+                  x = min_distance(r[idj].x - r[idi].x, L[0]);
+                  y = min_distance(r[idj].y - r[idi].y, L[1]);
+                  z = min_distance(r[idj].z - r[idi].z, L[2]); 
+                  rij = mindis(x,y,z,L); 
+                  if(rij < 3.2 && rij > 0)
+                    {
+                      hbond_cation += 1;
+                    }      
+                }
+              if(r[j].symbol[0] == 'C' || r[j].symbol[0] == 'F')
+                {
+                  x = min_distance(r[idj].x - r[idi1].x, L[0]);
+                  y = min_distance(r[idj].y - r[idi1].y, L[1]);
+                  z = min_distance(r[idj].z - r[idi1].z, L[2]); 
+                  rij1 = mindis(x,y,z,L);
+
+                  x = min_distance(r[idj].x - r[idi2].x, L[0]);
+                  y = min_distance(r[idj].y - r[idi2].y, L[1]);
+                  z = min_distance(r[idj].z - r[idi2].z, L[2]); 
+                  rij2 = mindis(x,y,z,L); 
+                  if( (rij1 < 3.0 && rij1 > 0) || (rij2 < 3.0 && rij2 > 0))
+                    {
+                      hbond_anion += 1;
+                    }      
+                }
+            } 
+
+          if(hbond_cation > 0 && hbond_anion == 0)
+            {
+              A_xx = 1.39182, A_yy = 1.16592, A_zz = 0.9145,
+              A_xy = 0.00176, A_xz =-0.00019, A_yz = 0.0002,
+              A_yx = 0.00163, A_zx =-0.00038, A_zy = 0.0002;
+            }
+          else if(hbond_cation == 0 && hbond_anion > 0)
+            {
+              A_xx = 1.3680, A_yy = 1.1594, A_zz = 0.9138,
+              A_xy = -0.0009, A_xz = -0.0002, A_yz = 0.0000,
+              A_yx = -0.0007, A_zx = -0.0002, A_zy = 0.0000;
+            }
+          else if(hbond_cation > 0 && hbond_anion > 0)
+            {
+              A_xx = 1.3855, A_yy = 1.1604, A_zz = 0.9139,
+              A_xy = 0.0050, A_xz = 0.0000, A_yz = -0.0001,
+              A_yx = 0.0055, A_zx = 0.0000, A_zy = -0.0001;
+            }
+          else if(hbond_cation == 0 && hbond_anion == 0)
+            {
+              A_xx = 1.3749, A_yy = 1.1586, A_zz = 0.9138,
+              A_xy = 0.0005, A_xz = 0.0000, A_yz = 0.0000,
+              A_yx = 0.0005, A_zx = 0.0000, A_zy = 0.0000;
+            }
+
+//------------------------------  variable polarizability model-------------------------//
+     
 
               mols.PPol.xx =  HH_x * HH_x * A_xx + wb_x * wb_x * A_yy + Pv_x * Pv_x * A_zz
                             + HH_x * wb_x * A_xy + HH_x * Pv_x * A_xz + wb_x * Pv_x * A_yz 

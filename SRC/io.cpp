@@ -200,7 +200,8 @@ outfile <<  t * dt  << " " <<  a   << " " <<  b  << " "  << c << "  " //<<  (a-0
             uint id = nmol*t+i;
              if(TYPE[4] == 'P')
                {
-              //   outfile << mol[id].MOL <<  "  " << mol[id].PD.x << "  " << mol[id].PD.y << "  " << mol[id].PD.z << "  "<< mol[id].PPol.xx << "  " << mol[id].PPol.yy << "  " << mol[id].PPol.zz << endl;
+                 outfile << id <<  "  " <<  mol[id].MOL <<  "  " << mol[id].PD.x << "  " << mol[id].PD.y << "  " << mol[id].PD.z << "  "<< mol[id].PPol.xx << "  " << mol[id].PPol.yy << "  " << mol[id].PPol.zz << endl;
+outfile << mol[id].x << "  " << mol[id].y << endl;
                }
              else if(TYPE[4] == 'I')
                {

@@ -262,8 +262,8 @@ void TensorduetoPermanentMultipoles(vector<Molecular> &mol, uint t, uint nmol, c
                 r5  = 3.0 * pow(rij, -5.0) ;
 
                 pc =  debyetoangstrom * mol[idj].q * pointchargedistancetodebye;
-                pd =  debyetoangstrom * ((mol[idj].PD.x + mol[idj].ID.x ) * x + (mol[idj].PD.y + mol[idj].ID.y ) * y + (mol[idj].PD.z + mol[idj].ID.z ) * z ) ; 
-
+                //pd =  debyetoangstrom * ((mol[idj].PD.x + mol[idj].ID.x ) * x + (mol[idj].PD.y + mol[idj].ID.y ) * y + (mol[idj].PD.z + mol[idj].ID.z ) * z ) ; 
+                pd = 0;
                 Field[i].x += x * ( r3 * pc + r5 * pd ) ;
                 Field[i].y += y * ( r3 * pc + r5 * pd ) ;
                 Field[i].z += z * ( r3 * pc + r5 * pd ) ;
