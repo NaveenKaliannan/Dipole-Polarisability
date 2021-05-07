@@ -1,8 +1,8 @@
 
 #!/bin/bash
 
-module load chem/CP2K/5.1-foss-2018b
-module load vis/GLib/2.64.1-GCCcore-9.3.0
+#module load chem/CP2K/5.1-foss-2018b
+#module load vis/GLib/2.64.1-GCCcore-9.3.0
 
 
 ##rm -rf build/*
@@ -12,8 +12,8 @@ cd build
 cmake . 
 make
 
-
-./exe ../$1 traj.psf 1 1 16.099 414 148 ../field_atomicunit KEncosine OpticalBirefringence dipol
+./exe ../$1 traj.psf 1 1 15.09 455 115 ../field_atomicunit one two three  four
+#./exe ../$1 traj.psf 1 1 16.099 414 148 ../field_atomicunit KEncosine OpticalBirefringence dipol
 
 
 declare -i n

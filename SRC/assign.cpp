@@ -270,11 +270,6 @@ void parameters(Molecular &mol)
       mol.PPol.xy = 0.0018;mol.PPol.xz = -0.0003;mol.PPol.yz = 0.0006;
       mol.PPol.yx = 0.0016;mol.PPol.zx = -0.0002;mol.PPol.zy = 0.0006;
 
-      //mol.PPol.xx = 1.244366;mol.PPol.yy =  1.067983;mol.PPol.zz = 0.817208;
-      //mol.PPol.xy = 0.0000;mol.PPol.xz = -0.0000;mol.PPol.yz = 0.0000;
-      //mol.PPol.yx = 0.0000;mol.PPol.zx = -0.0000;mol.PPol.zy = 0.0000;
-
-
       mol.IPol.xx = 0.0000;mol.IPol.yy = 0.0000;mol.IPol.zz = 0.0000;
       mol.IPol.xy = 0.0000;mol.IPol.xz = 0.0000;mol.IPol.yz = 0.0000;
       mol.IPol.yx = 0.0000;mol.IPol.zx = 0.0000;mol.IPol.zy = 0.0000; 
@@ -365,16 +360,6 @@ void parameters(Molecular &mol)
       mol.IPol.yx = 0.0000;mol.IPol.zx = 0.0000;mol.IPol.zy = 0.0000; 
       mol.ID.x    = 0.0000;mol.ID.y    = 0.0000;mol.ID.z    = 0.0000;
 
-      mol.shyperpol.xxxx = 0.9305*0.01162004;
-      mol.shyperpol.yyyy = 0.9305*0.01162004;
-      mol.shyperpol.zzzz = 0.9305*0.01162004;
-      mol.shyperpol.xxyy = 0.3102*0.01162004;
-      mol.shyperpol.xxzz = 0.3102*0.01162004;
-      mol.shyperpol.yyxx = 0.3102*0.01162004;
-      mol.shyperpol.yyzz = 0.3102*0.01162004;
-      mol.shyperpol.zzxx = 0.3102*0.01162004;
-      mol.shyperpol.zzyy = 0.3102*0.01162004;
-
     }
   else if( ( mol.MOL[0] == 'C' || mol.MOL[0] == 'c' ) && ( mol.MOL[1] == 'L' || mol.MOL[1] == 'l' ))
     {
@@ -389,17 +374,6 @@ void parameters(Molecular &mol)
       mol.IPol.xy = 0.0000;mol.IPol.xz = 0.0000;mol.IPol.yz = 0.0000;
       mol.IPol.yx = 0.0000;mol.IPol.zx = 0.0000;mol.IPol.zy = 0.0000; 
       mol.ID.x    = 0.0000;mol.ID.y    = 0.0000;mol.ID.z    = 0.0000;
-
-      mol.shyperpol.xxxx = -0.0661*0.01162004;
-      mol.shyperpol.yyyy = -0.0661*0.01162004;
-      mol.shyperpol.zzzz = -0.0661*0.01162004;
-      mol.shyperpol.xxyy = -0.0210*0.01162004;
-      mol.shyperpol.xxzz = -0.0210*0.01162004;
-      mol.shyperpol.yyxx = -0.0210*0.01162004;
-      mol.shyperpol.yyzz = -0.0210*0.01162004;
-      mol.shyperpol.zzxx = -0.0210*0.01162004;
-      mol.shyperpol.zzyy = -0.0210*0.01162004;
-
     }
   else if( ( mol.MOL[0] == 'N' || mol.MOL[0] == 'n' ) && ( mol.MOL[1] == 'A' || mol.MOL[1] == 'a' ))
     {
@@ -418,6 +392,19 @@ void parameters(Molecular &mol)
     {
       mol.q = -1;
       mol.PPol.xx = 1.3500;mol.PPol.yy = 1.3500;mol.PPol.zz = 1.3500;
+      mol.PPol.xy = 0.0000;mol.PPol.xz = 0.0000;mol.PPol.yz = 0.0000;
+      mol.PPol.yx = 0.0000;mol.PPol.zx = 0.0000;mol.PPol.zy = 0.0000;
+      mol.PD.x    = 0.0000;mol.PD.y    = 0.0000;mol.PD.z    = 0.0000;
+ 
+      mol.IPol.xx = 0.0000;mol.IPol.yy = 0.0000;mol.IPol.zz = 0.0000;
+      mol.IPol.xy = 0.0000;mol.IPol.xz = 0.0000;mol.IPol.yz = 0.0000;
+      mol.IPol.yx = 0.0000;mol.IPol.zx = 0.0000;mol.IPol.zy = 0.0000; 
+      mol.ID.x    = 0.0000;mol.ID.y    = 0.0000;mol.ID.z    = 0.0000;
+    }
+  else if(mol.MOL[0] == 'S' && mol.MOL[1] == 'O' && mol.MOL[2] == '4')
+    {
+      mol.q = -2;
+      mol.PPol.xx = 7;mol.PPol.yy = 7;mol.PPol.zz = 7;
       mol.PPol.xy = 0.0000;mol.PPol.xz = 0.0000;mol.PPol.yz = 0.0000;
       mol.PPol.yx = 0.0000;mol.PPol.zx = 0.0000;mol.PPol.zy = 0.0000;
       mol.PD.x    = 0.0000;mol.PD.y    = 0.0000;mol.PD.z    = 0.0000;
@@ -622,7 +609,7 @@ void TransformAtomictoMolecular(vector<Atom> &r, uint nsteps,  uint natoms, cons
               uint idj = natoms*t+j;
  
               /*first solvation shell*/
-              if(r[j].symbol[0] == 'M' || r[j].symbol[0] == 'N')
+              if(r[idj].symbol[0] == 'M' || r[idj].symbol[0] == 'N')
                 {
                   x = min_distance(r[idj].x - r[idi].x, L[0]);
                   y = min_distance(r[idj].y - r[idi].y, L[1]);
@@ -633,7 +620,7 @@ void TransformAtomictoMolecular(vector<Atom> &r, uint nsteps,  uint natoms, cons
                       hbond_cation += 1;
                     }      
                 }
-              if(r[j].symbol[0] == 'C' || r[j].symbol[0] == 'F')
+              if(r[idj].symbol[0] == 'C' || r[idj].symbol[0] == 'F')
                 {
                   x = min_distance(r[idj].x - r[idi1].x, L[0]);
                   y = min_distance(r[idj].y - r[idi1].y, L[1]);

@@ -54,6 +54,7 @@ int main ( int argc, char** argv )
 
   readtrajectory_gro(r, nsteps, natoms, xyzfilename, L);
   BringintoBox(r, nsteps, natoms, L);
+  TransformAtomictoMolecular(r, nsteps, natoms, L, mol, nmol);
   readExternalfield(E, nsteps, fieldfilename);
   TransformAtomictoMolecular(r, nsteps, natoms, L, mol, nmol);
   PrintOpticalBirefringence(mol, nsteps, nmol, L, dt, argv[9]);
@@ -64,6 +65,8 @@ int main ( int argc, char** argv )
   PrintOpticalBirefringence(mol, nsteps, nmol, L, dt, argv[11]);
   Induced_polarisabilityduetosecondhyperpolarizability(mol, nsteps, nmol, L, 500, E);
   PrintOpticalBirefringence(mol, nsteps, nmol, L, dt, argv[12]);
+
+
 
 /*
   PrintOpticalBirefringence(mol, nsteps, nmol, L, dt, argv[9]);

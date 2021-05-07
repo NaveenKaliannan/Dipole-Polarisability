@@ -108,7 +108,7 @@ void readExternalfield(vector<Vector> &E, uint nsteps, string fieldfilename)
   for(uint t = 0; t < nsteps; ++t )
     { 
       uint id = t; 
-      file >> temp >> E[id].x  >> E[id].y  >> E[id].z;       
+      file >> temp >> E[id].x  >> E[id].y  >> E[id].z;    
     }
   file.close();
   file.clear();
@@ -193,24 +193,23 @@ outfile <<  t * dt  << " " <<  a   << " " <<  b  << " "  << c << "  " //<<  (a-0
                            << " " <<  axy << " " << axz << " "  << ayz
                            << " " <<  ayx << " " << azx << " "  << azy  << endl; */
         
-       // outfile << "#Time  " << t * dt << "\n" << "## Total Mol [string] " << nmol << " Total \u03BC  [Debye] in x y z " << a << "  " << b << "  " << c << "   "  <<  " Total \u03B1 [Angstrom] xx yy zz  " << a1 << "  " <<  b1  << "  " << c1  << endl;
-        //outfile << "##Mol [string]  \u03BC  [Debye] in x y z \u03B1 [Angstrom] xx yy zz  \n";
+        outfile << "#Time  " << t * dt << "\n" << "## Total Mol [string] " << nmol << " Total \u03BC  [Debye] in x y z " << a << "  " << b << "  " << c << "   "  <<  " Total \u03B1 [Angstrom] xx yy zz  " << a1 << "  " <<  b1  << "  " << c1  << endl;
+        outfile << "##Mol [string]  \u03BC  [Debye] in x y z \u03B1 [Angstrom] xx yy zz  \n";
         for(uint i = 0;i < nmol;++i)
           {
             uint id = nmol*t+i;
              if(TYPE[4] == 'P')
                {
                  outfile << id <<  "  " <<  mol[id].MOL <<  "  " << mol[id].PD.x << "  " << mol[id].PD.y << "  " << mol[id].PD.z << "  "<< mol[id].PPol.xx << "  " << mol[id].PPol.yy << "  " << mol[id].PPol.zz << endl;
-outfile << mol[id].x << "  " << mol[id].y << endl;
-               }
+              }
              else if(TYPE[4] == 'I')
                {
-                 //outfile << mol[id].MOL <<  "  " <<  mol[id].ID.x << "  " <<  mol[id].ID.y << "  " <<  mol[id].ID.z << "  "<<  mol[id].IPol.xx << "  " <<  mol[id].IPol.yy << "  " <<  mol[id].IPol.zz << endl;
+                 outfile << mol[id].MOL <<  "  " <<  mol[id].ID.x << "  " <<  mol[id].ID.y << "  " <<  mol[id].ID.z << "  "<<  mol[id].IPol.xx << "  " <<  mol[id].IPol.yy << "  " <<  mol[id].IPol.zz << endl;
                }
              else if(TYPE[4] == 'T')
                {
              //    outfile << mol[id].MOL <<  "  " << mol[id].PD.x << "  " << mol[id].PD.y << "  " << mol[id].PD.z << "  "<< mol[id].PPol.xx << "  " << mol[id].PPol.yy << "  " << mol[id].PPol.zz << endl;
-            //     outfile << mol[id].MOL <<  "  " << mol[id].PD.x + mol[id].ID.x << "  " << mol[id].PD.y + mol[id].ID.y << "  " << mol[id].PD.z + mol[id].ID.z << "  "<< mol[id].PPol.xx + mol[id].IPol.xx << "  " << mol[id].PPol.yy + mol[id].IPol.yy << "  " << mol[id].PPol.zz + mol[id].IPol.zz << endl;
+                 outfile << mol[id].MOL <<  "  " << mol[id].PD.x + mol[id].ID.x << "  " << mol[id].PD.y + mol[id].ID.y << "  " << mol[id].PD.z + mol[id].ID.z << "  "<< mol[id].PPol.xx + mol[id].IPol.xx << "  " << mol[id].PPol.yy + mol[id].IPol.yy << "  " << mol[id].PPol.zz + mol[id].IPol.zz << endl;
                }
           }
       }

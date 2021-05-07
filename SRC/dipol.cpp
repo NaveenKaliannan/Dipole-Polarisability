@@ -16,7 +16,7 @@
 #include "../include/assign.h"
 
 #define ncell  1
-#define rcut  7
+#define rcut  5.7
 
 
 
@@ -111,7 +111,7 @@ void Induced_dipole(vector<Molecular> &mol, uint nsteps, uint nmol, const vector
               conj[i].z = zrsd[i].z + b * conj[i].z ;
               eps = eps + rsd[i].x * rsd[i].x + rsd[i].y * rsd[i].y + rsd[i].z * rsd[i].z; 
             } 
-          if (eps < 0.000001)  { cout << t <<  "  " << iter << endl; iter = niter;}   
+          if (eps < 0.00001)  { cout << t <<  "  " << iter << endl; iter = niter;}   
           if (iter == niter - 1)  { cout << "Frame " << t <<  " is not converged (dipole) " << endl;  }                                 
         }
     }
@@ -154,7 +154,7 @@ void Induced_polarisability(vector<Molecular> &mol, uint nsteps, uint nmol, cons
             }
 
           eps = a - b  ; 
-          if (abs(eps) < 0.000001)  { cout << t <<  "  " << iter << endl; iter = niter;}   
+          if (abs(eps) < 0.00001)  { cout << t <<  "  " << iter << endl; iter = niter;}   
           if (iter == niter - 1)  { cout << "Frame " << t <<  " is not converged (polarisability) " << endl;  }                                 
         }
     }      
@@ -223,10 +223,12 @@ void TensorduetoExternalField(vector<Molecular> &mol, uint t, uint nmol, const v
   uint idi = 0;
   for(uint i = 0;i < nmol;++i)
     {
-      idi = nmol*t+i;  
-      Field[i].x += amufieldtoangstrom2 * E[t].x ; 
-      Field[i].y += amufieldtoangstrom2 * E[t].y ;
-      Field[i].z += amufieldtoangstrom2 * E[t].z ;
+      idi = nmol*t+i;      
+      /*0 is multiplied to calculate the alpha under zero electric field*/
+      /*But in gas phase you must remove the zero*/
+      Field[i].x += amufieldtoangstrom2 * E[t].x * 0.0 ; 
+      Field[i].y += amufieldtoangstrom2 * E[t].y * 0.0 ;
+      Field[i].z += amufieldtoangstrom2 * E[t].z * 0.0 ;
     }
 }
 
@@ -258,25 +260,32 @@ void TensorduetoPermanentMultipoles(vector<Molecular> &mol, uint t, uint nmol, c
               rij = mindis(x,y,z,PB_L);       
               if ((i != j && cell == 0 && rij < rcut  ) || (cell > 0 && rij < rcut))
               {               
-                r3  = pow(rij, -3.0)  ; 
-                r5  = 3.0 * pow(rij, -5.0) ;
+                  //Thole damping function and correction updated each iteration
+                  mean_alpha1 = (mol[idi].PPol.xx + mol[idi].PPol.yy + mol[idi].PPol.zz + mol[idi].IPol.xx + mol[idi].IPol.yy + mol[idi].IPol.zz ) / 3.0;
+                  mean_alpha2 = (mol[idj].PPol.xx + mol[idj].PPol.yy + mol[idj].PPol.zz + mol[idj].IPol.xx + mol[idj].IPol.yy + mol[idj].IPol.zz ) / 3.0;
+                  u = rij / pow(mean_alpha1 * mean_alpha2, 0.16666);
+                  ar  = mol[idj].sl * pow(u,3.0)  ;   
+                  st1 = 1.0 - (1.0 + ar + (ar*ar/2.0)) * exp(-ar);     
+                  st2 = 1.0 - (1.0 + ar + (ar*ar/2.0) + (pow(ar,3.0)/6.0)) * exp(-ar);                   
+                  r3  = pow(rij, -3.0)  * (st1 + 0.0); 
+                  r5  = 3.0 * pow(rij, -5.0)  * (st2 + 0.0);
 
                 pc =  debyetoangstrom * mol[idj].q * pointchargedistancetodebye;
-                //pd =  debyetoangstrom * ((mol[idj].PD.x + mol[idj].ID.x ) * x + (mol[idj].PD.y + mol[idj].ID.y ) * y + (mol[idj].PD.z + mol[idj].ID.z ) * z ) ; 
-                pd = 0;
+                pd =  debyetoangstrom * ((mol[idj].PD.x + mol[idj].ID.x ) * x + (mol[idj].PD.y + mol[idj].ID.y ) * y + (mol[idj].PD.z + mol[idj].ID.z ) * z ) ; 
+
                 Field[i].x += x * ( r3 * pc + r5 * pd ) ;
                 Field[i].y += y * ( r3 * pc + r5 * pd ) ;
                 Field[i].z += z * ( r3 * pc + r5 * pd ) ;
 
-                Tij.xx = -r3 + r5 * x * x ;
-                Tij.yy = -r3 + r5 * y * y ; 
-                Tij.zz = -r3 + r5 * z * z ;
-                Tij.xy =  0  + r5 * x * y ;  
-                Tij.xz =  0  + r5 * x * z ;
-                Tij.yz =  0  + r5 * y * z ; 
-                Tij.yx =  0  + r5 * y * x ;    
-                Tij.zx =  0  + r5 * z * x ;
-                Tij.zy =  0  + r5 * z * y ; 
+                Tij.xx = -r3  ;
+                Tij.yy = -r3  ; 
+                Tij.zz = -r3  ;
+                Tij.xy =  0   ;  
+                Tij.xz =  0   ;
+                Tij.yz =  0   ; 
+                Tij.yx =  0   ;    
+                Tij.zx =  0   ;
+                Tij.zy =  0   ; 
 
                 dipole.x = debyetoangstrom * (mol[idj].PD.x + mol[idj].ID.x ); 
                 dipole.y = debyetoangstrom * (mol[idj].PD.y + mol[idj].ID.y ); 
@@ -319,8 +328,16 @@ void TensorduetoPolarisability(vector<Molecular> &mol, uint t, uint nmol, const 
               rij = mindis(x,y,z,PB_L);       
               if ((i != j && cell == 0 && rij < rcut ) || (cell > 0 && rij < rcut))
               {
-                r3  = pow(rij, -3.0)  ; 
-                r5  = 3.0 * pow(rij, -5.0) ;
+                  //Thole damping function and correction updated each iteration
+                  mean_alpha1 = (mol[idi].PPol.xx + mol[idi].PPol.yy + mol[idi].PPol.zz + mol[idi].IPol.xx + mol[idi].IPol.yy + mol[idi].IPol.zz ) / 3.0;
+                  mean_alpha2 = (mol[idj].PPol.xx + mol[idj].PPol.yy + mol[idj].PPol.zz + mol[idj].IPol.xx + mol[idj].IPol.yy + mol[idj].IPol.zz ) / 3.0;
+                  u = rij / pow(mean_alpha1 * mean_alpha2, 0.16666);
+                  ar  = mol[idj].sl * pow(u,3.0)  ;   
+                  st1 = 1.0 - (1.0 + ar + (ar*ar/2.0)) * exp(-ar);     
+                  st2 = 1.0 - (1.0 + ar + (ar*ar/2.0) + (pow(ar,3.0)/6.0)) * exp(-ar);                   
+                  r3  = pow(rij, -3.0)  * (st1 + 0.0); 
+                  r5  = 3.0 * pow(rij, -5.0)  * (st2 + 0.0);
+
                 /*
                   without damping function 
                   r3  = pow(rij, -3.0)  ; 
@@ -329,6 +346,16 @@ void TensorduetoPolarisability(vector<Molecular> &mol, uint t, uint nmol, const 
                   Thole damping function
                   mean_alpha1 = (mol[idi].PPol.xx + mol[idi].PPol.yy + mol[idi].PPol.zz ) / 3.0;
                   mean_alpha2 = (mol[idj].PPol.xx + mol[idj].PPol.yy + mol[idj].PPol.zz ) / 3.0;
+                  u = rij / pow(mean_alpha1 * mean_alpha2, 0.16666);
+                  ar  = mol[idj].sl * pow(u,3.0)  ;   
+                  st1 = 1.0 - (1.0 + ar + (ar*ar/2.0)) * exp(-ar);     
+                  st2 = 1.0 - (1.0 + ar + (ar*ar/2.0) + (pow(ar,3.0)/6.0)) * exp(-ar);                   
+                  r3  = pow(rij, -3.0)  * (st1 + 0.0); 
+                  r5  = 3.0 * pow(rij, -5.0)  * (st2 + 0.0);
+
+                  Thole damping function and correction updated each iteration
+                  mean_alpha1 = (mol[idi].PPol.xx + mol[idi].PPol.yy + mol[idi].PPol.zz + mol[idi].IPol.xx + mol[idi].IPol.yy + mol[idi].IPol.zz ) / 3.0;
+                  mean_alpha2 = (mol[idj].PPol.xx + mol[idj].PPol.yy + mol[idj].PPol.zz + mol[idj].IPol.xx + mol[idj].IPol.yy + mol[idj].IPol.zz ) / 3.0;
                   u = rij / pow(mean_alpha1 * mean_alpha2, 0.16666);
                   ar  = mol[idj].sl * pow(u,3.0)  ;   
                   st1 = 1.0 - (1.0 + ar + (ar*ar/2.0)) * exp(-ar);     
@@ -391,7 +418,7 @@ void FieldduetoExternalField(vector<Molecular> &mol, uint t, uint nmol, const ve
   for(uint i = 0;i < nmol;++i)
     {
       idi = nmol*t+i; 
-      Field[i].x += polfieldtodebye * E[t].x ;
+      Field[i].x += polfieldtodebye * E[t].x ; 
       Field[i].y += polfieldtodebye * E[t].y ;
       Field[i].z += polfieldtodebye * E[t].z ;
     }
@@ -426,8 +453,15 @@ void Fieldduetodipole(vector<Molecular> &mol, uint t, uint nmol, const vector<fl
               rij = mindis(x,y,z,PB_L);       
               if ((i != j && cell == 0 && rij < rcut  ) || (cell > 0 && rij < rcut))
               {
-                r3  = pow(rij, -3.0)  ; 
-                r5  = 3.0 * pow(rij, -5.0) ;
+                  //Thole damping function and correction updated each iteration
+                  mean_alpha1 = (mol[idi].PPol.xx + mol[idi].PPol.yy + mol[idi].PPol.zz + mol[idi].IPol.xx + mol[idi].IPol.yy + mol[idi].IPol.zz ) / 3.0;
+                  mean_alpha2 = (mol[idj].PPol.xx + mol[idj].PPol.yy + mol[idj].PPol.zz + mol[idj].IPol.xx + mol[idj].IPol.yy + mol[idj].IPol.zz ) / 3.0;
+                  u = rij / pow(mean_alpha1 * mean_alpha2, 0.16666);
+                  ar  = mol[idj].sl * pow(u,3.0)  ;   
+                  st1 = 1.0 - (1.0 + ar + (ar*ar/2.0)) * exp(-ar);     
+                  st2 = 1.0 - (1.0 + ar + (ar*ar/2.0) + (pow(ar,3.0)/6.0)) * exp(-ar);                   
+                  r3  = pow(rij, -3.0)  * (st1 + 0.0); 
+                  r5  = 3.0 * pow(rij, -5.0)  * (st2 + 0.0);
 
                 /*
                   without damping function 
@@ -437,6 +471,16 @@ void Fieldduetodipole(vector<Molecular> &mol, uint t, uint nmol, const vector<fl
                   Thole damping function
                   mean_alpha1 = (mol[idi].PPol.xx + mol[idi].PPol.yy + mol[idi].PPol.zz ) / 3.0;
                   mean_alpha2 = (mol[idj].PPol.xx + mol[idj].PPol.yy + mol[idj].PPol.zz ) / 3.0;
+                  u = rij / pow(mean_alpha1 * mean_alpha2, 0.16666);
+                  ar  = mol[idj].sl * pow(u,3.0)  ;   
+                  st1 = 1.0 - (1.0 + ar + (ar*ar/2.0)) * exp(-ar);     
+                  st2 = 1.0 - (1.0 + ar + (ar*ar/2.0) + (pow(ar,3.0)/6.0)) * exp(-ar);                   
+                  r3  = pow(rij, -3.0)  * (st1 + 0.0); 
+                  r5  = 3.0 * pow(rij, -5.0)  * (st2 + 0.0);
+
+                  Thole damping function and correction updated each iteration
+                  mean_alpha1 = (mol[idi].PPol.xx + mol[idi].PPol.yy + mol[idi].PPol.zz + mol[idi].IPol.xx + mol[idi].IPol.yy + mol[idi].IPol.zz ) / 3.0;
+                  mean_alpha2 = (mol[idj].PPol.xx + mol[idj].PPol.yy + mol[idj].PPol.zz + mol[idj].IPol.xx + mol[idj].IPol.yy + mol[idj].IPol.zz ) / 3.0;
                   u = rij / pow(mean_alpha1 * mean_alpha2, 0.16666);
                   ar  = mol[idj].sl * pow(u,3.0)  ;   
                   st1 = 1.0 - (1.0 + ar + (ar*ar/2.0)) * exp(-ar);     
@@ -528,9 +572,15 @@ void FieldduetoPermanentMultipoles(vector<Molecular> &mol, uint t, uint nmol, co
                    Note: Fermic  and Hesselmann daming function goes to zero quickly at smaller r, not suitable for here
                  */
 
-                //Thole damping function
-                r3  = pow(rij, -3.0)  ; 
-                r5  = 3.0 * pow(rij, -5.0) ;
+                  //Thole damping function and correction updated each iteration
+                  mean_alpha1 = (mol[idi].PPol.xx + mol[idi].PPol.yy + mol[idi].PPol.zz + mol[idi].IPol.xx + mol[idi].IPol.yy + mol[idi].IPol.zz ) / 3.0;
+                  mean_alpha2 = (mol[idj].PPol.xx + mol[idj].PPol.yy + mol[idj].PPol.zz + mol[idj].IPol.xx + mol[idj].IPol.yy + mol[idj].IPol.zz ) / 3.0;
+                  u = rij / pow(mean_alpha1 * mean_alpha2, 0.16666);
+                  ar  = mol[idj].sl * pow(u,3.0)  ;   
+                  st1 = 1.0 - (1.0 + ar + (ar*ar/2.0)) * exp(-ar);     
+                  st2 = 1.0 - (1.0 + ar + (ar*ar/2.0) + (pow(ar,3.0)/6.0)) * exp(-ar);                   
+                  r3  = pow(rij, -3.0)  * (st1 + 0.0); 
+                  r5  = 3.0 * pow(rij, -5.0)  * (st2 + 0.0);
 
                 /*
                   without damping function 
@@ -546,6 +596,18 @@ void FieldduetoPermanentMultipoles(vector<Molecular> &mol, uint t, uint nmol, co
                   st2 = 1.0 - (1.0 + ar + (ar*ar/2.0) + (pow(ar,3.0)/6.0)) * exp(-ar);                   
                   r3  = pow(rij, -3.0)  * (st1 + 0.0); 
                   r5  = 3.0 * pow(rij, -5.0)  * (st2 + 0.0);
+
+
+                  //Thole damping function and correction updated each iteration
+                  mean_alpha1 = (mol[idi].PPol.xx + mol[idi].PPol.yy + mol[idi].PPol.zz + mol[idi].IPol.xx + mol[idi].IPol.yy + mol[idi].IPol.zz ) / 3.0;
+                  mean_alpha2 = (mol[idj].PPol.xx + mol[idj].PPol.yy + mol[idj].PPol.zz + mol[idj].IPol.xx + mol[idj].IPol.yy + mol[idj].IPol.zz ) / 3.0;
+                  u = rij / pow(mean_alpha1 * mean_alpha2, 0.16666);
+                  ar  = mol[idj].sl * pow(u,3.0)  ;   
+                  st1 = 1.0 - (1.0 + ar + (ar*ar/2.0)) * exp(-ar);     
+                  st2 = 1.0 - (1.0 + ar + (ar*ar/2.0) + (pow(ar,3.0)/6.0)) * exp(-ar);                   
+                  r3  = pow(rij, -3.0)  * (st1 + 0.0); 
+                  r5  = 3.0 * pow(rij, -5.0)  * (st2 + 0.0);
+
 
                   Wu and Yang damping function 
                   float cdamp = 3.54 ; 
@@ -587,9 +649,13 @@ void PrintOpticalBirefringence(vector<Molecular> &mol, uint nsteps, uint nmol, c
                 total_OBF_anion  (nsteps, 0.0),
                 total_OBF_both   (nsteps, 0.0),
                 total_OBF_ions   (nsteps, 0.0), 
-                total_OBF_rem    (nsteps, 0.0);
+                total_OBF_rem    (nsteps, 0.0),
+                total_OBF_cat    (nsteps, 0.0),
+                total_OBF_ani    (nsteps, 0.0),
+                total_OBF_allwater    (nsteps, 0.0),
+                total_OBF_nowater    (nsteps, 0.0);
 
-  float count = 0, count_cation = 0, count_anion = 0, count_both = 0, count_rem = 0, count_ions = 0 ;
+  float count = 0, count_cation = 0, count_anion = 0, count_both = 0, count_rem = 0, count_ions = 0, count_allwater = 0, count_nowater = 0, count_cat = 0, count_ani = 0 ;
   float rij = 0, temp = 0, x = 0, y = 0, z = 0 ;
   uint hbond_cation = 0, hbond_anion = 0;
 
@@ -599,30 +665,43 @@ void PrintOpticalBirefringence(vector<Molecular> &mol, uint nsteps, uint nmol, c
         {
           hbond_cation = 0, hbond_anion = 0;
           for(uint j = 0;j < nmol;++j)
-            { 
-              uint idi = nmol*3500+i;  
-              uint idj = nmol*3500+j;
-
+            {  //94 if 200 //46 if 100
+              uint idi = nmol*46+i;  
+              uint idj = nmol*46+j;
+              /*Mg and Na cations */
               if((mol[j].MOL[0] == 'M' || mol[j].MOL[0] == 'N') && i != j )
                 {
                   x = min_distance(mol[idj].x - mol[idi].x, L[0]);
                   y = min_distance(mol[idj].y - mol[idi].y, L[1]);
                   z = min_distance(mol[idj].z - mol[idi].z, L[2]); 
                   rij = mindis(x,y,z,L); 
-                  if(rij < 3.0 && rij > 0)
+                  if(rij < 3.10 && rij > 0)
                     {
                       hbond_cation += 1;  
                     }      
                 }
+              /*CL and F anions */
               if((mol[j].MOL[0] == 'C' || mol[j].MOL[0] == 'F') && i != j ) 
                 {
                   x = min_distance(mol[idj].x - mol[idi].x, L[0]);
                   y = min_distance(mol[idj].y - mol[idi].y, L[1]);
                   z = min_distance(mol[idj].z - mol[idi].z, L[2]); 
                   rij = mindis(x,y,z,L); 
-                  if(rij < 3.0 && rij > 0)
+                  if(rij < 3.70 && rij > 0)
                     {
                       hbond_anion += 1;
+                    }      
+                }
+              /*SO4 anion */
+              if((mol[j].MOL[0] == 'S') && i != j ) 
+                { 
+                  x = min_distance(mol[idj].x - mol[idi].x, L[0]);
+                  y = min_distance(mol[idj].y - mol[idi].y, L[1]);
+                  z = min_distance(mol[idj].z - mol[idi].z, L[2]); 
+                  rij = mindis(x,y,z,L); 
+                  if(rij < 4.75 && rij > 0)
+                    {
+                      hbond_anion += 1; 
                     }      
                 }
             }
@@ -645,6 +724,29 @@ void PrintOpticalBirefringence(vector<Molecular> &mol, uint nsteps, uint nmol, c
             {
               count_cation += 1; 
             }
+
+
+          if( mol[i].MOL[0] == 'M' || mol[i].MOL[0] == 'N' )
+            {
+              count_cat += 1; 
+            }
+
+          if ( mol[i].MOL[0] == 'S' || mol[i].MOL[0] == 'C' || mol[i].MOL[0] == 'F'  )
+            {
+              count_ani += 1; 
+            }
+
+
+
+          if( mol[i].MOL[0] == 'H' && mol[i].MOL[1] == '2' && mol[i].MOL[2] == 'O')
+            {
+              count_allwater += 1; 
+            }
+           else
+            {
+              count_nowater += 1; 
+            }
+
 
           if((hbond_cation > 0 || hbond_anion > 0  || (hbond_cation + hbond_anion) > 0 ) && mol[i].MOL[0] == 'H' && mol[i].MOL[1] == '2' && mol[i].MOL[2] == 'O' )
             {
@@ -674,6 +776,29 @@ void PrintOpticalBirefringence(vector<Molecular> &mol, uint nsteps, uint nmol, c
                   total_OBF_cation[t] += temp ;
                 }
 
+
+          if( mol[i].MOL[0] == 'M' || mol[i].MOL[0] == 'N' )
+            {
+                  total_OBF_cat[t] += temp ;
+            }
+
+          if ( mol[i].MOL[0] == 'S' || mol[i].MOL[0] == 'C' || mol[i].MOL[0] == 'F'  )
+            {
+                  total_OBF_ani[t] += temp ;
+            }
+
+
+
+               /*counting all water*/
+               if(mol[i].MOL[0] == 'H' && mol[i].MOL[1] == '2' && mol[i].MOL[2] == 'O')
+                {
+                  total_OBF_allwater[t] += temp ; 
+                }
+               else 
+                {
+                  total_OBF_nowater[t] += temp ;
+                }
+
                if((hbond_cation > 0 || hbond_anion > 0  || (hbond_cation + hbond_anion) > 0 ) && mol[i].MOL[0] == 'H' && mol[i].MOL[1] == '2' && mol[i].MOL[2] == 'O' )
                 {
                   total_OBF_ions[t] += temp ;
@@ -688,6 +813,11 @@ void PrintOpticalBirefringence(vector<Molecular> &mol, uint nsteps, uint nmol, c
   if(count_anion == 0)  {count_anion = 1;}
   if(count_cation == 0) {count_cation = 1;}
   if(count_ions == 0)   {count_ions = 1;} 
+  if(count_allwater == 0)   {count_allwater = 1;} 
+  if(count_nowater == 0)   {count_nowater = 1;} 
+
+  if(count_ani == 0)  {count_ani = 1;}
+  if(count_cat == 0) {count_cat = 1;}
 
   /* Optical birefringence is in angstrom3 and normalized to per molecule */
   ofstream outfile(filename);
@@ -698,7 +828,11 @@ void PrintOpticalBirefringence(vector<Molecular> &mol, uint nsteps, uint nmol, c
                                  total_OBF_anion[t]  / count_anion  << "  " << 
                                  total_OBF_both[t]   / count_both   << "  " << 
                                  total_OBF_ions[t]   / count_ions   << "  " << 
-                                 total_OBF_rem[t]    / count_rem    << "  " <<  endl;
+                                 total_OBF_rem[t]    / count_rem    << "  " <<  
+                                 total_OBF_allwater[t]/ count_allwater  << "  " <<
+                                 total_OBF_nowater[t]/ count_nowater    << "  " <<
+                                 total_OBF_cat[t]    / count_cat    << "  " <<  
+                                 total_OBF_ani[t]    / count_ani    << "  " <<    endl;
     }
   outfile.close();
   outfile.clear();

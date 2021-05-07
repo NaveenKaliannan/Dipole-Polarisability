@@ -72,6 +72,115 @@ float angle_btwn_3points(const vector<Atom> &r, uint i, uint j1, uint j2, const 
     }
 }
 
+void PrintKEion(vector<Atom> &r, uint nsteps, uint natoms, const vector<float> & L, float dt, string filename)
+{
+  vector<float> total_KE (nsteps, 0.0), trans_KE (nsteps, 0.0), rot_KE (nsteps, 0.0),
+                total_KE_cation (nsteps, 0.0), trans_KE_cation (nsteps, 0.0), rot_KE_cation (nsteps, 0.0),
+                total_KE_anion (nsteps, 0.0), trans_KE_anion (nsteps, 0.0), rot_KE_anion (nsteps, 0.0);
+
+  float rij1 = 0, rij2 = 0, rij = 0, temp = 0, temp1 = 0, temp2 = 0, temp3 = 0, x = 0, y = 0, z = 0 ;
+  float count = 0, count_cation = 0, count_anion = 0, count_cation2 = 0, count_anion2 = 0, count_both = 0, count_rem = 0, count_ions = 0, count_oxygen = 0;
+  uint hbond_cation = 0, hbond_anion = 0, hbond_cation2 = 0, hbond_anion2 = 0, hbond_oxygen = 0;
+  float am_H = 1 * amu, am_O = 16 * amu, am_H2O = 18 * amu ;
+  double com[3]; 
+  double vec[3]; 
+
+  computeatomicvelocity(r, nsteps, natoms, L, dt); 
+  for(uint i = 0;i < natoms;++i)
+    { 
+      if(r[i].symbol[0] == 'M' || r[i].symbol[0] == 'N' || r[i].symbol[0] == 'S' || r[i].symbol[0] == 'C' || r[i].symbol[0] == 'F' ) 
+        {
+
+          count += 1;
+          if(r[i].symbol[0] == 'M' || r[i].symbol[0] == 'N')
+            {
+              count_cation   += 1; 
+            }
+          else if(r[i].symbol[0] == 'S' || r[i].symbol[0] == 'C' || r[i].symbol[0] == 'F')
+            {
+              count_anion  += 1; 
+            }
+
+          for(uint t = 1; t < nsteps-1;  t += deltat )
+            {
+              uint id = natoms*t+i;
+
+              /* translational and rotation KEs */
+              com[0] = r[id].vx ;
+              com[1] = r[id].vy ;
+              com[2] = r[id].vz ;
+
+          if(r[i].symbol[0] == 'M')
+            {
+              temp1         = jtohartree * 0.5 * 24.305 * amu *  norm2(com[0],com[1],com[2]) ;
+              temp2         = jtohartree * 0.5 * 24.305 * amu * norm2(  r[id].vx,  r[id].vy,  r[id].vz) ;
+            }
+          if( r[i].symbol[0] == 'N')
+            {
+              temp1         = jtohartree * 0.5 *11 * amu *  norm2(com[0],com[1],com[2]) ;
+              temp2         = jtohartree * 0.5 * 11 * amu * norm2(  r[id].vx,  r[id].vy,  r[id].vz) ;
+            }
+          if(r[i].symbol[0] == 'C')
+            {
+              temp1         = jtohartree * 0.5 * 35.453 * amu *  norm2(com[0],com[1],com[2]) ;
+              temp2         = jtohartree * 0.5 * 35.453 * amu * norm2(  r[id].vx,  r[id].vy,  r[id].vz) ;
+            }
+          if(r[i].symbol[0] == 'S')
+            {
+              temp1         = jtohartree * 0.5 * 96.06 * amu *  norm2(com[0],com[1],com[2]) ;
+              temp2         = jtohartree * 0.5 * 96.06 * amu * norm2(  r[id].vx,  r[id].vy,  r[id].vz) ;
+            }
+
+
+
+              trans_KE[t]  += temp1 ;
+              total_KE[t]  += temp2 ;
+
+               if(r[i].symbol[0] == 'M' || r[i].symbol[0] == 'N')
+            {
+                  trans_KE_cation[t]  += temp1 ;
+                  total_KE_cation[t]  += temp2 ;
+            }
+          else if(r[i].symbol[0] == 'S' || r[i].symbol[0] == 'C' || r[i].symbol[0] == 'F')
+            {
+                  trans_KE_anion[t]  += temp1 ;
+                  total_KE_anion[t]  += temp2 ;
+            }
+
+            }
+        }
+    }
+
+  if(count == 0)        {count = 1;}
+  if(count_rem == 0)    {count_rem = 1;}
+  if(count_both == 0)   {count_both = 1;}
+  if(count_anion == 0)  {count_anion = 1;}
+  if(count_cation == 0) {count_cation = 1;}
+  if(count_anion2 == 0)  {count_anion2 = 1;}
+  if(count_cation2 == 0) {count_cation2 = 1;}
+  if(count_ions == 0)   {count_ions = 1;}
+  if(count_oxygen == 0) {count_oxygen = 1;}
+
+  /* Total KE is in Atomic Unit in order to compare with CP2K data */
+  ofstream outfile(filename);
+  for(uint t = 1; t < nsteps-1;  t += deltat )
+    {
+      if(total_KE[t] == 0)        {total_KE[t]        = 1;}
+      if(total_KE_cation[t] == 0) {total_KE_cation[t] = 1;}
+      if(total_KE_anion[t] == 0)  {total_KE_anion[t]  = 1;}
+
+
+      outfile << t*dt << "  " << total_KE[t]       << "  " << trans_KE[t] / count              << "  " << rot_KE[t] / count            << "   " << 
+                                total_KE_cation[t] << "  " << trans_KE_cation[t] / count_cation << "  " << rot_KE_cation[t] / count_cation << "   " <<
+                                total_KE_anion[t]  << "  " << trans_KE_anion[t] / count_anion   << "  " << rot_KE_anion[t] / count_anion   << "   "  << endl;
+    }
+  outfile.close();
+  outfile.clear();
+}
+
+
+
+
 
 void PrintKEnCosine(vector<Atom> &r, uint nsteps, uint natoms, const vector<float> & L, float dt, string filename)
 {
@@ -109,10 +218,10 @@ void PrintKEnCosine(vector<Atom> &r, uint nsteps, uint natoms, const vector<floa
           hbond_cation2 = 0, hbond_anion2 = 0;
           for(uint j = 0;j < natoms;++j)
             { 
-              uint idi = natoms*1+i;  
-              uint idi1 = natoms*1+i+1;          
-              uint idi2 = natoms*1+i+2;                  
-              uint idj = natoms*1+j;
+              uint idi = natoms*0+i;  
+              uint idi1 = natoms*0+i+1;          
+              uint idi2 = natoms*0+i+2;                  
+              uint idj = natoms*0+j;
  
               /*first solvation shell*/
               if(r[j].symbol[0] == 'M' || r[j].symbol[0] == 'N')
@@ -121,10 +230,11 @@ void PrintKEnCosine(vector<Atom> &r, uint nsteps, uint natoms, const vector<floa
                   y = min_distance(r[idj].y - r[idi].y, L[1]);
                   z = min_distance(r[idj].z - r[idi].z, L[2]); 
                   rij = mindis(x,y,z,L); 
-                  if(rij < 3.2 && rij > 0)
+                  if(rij < 7.5 && rij > 0 && j == 0)
                     {
                       hbond_cation += 1;
-                    }      
+                    }   
+
                 }
               if(r[j].symbol[0] == 'C' || r[j].symbol[0] == 'F')
                 {
