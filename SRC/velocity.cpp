@@ -230,7 +230,7 @@ void PrintKEnCosine(vector<Atom> &r, uint nsteps, uint natoms, const vector<floa
                   y = min_distance(r[idj].y - r[idi].y, L[1]);
                   z = min_distance(r[idj].z - r[idi].z, L[2]); 
                   rij = mindis(x,y,z,L); 
-                  if(rij < 7.5 && rij > 0 && j == 0)
+                  if(rij < 3.2 && rij > 0 && j == 0)
                     {
                       hbond_cation += 1;
                     }   
@@ -600,18 +600,4 @@ void Printwaterioncoordination(vector<Atom> &r, uint nsteps, uint natoms, const 
       cout << "number Of H2O aroud cation  = " << hbond_cation / count_cation << "\n"  
            << "number Of H2O aroud anion   = " << hbond_anion / count_anion << "\n"  ;                            
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

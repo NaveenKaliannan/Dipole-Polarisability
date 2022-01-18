@@ -38,28 +38,36 @@ void readtrajectory_tinker(vector<Atom> &r, uint nsteps, uint natoms, string xyz
       for(uint i = 0;i < natoms;++i)
         {
           uint id = natoms*t+i;
-          xyzfile >> temp >> r[id].symbol ;
+          xyzfile >> temp >> r[id].symbol ; 
           if((r[id].symbol[0] == 'N' || r[id].symbol[0] == 'n' ) && ( r[id].symbol[1] == 'A' || r[id].symbol[1] == 'a'))
             {
               xyzfile >> r[id].x  >> r[id].y  >> r[id].z >> temp;          
             }
-          if((r[id].symbol[0] == 'M' || r[id].symbol[0] == 'm' ) && ( r[id].symbol[1] == 'G' || r[id].symbol[1] == 'g'))
+          else if((r[id].symbol[0] == 'M' || r[id].symbol[0] == 'm' ) && ( r[id].symbol[1] == 'G' || r[id].symbol[1] == 'g'))
             {
               xyzfile >> r[id].x  >> r[id].y  >> r[id].z >> temp;          
             }
-          if((r[id].symbol[0] == 'C' || r[id].symbol[0] == 'c' ) && ( r[id].symbol[1] == 'L' || r[id].symbol[1] == 'l'))
+          else if((r[id].symbol[0] == 'C' || r[id].symbol[0] == 'c' ) && ( r[id].symbol[1] == 'L' || r[id].symbol[1] == 'l'))
             {
               xyzfile >> r[id].x  >> r[id].y  >> r[id].z >> temp;          
             }
-          if((r[id].symbol[0] == 'F' || r[id].symbol[0] == 'f' ))
+          else if((r[id].symbol[0] == 'F' || r[id].symbol[0] == 'f' ))
             {
               xyzfile >> r[id].x  >> r[id].y  >> r[id].z >> temp;          
             }
-          if((r[id].symbol[0] == 'O' || r[id].symbol[0] == 'o' ))
+          else if((r[id].symbol[0] == 'O' || r[id].symbol[0] == 'o' ) && (r[id].symbol[1] == '1' || r[id].symbol[1] == '1' ) )
             {
-              xyzfile >> r[id].x  >> r[id].y  >> r[id].z >> temp >> temp >> temp;          
+              xyzfile >> r[id].x  >> r[id].y  >> r[id].z >> temp >> temp ;          
             }
-          if((r[id].symbol[0] == 'H' || r[id].symbol[0] == 'h' ))
+          else if((r[id].symbol[0] == 'O' || r[id].symbol[0] == 'o' ) )
+            {
+              xyzfile >> r[id].x  >> r[id].y  >> r[id].z >> temp >> temp >> temp ;          
+            }
+          else if((r[id].symbol[0] == 'S' || r[id].symbol[0] == 's' ) && (r[id].symbol[1] == '1' || r[id].symbol[1] == '1' ) )
+            {
+              xyzfile >> r[id].x  >> r[id].y  >> r[id].z >> temp >> temp >> temp >> temp >> temp ;          
+            }
+          else if((r[id].symbol[0] == 'H' || r[id].symbol[0] == 'h' ))
             {
               xyzfile >> r[id].x  >> r[id].y  >> r[id].z >> temp >> temp ;          
             }
@@ -133,11 +141,13 @@ void Print_tinker(vector<Atom> &r, uint nsteps, uint natoms, const vector<float>
                 }
               if((r[id].symbol[0] == 'M' || r[id].symbol[0] == 'm' ) && ( r[id].symbol[1] == 'G' || r[id].symbol[1] == 'g'))
                 {
-                  outfile << "   " << i+1 << "  " <<  r[id].symbol <<  "  " << r[id].x << "  " << r[id].y << "  " << r[id].z << "    111"  << endl;
+                  //outfile << "   " << i+1 << "  " <<  r[id].symbol <<  "  " << r[id].x << "  " << r[id].y << "  " << r[id].z << "    111"  << endl;
+                  outfile << "   " << i+1 << "  " <<  "Mg+" <<  "  " << r[id].x << "  " << r[id].y << "  " << r[id].z << "    111"  << endl;
                 }
               if((r[id].symbol[0] == 'C' || r[id].symbol[0] == 'c' ) && ( r[id].symbol[1] == 'L' || r[id].symbol[1] == 'l'))
                 {
-                  outfile << "   " << i+1 << "  " <<  r[id].symbol <<  "  " << r[id].x << "  " << r[id].y << "  " << r[id].z << "    115"  << endl;
+                  //outfile << "   " << i+1 << "  " <<  r[id].symbol <<  "  " << r[id].x << "  " << r[id].y << "  " << r[id].z << "    115"  << endl;
+                  outfile << "   " << i+1 << "  " <<  "Cl-" <<  "  " << r[id].x << "  " << r[id].y << "  " << r[id].z << "    115"  << endl;
                 }
               if((r[id].symbol[0] == 'F' || r[id].symbol[0] == 'f' ))
                 {
@@ -145,9 +155,17 @@ void Print_tinker(vector<Atom> &r, uint nsteps, uint natoms, const vector<float>
                 }
               if(r[id].symbol[0] == 'O' && r[id+1].symbol[0] == 'H' && r[id+2].symbol[0] == 'H')
                 {
-                  outfile << "   " << i+1 << "  " <<  r[id].symbol <<  "  " << r[id].x << "  " << r[id].y << "  " << r[id].z << "    103 " << i+2 << "  "<< i+3 << endl;
-                  outfile << "   " << i+2 << "  " <<  r[id+1].symbol <<  "  " << r[id+1].x << "  " << r[id+1].y << "  " << r[id+1].z << "    104 " << i+1 << endl;
-                  outfile << "   " << i+3 << "  " <<  r[id+2].symbol <<  "  " << r[id+2].x << "  " << r[id+2].y << "  " << r[id+2].z << "    104 " << i+1 << endl;
+                  outfile << "   " << i+1 << "  " <<  "O" <<  "  " << r[id].x << "  " << r[id].y << "  " << r[id].z << "    103 " << i+2 << "  "<< i+3 << endl;
+                  outfile << "   " << i+2 << "  " <<  "H" <<  "  " << r[id+1].x << "  " << r[id+1].y << "  " << r[id+1].z << "    104 " << i+1 << endl;
+                  outfile << "   " << i+3 << "  " <<  "H" <<  "  " << r[id+2].x << "  " << r[id+2].y << "  " << r[id+2].z << "    104 " << i+1 << endl;
+                }
+              if(r[id].symbol[0] == 'O' && r[id+1].symbol[0] == 'S' && r[id+2].symbol[0] == 'O' && r[id+3].symbol[0] == 'O')
+                {
+                  outfile << "   " << i+1 << "  " <<  "O" <<  "  " << r[id].x << "  " << r[id].y << "  " << r[id].z << "    119 " << i+2  << endl;
+                  outfile << "   " << i+2 << "  " <<  "S" <<  "  " << r[id+1].x << "  " << r[id+1].y << "  " << r[id+1].z << "    118 " << i+1 << "  " <<  i+3 << " " << i+4 << " " << i+5  << endl;
+                  outfile << "   " << i+3 << "  " <<  "O" <<  "  " << r[id+2].x << "  " << r[id+2].y << "  " << r[id+2].z << "    119 " << i+2 << endl;
+                  outfile << "   " << i+4 << "  " <<  "O" <<  "  " << r[id+3].x << "  " << r[id+3].y << "  " << r[id+3].z << "    119 " << i+2 << endl;
+                  outfile << "   " << i+5 << "  " <<  "O" <<  "  " << r[id+4].x << "  " << r[id+4].y << "  " << r[id+4].z << "    119 " << i+2 << endl;
                 }
             }
         }

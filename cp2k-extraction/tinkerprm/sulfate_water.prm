@@ -1,0 +1,180 @@
+
+      ##############################
+      ##                          ##
+      ##  Force Field Definition  ##
+      ##                          ##
+      ##############################
+
+
+forcefield              AMOEBA
+
+bond-cubic              -2.55
+bond-quartic            3.793125
+angle-cubic             -0.014
+angle-quartic           0.000056
+angle-pentic            -0.0000007
+angle-sextic            0.000000022
+opbendunit              0.02191418
+torsionunit             0.5
+vdwtype                 BUFFERED-14-7
+radiusrule              CUBIC-MEAN
+radiustype              R-MIN
+radiussize              DIAMETER
+epsilonrule             HHG
+dielectric              1.0
+polarization            MUTUAL
+vdw-13-scale            0.0
+vdw-14-scale            1.0
+vdw-15-scale            1.0
+mpole-11-scale          0.0
+mpole-12-scale          0.0
+mpole-13-scale          0.0
+mpole-14-scale          0.4
+mpole-15-scale          0.8
+polar-11-scale          0.0
+polar-12-scale          0.0
+polar-13-scale          0.0
+polar-14-scale          1.0
+polar-15-scale          1.0
+direct-11-scale         0.0
+direct-12-scale         1.0
+direct-13-scale         1.0
+direct-14-scale         1.0
+mutual-11-scale         1.0
+mutual-12-scale         1.0
+mutual-13-scale         1.0
+mutual-14-scale         1.0
+
+
+      #############################
+      ##                         ##
+      ##  Atom Type Definitions  ##
+      ##                         ##
+      #############################
+
+
+atom         24    24    O      "Water O"                  8     15.995    2
+atom         25    25    H      "Water H2O"                1      1.008    1
+atom        310   310    S      "Sulfate S"               16     31.972    4
+atom        311   311    O      "Sulfate O"                8     15.995    1
+
+
+      ################################
+      ##                            ##
+      ##  Van der Waals Parameters  ##
+      ##                            ##
+      ################################
+
+
+vdw          24               3.405     0.1100
+vdw          25               2.655     0.0135     0.91
+vdw         310               3.910     0.3850
+vdw         311               3.450     0.1120
+
+
+
+      ##################################
+      ##                              ##
+      ##  Bond Stretching Parameters  ##
+      ##                              ##
+      ##################################
+
+
+bond         24   25          529.6     0.9572
+bond        310  311          606.0     1.510
+
+      ################################
+      ##                            ##
+      ##  Angle Bending Parameters  ##
+      ##                            ##
+      ################################
+
+
+angle        25   24   25     34.05     108.50
+angle       311  310  311     168.0     109.471
+
+
+
+      ###############################
+      ##                           ##
+      ##  Stretch-Bend Parameters  ##
+      ##                           ##
+      ###############################
+
+
+strbnd       24                7.20       4.30       0.00
+strbnd      310               209.0
+
+
+      ###############################
+      ##                           ##
+      ##  Urey-Bradley Parameters  ##
+      ##                           ##
+      ###############################
+
+
+ureybrad     25   24   25     38.25     1.5537
+
+
+      ####################################
+      ##                                ##
+      ##  Out-of-Plane Bend Parameters  ##
+      ##                                ##
+      ####################################
+
+
+      ############################
+      ##                        ##
+      ##  Torsional Parameters  ##
+      ##                        ##
+      ############################
+
+
+      #############################
+      ##                         ##
+      ##  Pi-Torsion Parameters  ##
+      ##                         ##
+      #############################
+
+
+      ###################################
+      ##                               ##
+      ##  Atomic Multipole Parameters  ##
+      ##                               ##
+      ###################################
+
+
+multipole    24   25  -25             -0.51966
+                                       0.00000    0.00000    0.14279
+                                       0.37928
+                                       0.00000   -0.41809
+                                       0.00000    0.00000    0.03881
+multipole    25   24   25              0.25983
+                                      -0.03859    0.00000   -0.05818
+                                      -0.03673
+                                       0.00000   -0.10739
+                                      -0.00203    0.00000    0.14412
+multipole   310  311  311              0.86816
+                                       0.00000    0.00000    0.00000
+                                       0.00000
+                                       0.00000    0.00000
+                                       0.00000    0.00000    0.00000
+multipole   311  310  311             -0.71704
+                                       0.00000    0.00000    0.59187
+                                      -0.59281
+                                       0.00000   -0.59281
+                                       0.00000    0.00000    1.18562
+
+
+
+      ########################################
+      ##                                    ##
+      ##  Dipole Polarizability Parameters  ##
+      ##                                    ##
+      ########################################
+
+
+polarize     24               0.837      0.390      25
+polarize     25               0.496      0.390      24
+polarize    310               3.300      0.390     311
+polarize    311               0.837      0.390     310

@@ -170,7 +170,7 @@ void Induced_polarisabilityduetohyperpolarizability(vector<Molecular> &mol, uint
   for(uint t = 0; t < nsteps;t += deltat )
     {
       TensorduetoPermanentMultipoles(mol, t, nmol, L, Field);
-      TensorduetoExternalField(mol, t, nmol, E,  Field);
+      //TensorduetoExternalField(mol, t, nmol, E,  Field);
       for(uint i = 0;i < nmol;++i)
         {
           idi = nmol*t+i;  
@@ -189,7 +189,7 @@ void Induced_polarisabilityduetofirsthyperpolarizability(vector<Molecular> &mol,
   for(uint t = 0; t < nsteps;t += deltat )
     {
       TensorduetoPermanentMultipoles(mol, t, nmol, L, Field);
-      TensorduetoExternalField(mol, t, nmol, E,  Field);
+      //TensorduetoExternalField(mol, t, nmol, E,  Field);
       for(uint i = 0;i < nmol;++i)
         {
           idi = nmol*t+i;  
@@ -207,7 +207,7 @@ void Induced_polarisabilityduetosecondhyperpolarizability(vector<Molecular> &mol
   for(uint t = 0; t < nsteps;t += deltat )
     {
       TensorduetoPermanentMultipoles(mol, t, nmol, L, Field);
-      TensorduetoExternalField(mol, t, nmol, E,  Field);
+      //TensorduetoExternalField(mol, t, nmol, E,  Field);
       for(uint i = 0;i < nmol;++i)
         {
           idi = nmol*t+i;  
@@ -259,16 +259,9 @@ void TensorduetoPermanentMultipoles(vector<Molecular> &mol, uint t, uint nmol, c
               dist(mol, idi, idj, L, PB_L, imageno, cell, x, y, z );
               rij = mindis(x,y,z,PB_L);       
               if ((i != j && cell == 0 && rij < rcut  ) || (cell > 0 && rij < rcut))
-              {               
-                  //Thole damping function and correction updated each iteration
-                  mean_alpha1 = (mol[idi].PPol.xx + mol[idi].PPol.yy + mol[idi].PPol.zz + mol[idi].IPol.xx + mol[idi].IPol.yy + mol[idi].IPol.zz ) / 3.0;
-                  mean_alpha2 = (mol[idj].PPol.xx + mol[idj].PPol.yy + mol[idj].PPol.zz + mol[idj].IPol.xx + mol[idj].IPol.yy + mol[idj].IPol.zz ) / 3.0;
-                  u = rij / pow(mean_alpha1 * mean_alpha2, 0.16666);
-                  ar  = mol[idj].sl * pow(u,3.0)  ;   
-                  st1 = 1.0 - (1.0 + ar + (ar*ar/2.0)) * exp(-ar);     
-                  st2 = 1.0 - (1.0 + ar + (ar*ar/2.0) + (pow(ar,3.0)/6.0)) * exp(-ar);                   
-                  r3  = pow(rij, -3.0)  * (st1 + 0.0); 
-                  r5  = 3.0 * pow(rij, -5.0)  * (st2 + 0.0);
+              {                                  
+                  r3  = pow(rij, -3.0)  ; 
+                  r5  = 3.0 * pow(rij, -5.0) ;
 
                 pc =  debyetoangstrom * mol[idj].q * pointchargedistancetodebye;
                 pd =  debyetoangstrom * ((mol[idj].PD.x + mol[idj].ID.x ) * x + (mol[idj].PD.y + mol[idj].ID.y ) * y + (mol[idj].PD.z + mol[idj].ID.z ) * z ) ; 
@@ -328,49 +321,8 @@ void TensorduetoPolarisability(vector<Molecular> &mol, uint t, uint nmol, const 
               rij = mindis(x,y,z,PB_L);       
               if ((i != j && cell == 0 && rij < rcut ) || (cell > 0 && rij < rcut))
               {
-                  //Thole damping function and correction updated each iteration
-                  mean_alpha1 = (mol[idi].PPol.xx + mol[idi].PPol.yy + mol[idi].PPol.zz + mol[idi].IPol.xx + mol[idi].IPol.yy + mol[idi].IPol.zz ) / 3.0;
-                  mean_alpha2 = (mol[idj].PPol.xx + mol[idj].PPol.yy + mol[idj].PPol.zz + mol[idj].IPol.xx + mol[idj].IPol.yy + mol[idj].IPol.zz ) / 3.0;
-                  u = rij / pow(mean_alpha1 * mean_alpha2, 0.16666);
-                  ar  = mol[idj].sl * pow(u,3.0)  ;   
-                  st1 = 1.0 - (1.0 + ar + (ar*ar/2.0)) * exp(-ar);     
-                  st2 = 1.0 - (1.0 + ar + (ar*ar/2.0) + (pow(ar,3.0)/6.0)) * exp(-ar);                   
-                  r3  = pow(rij, -3.0)  * (st1 + 0.0); 
-                  r5  = 3.0 * pow(rij, -5.0)  * (st2 + 0.0);
-
-                /*
-                  without damping function 
                   r3  = pow(rij, -3.0)  ; 
                   r5  = 3.0 * pow(rij, -5.0) ;
- 
-                  Thole damping function
-                  mean_alpha1 = (mol[idi].PPol.xx + mol[idi].PPol.yy + mol[idi].PPol.zz ) / 3.0;
-                  mean_alpha2 = (mol[idj].PPol.xx + mol[idj].PPol.yy + mol[idj].PPol.zz ) / 3.0;
-                  u = rij / pow(mean_alpha1 * mean_alpha2, 0.16666);
-                  ar  = mol[idj].sl * pow(u,3.0)  ;   
-                  st1 = 1.0 - (1.0 + ar + (ar*ar/2.0)) * exp(-ar);     
-                  st2 = 1.0 - (1.0 + ar + (ar*ar/2.0) + (pow(ar,3.0)/6.0)) * exp(-ar);                   
-                  r3  = pow(rij, -3.0)  * (st1 + 0.0); 
-                  r5  = 3.0 * pow(rij, -5.0)  * (st2 + 0.0);
-
-                  Thole damping function and correction updated each iteration
-                  mean_alpha1 = (mol[idi].PPol.xx + mol[idi].PPol.yy + mol[idi].PPol.zz + mol[idi].IPol.xx + mol[idi].IPol.yy + mol[idi].IPol.zz ) / 3.0;
-                  mean_alpha2 = (mol[idj].PPol.xx + mol[idj].PPol.yy + mol[idj].PPol.zz + mol[idj].IPol.xx + mol[idj].IPol.yy + mol[idj].IPol.zz ) / 3.0;
-                  u = rij / pow(mean_alpha1 * mean_alpha2, 0.16666);
-                  ar  = mol[idj].sl * pow(u,3.0)  ;   
-                  st1 = 1.0 - (1.0 + ar + (ar*ar/2.0)) * exp(-ar);     
-                  st2 = 1.0 - (1.0 + ar + (ar*ar/2.0) + (pow(ar,3.0)/6.0)) * exp(-ar);                   
-                  r3  = pow(rij, -3.0)  * (st1 + 0.0); 
-                  r5  = 3.0 * pow(rij, -5.0)  * (st2 + 0.0);
-
-                  Wu and Yang damping function 
-                  float cdamp = 3.54 ; 
-                  float r_vdwr = mol[idi].vdwr + mol[idj].vdwr ;
-                  float WY1 =  pow( 1.0  - exp( -1.0 * cdamp * pow( rij / r_vdwr ,3)) , 2);
-                  r3  = pow(rij, -3.0)  * WY1 ; 
-                  r5  = 3.0 * pow(rij, -5.0)  * WY1;
-                */
-
 
                 Tij.xx = -r3 + r5 * x * x ;
                 Tij.yy = -r3 + r5 * y * y ; 
@@ -453,48 +405,8 @@ void Fieldduetodipole(vector<Molecular> &mol, uint t, uint nmol, const vector<fl
               rij = mindis(x,y,z,PB_L);       
               if ((i != j && cell == 0 && rij < rcut  ) || (cell > 0 && rij < rcut))
               {
-                  //Thole damping function and correction updated each iteration
-                  mean_alpha1 = (mol[idi].PPol.xx + mol[idi].PPol.yy + mol[idi].PPol.zz + mol[idi].IPol.xx + mol[idi].IPol.yy + mol[idi].IPol.zz ) / 3.0;
-                  mean_alpha2 = (mol[idj].PPol.xx + mol[idj].PPol.yy + mol[idj].PPol.zz + mol[idj].IPol.xx + mol[idj].IPol.yy + mol[idj].IPol.zz ) / 3.0;
-                  u = rij / pow(mean_alpha1 * mean_alpha2, 0.16666);
-                  ar  = mol[idj].sl * pow(u,3.0)  ;   
-                  st1 = 1.0 - (1.0 + ar + (ar*ar/2.0)) * exp(-ar);     
-                  st2 = 1.0 - (1.0 + ar + (ar*ar/2.0) + (pow(ar,3.0)/6.0)) * exp(-ar);                   
-                  r3  = pow(rij, -3.0)  * (st1 + 0.0); 
-                  r5  = 3.0 * pow(rij, -5.0)  * (st2 + 0.0);
-
-                /*
-                  without damping function 
                   r3  = pow(rij, -3.0)  ; 
                   r5  = 3.0 * pow(rij, -5.0) ;
- 
-                  Thole damping function
-                  mean_alpha1 = (mol[idi].PPol.xx + mol[idi].PPol.yy + mol[idi].PPol.zz ) / 3.0;
-                  mean_alpha2 = (mol[idj].PPol.xx + mol[idj].PPol.yy + mol[idj].PPol.zz ) / 3.0;
-                  u = rij / pow(mean_alpha1 * mean_alpha2, 0.16666);
-                  ar  = mol[idj].sl * pow(u,3.0)  ;   
-                  st1 = 1.0 - (1.0 + ar + (ar*ar/2.0)) * exp(-ar);     
-                  st2 = 1.0 - (1.0 + ar + (ar*ar/2.0) + (pow(ar,3.0)/6.0)) * exp(-ar);                   
-                  r3  = pow(rij, -3.0)  * (st1 + 0.0); 
-                  r5  = 3.0 * pow(rij, -5.0)  * (st2 + 0.0);
-
-                  Thole damping function and correction updated each iteration
-                  mean_alpha1 = (mol[idi].PPol.xx + mol[idi].PPol.yy + mol[idi].PPol.zz + mol[idi].IPol.xx + mol[idi].IPol.yy + mol[idi].IPol.zz ) / 3.0;
-                  mean_alpha2 = (mol[idj].PPol.xx + mol[idj].PPol.yy + mol[idj].PPol.zz + mol[idj].IPol.xx + mol[idj].IPol.yy + mol[idj].IPol.zz ) / 3.0;
-                  u = rij / pow(mean_alpha1 * mean_alpha2, 0.16666);
-                  ar  = mol[idj].sl * pow(u,3.0)  ;   
-                  st1 = 1.0 - (1.0 + ar + (ar*ar/2.0)) * exp(-ar);     
-                  st2 = 1.0 - (1.0 + ar + (ar*ar/2.0) + (pow(ar,3.0)/6.0)) * exp(-ar);                   
-                  r3  = pow(rij, -3.0)  * (st1 + 0.0); 
-                  r5  = 3.0 * pow(rij, -5.0)  * (st2 + 0.0);
-
-                  Wu and Yang damping function 
-                  float cdamp = 3.54 ; 
-                  float r_vdwr = mol[idi].vdwr + mol[idj].vdwr ;
-                  float WY1 =  pow( 1.0  - exp( -1.0 * cdamp * pow( rij / r_vdwr ,3)) , 2);
-                  r3  = pow(rij, -3.0)  * WY1 ; 
-                  r5  = 3.0 * pow(rij, -5.0)  * WY1;
-                */
 
                 Tij.xx = -r3 + r5 * x * x ;
                 Tij.yy = -r3 + r5 * y * y ; 
@@ -572,15 +484,8 @@ void FieldduetoPermanentMultipoles(vector<Molecular> &mol, uint t, uint nmol, co
                    Note: Fermic  and Hesselmann daming function goes to zero quickly at smaller r, not suitable for here
                  */
 
-                  //Thole damping function and correction updated each iteration
-                  mean_alpha1 = (mol[idi].PPol.xx + mol[idi].PPol.yy + mol[idi].PPol.zz + mol[idi].IPol.xx + mol[idi].IPol.yy + mol[idi].IPol.zz ) / 3.0;
-                  mean_alpha2 = (mol[idj].PPol.xx + mol[idj].PPol.yy + mol[idj].PPol.zz + mol[idj].IPol.xx + mol[idj].IPol.yy + mol[idj].IPol.zz ) / 3.0;
-                  u = rij / pow(mean_alpha1 * mean_alpha2, 0.16666);
-                  ar  = mol[idj].sl * pow(u,3.0)  ;   
-                  st1 = 1.0 - (1.0 + ar + (ar*ar/2.0)) * exp(-ar);     
-                  st2 = 1.0 - (1.0 + ar + (ar*ar/2.0) + (pow(ar,3.0)/6.0)) * exp(-ar);                   
-                  r3  = pow(rij, -3.0)  * (st1 + 0.0); 
-                  r5  = 3.0 * pow(rij, -5.0)  * (st2 + 0.0);
+                  r3  = pow(rij, -3.0)  ; 
+                  r5  = 3.0 * pow(rij, -5.0) ;
 
                 /*
                   without damping function 
@@ -666,8 +571,8 @@ void PrintOpticalBirefringence(vector<Molecular> &mol, uint nsteps, uint nmol, c
           hbond_cation = 0, hbond_anion = 0;
           for(uint j = 0;j < nmol;++j)
             {  //94 if 200 //46 if 100
-              uint idi = nmol*46+i;  
-              uint idj = nmol*46+j;
+              uint idi = nmol*0+i;  
+              uint idj = nmol*0+j;
               /*Mg and Na cations */
               if((mol[j].MOL[0] == 'M' || mol[j].MOL[0] == 'N') && i != j )
                 {

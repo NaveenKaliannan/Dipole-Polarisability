@@ -29,7 +29,7 @@ void readtrajectory(vector<Atom> &r, uint nsteps, uint natoms, string xyzfilenam
       for(uint i = 0;i < natoms;++i)
         {
           uint id = natoms*t+i; 
-          xyzfile >> r[id].symbol >> r[id].x  >> r[id].y  >> r[id].z;           
+          xyzfile >> r[id].symbol >> r[id].x  >> r[id].y  >> r[id].z;      
           //cout << r[id].symbol <<  "  " << r[id].x << "  " << r[id].y << "  " << r[id].z << endl;
         }
     }
@@ -49,11 +49,15 @@ void readtrajectory_gro(vector<Atom> &r, uint nsteps, uint natoms, string xyzfil
         for(uint i = 0;i < natoms;++i)
           {
             uint id = natoms*t+i;
-            xyzfile >> temp >> r[id].symbol >> temp >> r[id].x  >> r[id].y  >> r[id].z;
+            //xyz     xyzfile >> temp >> r[id].symbol >> temp >> r[id].x  >> r[id].y  >> r[id].z;
+            //xyz-vel xyzfile >> temp >> r[id].symbol >> temp >> r[id].x  >> r[id].y  >> r[id].z >>  temp >> temp >> temp;
+            xyzfile >> temp >> r[id].symbol >> temp >> r[id].x  >> r[id].y  >> r[id].z >>  temp >> temp >> temp;
             r[id].x *= 10;
             r[id].y *= 10;
             r[id].z *= 10;
+          if(r[id].z < 9.1)  { cout << r[id].symbol <<  "  " << r[id].x << "  " << r[id].y << "  " << r[id].z << endl; }   
             //cout << t << "  " << i << "  " <<  r[id].symbol <<  "  " << r[id].x << "  " << r[id].y << "  " << r[id].z << endl;
+           
           }
         xyzfile >> temp >>  temp >> temp;
         getline(xyzfile, temp);
@@ -183,33 +187,29 @@ void Print(vector<Atom> &r, uint nsteps, uint natoms, const vector<float> & L, v
                }
           }
 
-outfile <<  t * dt  << " " <<  a   << " " <<  b  << " "  << c << "  " //<<  (a-0.5*(b+c) )/nmol
-                          << " " <<  a1  << " " <<  b1 << " "  << c1 //<< "   " << (a1-0.5*(b1+c1)) /nmol
-                          << " " <<  axy << " " << axz << " "  << ayz
-                          << " " <<  ayx << " " << azx << " "  << azy  << endl;
 
-      /*  outfile <<  t * dt << " " <<  a   << " " <<  b  << " "  << c << "  " << a - 0.5 * (b+c)
+        outfile <<  t * dt << " " <<  a   << " " <<  b  << " "  << c << "  " 
                            << " " <<  a1  << " " <<  b1 << " "  << c1 << "   " << a1 - 0.5 * (b1+c1)
                            << " " <<  axy << " " << axz << " "  << ayz
-                           << " " <<  ayx << " " << azx << " "  << azy  << endl; */
+                           << " " <<  ayx << " " << azx << " "  << azy  << endl; 
         
-        outfile << "#Time  " << t * dt << "\n" << "## Total Mol [string] " << nmol << " Total \u03BC  [Debye] in x y z " << a << "  " << b << "  " << c << "   "  <<  " Total \u03B1 [Angstrom] xx yy zz  " << a1 << "  " <<  b1  << "  " << c1  << endl;
-        outfile << "##Mol [string]  \u03BC  [Debye] in x y z \u03B1 [Angstrom] xx yy zz  \n";
+       // outfile << "#Time  " << t * dt << "\n" << "## Total Mol [string] " << nmol << " Total \u03BC  [Debye] in x y z " << a << "  " << b << "  " << c << "   "  <<  " Total \u03B1 [Angstrom] xx yy zz  " << a1 << "  " <<  b1  << "  " << c1  << endl;
+        //outfile << "##Mol [string]  \u03BC  [Debye] in x y z \u03B1 [Angstrom] xx yy zz  \n";
         for(uint i = 0;i < nmol;++i)
           {
             uint id = nmol*t+i;
              if(TYPE[4] == 'P')
                {
-                 outfile << id <<  "  " <<  mol[id].MOL <<  "  " << mol[id].PD.x << "  " << mol[id].PD.y << "  " << mol[id].PD.z << "  "<< mol[id].PPol.xx << "  " << mol[id].PPol.yy << "  " << mol[id].PPol.zz << endl;
+              //   outfile << id <<  "  " <<  mol[id].MOL <<  "  " << mol[id].PD.x << "  " << mol[id].PD.y << "  " << mol[id].PD.z << "  "<< mol[id].PPol.xx << "  " << mol[id].PPol.yy << "  " << mol[id].PPol.zz << endl;
               }
              else if(TYPE[4] == 'I')
                {
-                 outfile << mol[id].MOL <<  "  " <<  mol[id].ID.x << "  " <<  mol[id].ID.y << "  " <<  mol[id].ID.z << "  "<<  mol[id].IPol.xx << "  " <<  mol[id].IPol.yy << "  " <<  mol[id].IPol.zz << endl;
+               //  outfile << mol[id].MOL <<  "  " <<  mol[id].ID.x << "  " <<  mol[id].ID.y << "  " <<  mol[id].ID.z << "  "<<  mol[id].IPol.xx << "  " <<  mol[id].IPol.yy << "  " <<  mol[id].IPol.zz << endl;
                }
              else if(TYPE[4] == 'T')
                {
              //    outfile << mol[id].MOL <<  "  " << mol[id].PD.x << "  " << mol[id].PD.y << "  " << mol[id].PD.z << "  "<< mol[id].PPol.xx << "  " << mol[id].PPol.yy << "  " << mol[id].PPol.zz << endl;
-                 outfile << mol[id].MOL <<  "  " << mol[id].PD.x + mol[id].ID.x << "  " << mol[id].PD.y + mol[id].ID.y << "  " << mol[id].PD.z + mol[id].ID.z << "  "<< mol[id].PPol.xx + mol[id].IPol.xx << "  " << mol[id].PPol.yy + mol[id].IPol.yy << "  " << mol[id].PPol.zz + mol[id].IPol.zz << endl;
+               //  outfile << mol[id].MOL <<  "  " << mol[id].PD.x + mol[id].ID.x << "  " << mol[id].PD.y + mol[id].ID.y << "  " << mol[id].PD.z + mol[id].ID.z << "  "<< mol[id].PPol.xx + mol[id].IPol.xx << "  " << mol[id].PPol.yy + mol[id].IPol.yy << "  " << mol[id].PPol.zz + mol[id].IPol.zz << endl;
                }
           }
       }
