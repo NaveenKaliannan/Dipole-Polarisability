@@ -55,7 +55,7 @@ void readtrajectory_gro(vector<Atom> &r, uint nsteps, uint natoms, string xyzfil
             r[id].x *= 10;
             r[id].y *= 10;
             r[id].z *= 10;
-          if(r[id].z < 9.1)  { cout << r[id].symbol <<  "  " << r[id].x << "  " << r[id].y << "  " << r[id].z << endl; }   
+          //if(r[id].z < 9.1)  { cout << r[id].symbol <<  "  " << r[id].x << "  " << r[id].y << "  " << r[id].z << endl; }   
             //cout << t << "  " << i << "  " <<  r[id].symbol <<  "  " << r[id].x << "  " << r[id].y << "  " << r[id].z << endl;
            
           }

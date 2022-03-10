@@ -70,7 +70,9 @@ void replica(const vector<float> & L, uint ncell, vector<float> & PB_L, vector<V
 /* Broken bonds due to PBC are solved here, Minimum image convention was applied to bring them together */
 void BringintoBox(vector<Atom> &r, uint nsteps,  uint natoms, const vector<float> & L)
 {
-  for(uint t = 0; t < nsteps; ++t )
+
+  // t += deltat, ++t
+  for(uint t = 0; t < nsteps; t += ++t )
     { 
       for(uint i = 0;i < natoms;++i)
         {
@@ -88,8 +90,8 @@ void BringintoBox(vector<Atom> &r, uint nsteps,  uint natoms, const vector<float
           if(r[id].z < 0 ) { r[id].z += L[2] ; }
         }
     }
-
-  for(uint t = 0; t < nsteps; ++t )
+  // t += deltat, ++t
+  for(uint t = 0; t < nsteps; t += ++t )
     { 
       for(uint i = 0;i < natoms;++i)
         {

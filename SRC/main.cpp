@@ -52,21 +52,10 @@ int main ( int argc, char** argv )
   vector<Molecular> mol ;
   vector<Vector> E (nsteps);
 
-  readtrajectory_gro(r, nsteps, natoms, xyzfilename, L); 
+  readtrajectory(r, nsteps, natoms, xyzfilename, L); 
   BringintoBox(r, nsteps, natoms, L); 
-  Print(r, nsteps, natoms, L, mol, nmol, dt, "PBC-trajectory.xyz", "ATM");
-  Print_tinker(r, nsteps, natoms, L, mol, nmol, dt, "water.xyz", "TINKER");
-  readExternalfield(E, nsteps, fieldfilename);  
-  TransformAtomictoMolecular(r, nsteps, natoms, L, mol, nmol);
-  PrintOpticalBirefringence(mol, nsteps, nmol, L, dt, argv[9]);  
-  Induced_dipole(mol, nsteps, nmol, L, 500, E);
-  Induced_polarisability(mol, nsteps, nmol, L, 500, E);
-  PrintOpticalBirefringence(mol, nsteps, nmol, L, dt, argv[10]);
-  Induced_polarisabilityduetofirsthyperpolarizability(mol, nsteps, nmol, L, 500, E);
-  PrintOpticalBirefringence(mol, nsteps, nmol, L, dt, argv[11]);
-  Induced_polarisabilityduetosecondhyperpolarizability(mol, nsteps, nmol, L, 500, E);
-  PrintOpticalBirefringence(mol, nsteps, nmol, L, dt, argv[12]);
-  Print(r, nsteps, natoms, L, mol, nmol, dt, "Total.data", "DIP-T");
+  classifywater(r, nsteps, natoms, L, dt);
+  PrintOOdistance(r, nsteps, natoms, L, dt, "OOdistance");
 
 
 /*

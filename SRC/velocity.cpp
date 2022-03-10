@@ -230,7 +230,7 @@ void PrintKEnCosine(vector<Atom> &r, uint nsteps, uint natoms, const vector<floa
                   y = min_distance(r[idj].y - r[idi].y, L[1]);
                   z = min_distance(r[idj].z - r[idi].z, L[2]); 
                   rij = mindis(x,y,z,L); 
-                  if(rij < 3.2 && rij > 0 && j == 0)
+                  if(rij < 3.2 && rij > 0)
                     {
                       hbond_cation += 1;
                     }   
@@ -599,5 +599,362 @@ void Printwaterioncoordination(vector<Atom> &r, uint nsteps, uint natoms, const 
 
       cout << "number Of H2O aroud cation  = " << hbond_cation / count_cation << "\n"  
            << "number Of H2O aroud anion   = " << hbond_anion / count_anion << "\n"  ;                            
+}
+
+void classifywater(vector<Atom> &r, uint nsteps, uint natoms, const vector<float> & L, float dt)
+{
+
+  uint idi = 0, idj = 0;
+  float rij1 = 0, rij2 = 0, rij = 0, temp = 0, temp1 = 0, temp2 = 0, temp3 = 0, x = 0, y = 0, z = 0 ;;
+  uint hbond_cation = 0, hbond_anion = 0, hbond_cation2 = 0, hbond_anion2 = 0, hbond_oxygen = 0;
+ 
+  for(uint t = 0; t < nsteps; ++t )
+    {
+  for(uint i = 0;i < natoms;++i)
+    { 
+      uint idi = natoms*t+i;  
+      uint idi1 = natoms*t+i+1;          
+      if(r[i].symbol[0] == 'O' && r[i+1].symbol[0] == 'H' && r[i+2].symbol[0] == 'H') 
+        {
+          hbond_cation = 0, hbond_anion = 0, hbond_oxygen = 0;
+          hbond_cation2 = 0, hbond_anion2 = 0;
+          for(uint j = 0;j < natoms;++j)
+            { 
+              uint idi2 = natoms*t+i+2;                  
+              uint idj = natoms*t+j;
+ 
+              /*first solvation shell*/
+              if(r[j].symbol[0] == 'M' || r[j].symbol[0] == 'N')
+                {
+                  x = min_distance(r[idj].x - r[idi].x, L[0]);
+                  y = min_distance(r[idj].y - r[idi].y, L[1]);
+                  z = min_distance(r[idj].z - r[idi].z, L[2]); 
+                  rij = mindis(x,y,z,L); 
+                  if(rij < 3.2 && rij > 0)
+                    {
+                      hbond_cation += 1;  
+                    }   
+                }
+              if(r[j].symbol[0] == 'C' || r[j].symbol[0] == 'F')
+                {
+                  x = min_distance(r[idj].x - r[idi1].x, L[0]);
+                  y = min_distance(r[idj].y - r[idi1].y, L[1]);
+                  z = min_distance(r[idj].z - r[idi1].z, L[2]); 
+                  rij1 = mindis(x,y,z,L);
+
+                  x = min_distance(r[idj].x - r[idi2].x, L[0]);
+                  y = min_distance(r[idj].y - r[idi2].y, L[1]);
+                  z = min_distance(r[idj].z - r[idi2].z, L[2]); 
+                  rij2 = mindis(x,y,z,L); 
+                  if( (rij1 < 3.0 && rij1 > 0) || (rij2 < 3.0 && rij2 > 0))
+                    {
+                      hbond_anion += 1;
+                    }      
+                }
+              if(r[j].symbol[0] == 'S')
+                {
+                  x = min_distance(r[idj].x - r[idi1].x, L[0]);
+                  y = min_distance(r[idj].y - r[idi1].y, L[1]);
+                  z = min_distance(r[idj].z - r[idi1].z, L[2]); 
+                  rij1 = mindis(x,y,z,L);
+
+                  x = min_distance(r[idj].x - r[idi2].x, L[0]);
+                  y = min_distance(r[idj].y - r[idi2].y, L[1]);
+                  z = min_distance(r[idj].z - r[idi2].z, L[2]); 
+                  rij2 = mindis(x,y,z,L); 
+                  if( (rij1 < 3.75 && rij1 > 0) || (rij2 < 3.75 && rij2 > 0))
+                    {
+                      hbond_anion += 1; 
+                    }      
+                }
+            }
+
+          if(hbond_cation == 0 && hbond_anion == 0)
+            {
+              r[idi].watertype = "remwater"; 
+            }
+          else if(hbond_cation > 0 && hbond_anion > 0)
+            {
+              r[idi].watertype = "waterbetweencationandanion"; 
+            }
+          else if(hbond_cation == 0 && hbond_anion > 0)
+            {
+              r[idi].watertype = "wateraroundanion"; 
+            }
+          else if(hbond_cation > 0 && hbond_anion == 0)
+            {
+              r[idi].watertype = "wateraroundcation"; 
+            }
+        }
+    }
+    }
+}
+
+
+void PrintOOdistance1(vector<Atom> &r, uint nsteps, uint natoms, const vector<float> & L, float dt, string filename)
+{
+  float x = 0, y = 0, z = 0, rij = 0, V = L[0] * L[1] * L[2], len = max(L[0], L[1]), RDF_h = 0.1, count = 0 ;
+  uint idi = 0, idj = 0, ncell = 0, count_atoms = 0;
+  len = max(len, L[2]);
+  len = len/2.0;
+  uint RDF_size = len*100;
+  vector<float> RDF(RDF_size,0.0), rad(RDF_size,0.0);
+  for(uint i = 1;i < RDF_size ;i++)
+    {
+      rad[i]          = i * 0.01;
+    }  
+  float no_of_residue_first  = 0;
+  float no_of_residue_second = 0; 
+  //cout << "g \u03B1 - \u03B2 (rij)" << endl; ;
+  //cout << "Enter number of \u03B1 species : " ;
+  //cin >>  no_of_residue_first ;
+  //cout << "Enter number of \u03B2 species : " ;
+  //cin >>  no_of_residue_second ;
+
+  string whichtype = "wateraroundcation";
+  for(uint t = 0; t < nsteps; t += deltat )  
+    {
+      cout << t << endl;
+      count += 1;      
+      for(uint RDF_i = 1;RDF_i < RDF_size - 1; ++RDF_i)
+        {
+          count_atoms = 0;
+          no_of_residue_first = 0;        
+          for(uint i = 0;i < natoms;++i)
+            {
+              idi = natoms*t+i;  
+              if(r[idi].watertype == whichtype && r[idi].symbol[0] == 'O' && r[idi+1].symbol[0] == 'H' ) {no_of_residue_first+=1;}
+              no_of_residue_second = 0;        
+              for(uint j = 0;j < natoms;++j)
+                {
+                  idj = natoms*t+j;
+                  if(r[idj].watertype != whichtype  && r[idj].symbol[0] == 'O' && r[idj+1].symbol[0] == 'H'  ) {no_of_residue_second+=1;}
+                  if (r[idi].symbol[0] == 'O' && r[idj].symbol[0] == 'O' &&
+                      r[idi+1].symbol[0] == 'H' && r[idj+1].symbol[0] == 'H' && 
+                      r[idi+2].symbol[0] == 'H' && r[idj+2].symbol[0] == 'H'  &&
+                       i != j  &&
+                       r[idi].watertype == whichtype &&
+                       r[idj].watertype != whichtype  )
+                    {    
+                      x = min_distance(r[idj].x - r[idi].x, L[0]);
+                      y = min_distance(r[idj].y - r[idi].y, L[1]);
+                      z = min_distance(r[idj].z - r[idi].z, L[2]); 
+                      rij = mindis(x,y,z,L);       
+                      if (rij <= rad[RDF_i] + (RDF_h/2.0) && rij > rad[RDF_i] - (RDF_h/2.0))
+                        {
+                          count_atoms += 1;  
+                        }
+                    }
+                }
+            }
+          RDF[RDF_i]  += count_atoms;
+        }
+    }
+
+  // consine thetha per water molecule
+  ofstream outfile(whichtype);
+  for(uint RDF_i = 1;RDF_i < RDF_size - 1; ++RDF_i)
+    {
+      float bulkdensity = no_of_residue_second/V ; 
+      outfile << rad[RDF_i]  << "  " << RDF[RDF_i] / (bulkdensity * 4.0 * PI * rad[RDF_i] * rad[RDF_i] *  RDF_h * count * no_of_residue_first)  << endl;
+    }
+  outfile.close();
+  outfile.clear();
+}
+
+
+
+
+void PrintOOdistance(vector<Atom> &r, uint nsteps, uint natoms, const vector<float> & L, float dt, string filename)
+{
+  float V = L[0] * L[1] * L[2], len = max(L[0], L[1]), RDF_h = 0.1 ;
+  uint idi = 0, idj = 0, ncell = 0, count_atoms = 0;
+  len = max(len, L[2]);
+  len = len/2.0;
+  uint RDF_size = len*100;
+  vector<float> cation(RDF_size,0.0), anion(RDF_size,0.0), both(RDF_size,0.0), rem(RDF_size,0.0), total(RDF_size,0.0), rad(RDF_size,0.0);
+  for(uint i = 1;i < RDF_size ;i++)
+    {
+      rad[i]          = i * 0.01;
+    }   
+
+  float rij1 = 0, rij2 = 0, rij = 0, temp = 0, temp1 = 0, temp2 = 0, temp3 = 0, x = 0, y = 0, z = 0 ;
+  float count = 0, count_cation = 0, count_anion = 0, count_cation2 = 0, count_anion2 = 0, count_both = 0, count_rem = 0, count_ions = 0, count_oxygen = 0;
+  uint hbond_cation = 0, hbond_anion = 0, hbond_cation2 = 0, hbond_anion2 = 0, hbond_oxygen = 0;
+ 
+  for(uint i = 0;i < natoms;++i)
+    { 
+      //cout << i << endl;
+      if(r[i].symbol[0] == 'O' && r[i+1].symbol[0] == 'H' && r[i+2].symbol[0] == 'H') 
+        {
+          hbond_cation = 0, hbond_anion = 0, hbond_oxygen = 0;
+          hbond_cation2 = 0, hbond_anion2 = 0;
+          for(uint j = 0;j < natoms;++j)
+            { 
+              uint idi = natoms*0+i;  
+              uint idi1 = natoms*0+i+1;          
+              uint idi2 = natoms*0+i+2;                  
+              uint idj = natoms*0+j;
+ 
+              /*first solvation shell*/
+              if(r[j].symbol[0] == 'M' || r[j].symbol[0] == 'N')
+                {
+                  x = min_distance(r[idj].x - r[idi].x, L[0]);
+                  y = min_distance(r[idj].y - r[idi].y, L[1]);
+                  z = min_distance(r[idj].z - r[idi].z, L[2]); 
+                  rij = mindis(x,y,z,L); 
+                  if(rij < 3.2 && rij > 0)
+                    {
+                      hbond_cation += 1;  
+                    }   
+                }
+              if(r[j].symbol[0] == 'C' || r[j].symbol[0] == 'F')
+                {
+                  x = min_distance(r[idj].x - r[idi1].x, L[0]);
+                  y = min_distance(r[idj].y - r[idi1].y, L[1]);
+                  z = min_distance(r[idj].z - r[idi1].z, L[2]); 
+                  rij1 = mindis(x,y,z,L);
+
+                  x = min_distance(r[idj].x - r[idi2].x, L[0]);
+                  y = min_distance(r[idj].y - r[idi2].y, L[1]);
+                  z = min_distance(r[idj].z - r[idi2].z, L[2]); 
+                  rij2 = mindis(x,y,z,L); 
+                  if( (rij1 < 3.0 && rij1 > 0) || (rij2 < 3.0 && rij2 > 0))
+                    {
+                      hbond_anion += 1;
+                    }      
+                }
+              if(r[j].symbol[0] == 'S')
+                {
+                  x = min_distance(r[idj].x - r[idi1].x, L[0]);
+                  y = min_distance(r[idj].y - r[idi1].y, L[1]);
+                  z = min_distance(r[idj].z - r[idi1].z, L[2]); 
+                  rij1 = mindis(x,y,z,L);
+
+                  x = min_distance(r[idj].x - r[idi2].x, L[0]);
+                  y = min_distance(r[idj].y - r[idi2].y, L[1]);
+                  z = min_distance(r[idj].z - r[idi2].z, L[2]); 
+                  rij2 = mindis(x,y,z,L); 
+                  if( (rij1 < 3.75 && rij1 > 0) || (rij2 < 3.75 && rij2 > 0))
+                    {
+                      hbond_anion += 1; 
+                    }      
+                }
+            }
+
+          /*counting first solvation shell*/
+          count += 1;
+          if(hbond_cation == 0 && hbond_anion == 0)
+            {
+              count_rem   += 1;  
+            }
+          else if(hbond_cation > 0 && hbond_anion > 0)
+            {
+              count_both  += 1; 
+            }
+          else if(hbond_cation == 0 && hbond_anion > 0)
+            {
+              count_anion += 1; 
+            }
+          else if(hbond_cation > 0 && hbond_anion == 0)
+            {
+              count_cation += 1; 
+            }
+
+
+      for(uint RDF_i = 1;RDF_i < RDF_size - 1; ++RDF_i)
+        {
+          if(rad[RDF_i] > 2.2 && rad[RDF_i] < 3.5){
+          temp = 0;
+          for(uint t = 1; t < nsteps-1;  t += deltat)
+            {
+              idi = natoms*t+i;          
+              for(uint j = 0;j < natoms;++j)
+                {
+                  idj = natoms*t+j; 
+                  // donating + accepting
+                  if (r[idi].symbol[0] == 'O' && r[idj].symbol[0] == 'O' && r[idj+1].symbol[0] == 'H' && i != j)
+                    {                  
+                      x = min_distance(r[idj].x - r[idi].x, L[0]);
+                      y = min_distance(r[idj].y - r[idi].y, L[1]);
+                      z = min_distance(r[idj].z - r[idi].z, L[2]); 
+                      rij = mindis(x,y,z,L);     
+  
+                      if (rij <= rad[RDF_i] + (RDF_h/2.0) && rij > rad[RDF_i] - (RDF_h/2.0) && rij < 3.5  && rij > 0 && ( angle_btwn_3points(r,idi,idi+1,idj, L) < 30 || angle_btwn_3points(r,idi,idi+2,idj, L) < 30 || angle_btwn_3points(r,idj,idj+1,idi, L) < 30 || angle_btwn_3points(r,idj,idj+2,idi, L) < 30)  )
+                        {
+                          temp += 1; // cout << rij << endl;
+                        }
+                    }
+                }
+            }}
+
+                  total[RDF_i]  += temp    ; 
+
+              /*first solvation shell*/
+              if(hbond_cation == 0 && hbond_anion == 0)
+                {
+                  rem[RDF_i]  += temp ;
+                }
+              else if(hbond_cation > 0 && hbond_anion > 0)
+                {
+                  both[RDF_i]  += temp ;
+                }
+              else if(hbond_cation == 0 && hbond_anion > 0)
+                {
+                  anion[RDF_i]  += temp ;
+                }
+              else if(hbond_cation > 0 && hbond_anion == 0)
+                {
+                  cation[RDF_i]  += temp ;
+                }
+        }
+        } //if condition ends
+    }
+
+  if(count == 0)        {count = 1;}
+  if(count_rem == 0)    {count_rem = 1;}
+  if(count_both == 0)   {count_both = 1;}
+  if(count_anion == 0)  {count_anion = 1;}
+  if(count_cation == 0) {count_cation = 1;}
+  if(count_anion2 == 0)  {count_anion2 = 1;}
+  if(count_cation2 == 0) {count_cation2 = 1;}
+  if(count_ions == 0)   {count_ions = 1;}
+  if(count_oxygen == 0) {count_oxygen = 1;}
+
+  double sum1=0;
+  double sum2=0;
+  double sum3=0;
+  double sum4=0;
+  double sum5=0;
+
+
+  for(uint RDF_i = 1;RDF_i < RDF_size - 1; ++RDF_i)
+    {
+      sum1 +=total[RDF_i] / count ;
+      sum2 +=cation[RDF_i] / count_cation;
+      sum3 +=anion[RDF_i] / count_anion;
+      sum4 +=both[RDF_i] / count_both;
+      sum5 +=rem[RDF_i] / count_rem;
+    }
+
+  if(sum1 == 0)        {sum1 = 1;}
+  if(sum2 == 0)        {sum2 = 1;}
+  if(sum3 == 0)        {sum3 = 1;}
+  if(sum4 == 0)        {sum4 = 1;}
+  if(sum5 == 0)        {sum5 = 1;}
+
+
+  ofstream outfile(filename);
+  for(uint RDF_i = 1;RDF_i < RDF_size - 1; ++RDF_i)
+    {
+      double bulkden = 1 ;
+      outfile << rad[RDF_i]  << "  " << total[RDF_i] / (count * sum1 * bulkden )  << "  " 
+                                     << cation[RDF_i] / (count_cation * sum2* bulkden)  << "  " 
+                                     << anion[RDF_i] / (count_anion * sum3 * bulkden )  << "  " 
+                                     << both[RDF_i]  /(count_both * sum4 * bulkden )  << "  " 
+                                     << rem[RDF_i] / (count_rem * sum5 * bulkden )  << endl;
+    }
+  outfile.close();
+  outfile.clear();
 }
 

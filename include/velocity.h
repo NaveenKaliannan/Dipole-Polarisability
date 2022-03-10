@@ -17,8 +17,8 @@ void computeatomicvelocity(vector<Atom> &r, uint nsteps, uint natoms, const vect
 
 float angle_btwn_3points(const vector<Atom> &r, uint i, uint j1, uint j2, const vector<float> & L ) ; 
 void PrintKEnCosine(vector<Atom> &r, uint nsteps, uint natoms, const vector<float> & L, float dt, string filename) ; 
-
-
+void classifywater(vector<Atom> &r, uint nsteps, uint natoms, const vector<float> & L, float dt) ; 
+void PrintOOdistance(vector<Atom> &r, uint nsteps, uint natoms, const vector<float> & L, float dt, string filename);
 void Printwaterioncoordination(vector<Atom> &r, uint nsteps, uint natoms, const vector<float> & L, float dt, string filename) ;
 
 #endif

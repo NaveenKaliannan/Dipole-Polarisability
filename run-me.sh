@@ -27,7 +27,13 @@ make
 ## SO4 coordinates in xyz file should in the following order O S O O O
 ## H2O coordinates in xyz file should in the following order O H H
 
-./exe ../$1 traj.psf 1 0.4 15.72 405 135 ../field_atomicunit one two three four
+##check io.h file for deltat, dipol.cpp for ncell for replica
+
+
+./exe ../$1 traj.psf 25000 0.4 15.56 389 131 ../field_atomicunit one two three four
+
+##./exe ../$1 traj.psf 25000 0.4 16.099 414 148 ../field_atomicunit one two three four
+##./exe ../$1 traj.psf 80000 0.4 15.6404 384 128 ../field_atomicunit one two three four
 
 
 
