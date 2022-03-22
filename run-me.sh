@@ -1,8 +1,7 @@
 
 #!/bin/bash
 
-#module load chem/CP2K/5.1-foss-2018b
-#module load vis/GLib/2.64.1-GCCcore-9.3.0
+
 
 ##rm -rf build/*
 mkdir build
@@ -10,6 +9,8 @@ cp CMakeLists.txt build/CMakeLists.txt
 cd build
 cmake . 
 make
+
+./exe ../$1 traj.psf 10000 0.4 7 18 8 ../field_atomicunit perm_polaniso  permplusDID_polaniso permplusXDID_polaniso permplusXXDID_polaniso permanet Induced total
 
 ## argumets
 ## 1. trajectory
@@ -23,15 +24,15 @@ make
 
 ## Important Note: Partial charges, atomic and molecular polarisability for ions should be 
 ## described in parameters() function in  dipol.cpp file
-
 ## SO4 coordinates in xyz file should in the following order O S O O O
 ## H2O coordinates in xyz file should in the following order O H H
-
 ##check io.h file for deltat, dipol.cpp for ncell for replica
 
 
-./exe ../$1 traj.psf 25000 0.4 15.56 389 131 ../field_atomicunit one two three four
+#module load chem/CP2K/5.1-foss-2018b
+#module load vis/GLib/2.64.1-GCCcore-9.3.0
 
+#./exe ../$1 traj.psf 25000 0.4 15.56 389 131 ../field_atomicunit one two three four
 ##./exe ../$1 traj.psf 25000 0.4 16.099 414 148 ../field_atomicunit one two three four
 ##./exe ../$1 traj.psf 80000 0.4 15.6404 384 128 ../field_atomicunit one two three four
 

@@ -54,9 +54,23 @@ int main ( int argc, char** argv )
 
   readtrajectory(r, nsteps, natoms, xyzfilename, L); 
   BringintoBox(r, nsteps, natoms, L); 
-  classifywater(r, nsteps, natoms, L, dt);
-  PrintOOdistance(r, nsteps, natoms, L, dt, "OOdistance");
+  readExternalfield(E, nsteps, fieldfilename);
+  TransformAtomictoMolecular(r, nsteps, natoms, L, mol, nmol);
 
+  // Printing permanet, induced and total polarizability anisotropy of whole system as well as classified water 
+  PrintOpticalBirefringence(mol, nsteps, nmol, L, dt, argv[9]);
+  Induced_dipole(mol, nsteps, nmol, L, 500, E);
+  Induced_polarisability(mol, nsteps, nmol, L, 500, E);
+  PrintOpticalBirefringence(mol, nsteps, nmol, L, dt, argv[10]);
+  Induced_polarisabilityduetofirsthyperpolarizability(mol, nsteps, nmol, L, 500, E);
+  PrintOpticalBirefringence(mol, nsteps, nmol, L, dt, argv[11]);
+  Induced_polarisabilityduetosecondhyperpolarizability(mol, nsteps, nmol, L, 500, E);
+  PrintOpticalBirefringence(mol, nsteps, nmol, L, dt, argv[12]);
+
+  // Printing permanet, induced and total dipole, polarizability of whole system. 
+  Print(r, nsteps, natoms, L, mol, nmol, dt, argv[13], "DIP-P");
+  Print(r, nsteps, natoms, L, mol, nmol, dt, argv[14], "DIP-I");
+  Print(r, nsteps, natoms, L, mol, nmol, dt, argv[15], "DIP-T");
 
 /*
   /*Reading Trajectories - xyz, gro, tinker, tinkerhp
@@ -120,6 +134,8 @@ int main ( int argc, char** argv )
 
 
   /* assinging coordination number and asymmetry gamma parameter for pure water
+  classifywater(r, nsteps, natoms, L, dt);
+  PrintOOdistance(r, nsteps, natoms, L, dt, "OOdistance");
   Assigncoordinationforpurewater(r, nsteps, natoms, L, dt); 
   Assigngammaforpurewater(r, nsteps, natoms, L, dt); 
   */
