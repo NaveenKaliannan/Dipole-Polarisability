@@ -54,8 +54,8 @@ int main ( int argc, char** argv )
 
   readtrajectory(r, nsteps, natoms, xyzfilename, L); 
   BringintoBox(r, nsteps, natoms, L); 
-  readExternalfield(E, nsteps, fieldfilename);
-  TransformAtomictoMolecular(r, nsteps, natoms, L, mol, nmol);
+  //readExternalfield(E, nsteps, fieldfilename);
+  TransformAtomictoAtomic(r, nsteps, natoms, L, mol, nmol);
 
   // Printing permanet, induced and total polarizability anisotropy of whole system as well as classified water 
   PrintOpticalBirefringence(mol, nsteps, nmol, L, dt, argv[9]);

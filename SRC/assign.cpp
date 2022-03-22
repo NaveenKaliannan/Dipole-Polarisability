@@ -435,6 +435,32 @@ void TransformAtomictoAtomic(vector<Atom> &r, uint nsteps,  uint natoms, const v
           mols.PD.x *= amutodebye;
           mols.PD.y *= amutodebye;
           mols.PD.z *= amutodebye;
+         //MG
+          if((r[id].symbol[0] == 'M' || r[id].symbol[0] == 'm' ) && ( r[id].symbol[1] == 'G' || r[id].symbol[1] == 'g'))
+            {
+              mols.MOL = "Mg";
+              mols.sl = 0.1150 ;
+              mols.vdwr = 1.364 ;     
+            }
+          //CL
+          if((r[id].symbol[0] == 'C' || r[id].symbol[0] == 'c' ) && ( r[id].symbol[1] == 'L' || r[id].symbol[1] == 'l'))
+            {
+              mols.MOL = "Cl";
+              mols.sl = 0.3900 ; 
+              mols.vdwr = 1.639 ;    
+            }
+          if((r[id].symbol[0] == 'O'))
+            {
+              mols.MOL = "O";
+              mols.sl = 0.3900 ; 
+              mols.vdwr = 1.52 ;    
+            }
+          if((r[id].symbol[0] == 'H'))
+            {
+              mols.MOL = "H";
+              mols.sl = 0.3900 ; 
+              mols.vdwr = 1.0 ;    
+            }
           mol.push_back(mols);         
         }
     } 

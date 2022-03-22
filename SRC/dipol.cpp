@@ -16,7 +16,7 @@
 #include "../include/assign.h"
 
 #define ncell  1
-#define rcut  5.7
+#define rcut 7
 
 
 
@@ -260,8 +260,14 @@ void TensorduetoPermanentMultipoles(vector<Molecular> &mol, uint t, uint nmol, c
               rij = mindis(x,y,z,PB_L);       
               if ((i != j && cell == 0 && rij < rcut  ) || (cell > 0 && rij < rcut))
               {                                  
-                  r3  = pow(rij, -3.0)  ; 
-                  r5  = 3.0 * pow(rij, -5.0) ;
+                  mean_alpha1 = (mol[idi].PPol.xx + mol[idi].PPol.yy + mol[idi].PPol.zz ) / 3.0;
+                  mean_alpha2 = (mol[idj].PPol.xx + mol[idj].PPol.yy + mol[idj].PPol.zz ) / 3.0;
+                  u = rij / pow(mean_alpha1 * mean_alpha2, 0.16666);
+                  ar  = mol[idj].sl * pow(u,3.0)  ;   
+                  st1 = 1.0 - (1.0 + ar + (ar*ar/2.0)) * exp(-ar);     
+                  st2 = 1.0 - (1.0 + ar + (ar*ar/2.0) + (pow(ar,3.0)/6.0)) * exp(-ar);                   
+                  r3  = pow(rij, -3.0)  * (st1 + 0.0); 
+                  r5  = 3.0 * pow(rij, -5.0)  * (st2 + 0.0);
 
                 pc =  debyetoangstrom * mol[idj].q * pointchargedistancetodebye;
                 pd =  debyetoangstrom * ((mol[idj].PD.x + mol[idj].ID.x ) * x + (mol[idj].PD.y + mol[idj].ID.y ) * y + (mol[idj].PD.z + mol[idj].ID.z ) * z ) ; 
@@ -321,8 +327,14 @@ void TensorduetoPolarisability(vector<Molecular> &mol, uint t, uint nmol, const 
               rij = mindis(x,y,z,PB_L);       
               if ((i != j && cell == 0 && rij < rcut ) || (cell > 0 && rij < rcut))
               {
-                  r3  = pow(rij, -3.0)  ; 
-                  r5  = 3.0 * pow(rij, -5.0) ;
+                  mean_alpha1 = (mol[idi].PPol.xx + mol[idi].PPol.yy + mol[idi].PPol.zz ) / 3.0;
+                  mean_alpha2 = (mol[idj].PPol.xx + mol[idj].PPol.yy + mol[idj].PPol.zz ) / 3.0;
+                  u = rij / pow(mean_alpha1 * mean_alpha2, 0.16666);
+                  ar  = mol[idj].sl * pow(u,3.0)  ;   
+                  st1 = 1.0 - (1.0 + ar + (ar*ar/2.0)) * exp(-ar);     
+                  st2 = 1.0 - (1.0 + ar + (ar*ar/2.0) + (pow(ar,3.0)/6.0)) * exp(-ar);                   
+                  r3  = pow(rij, -3.0)  * (st1 + 0.0); 
+                  r5  = 3.0 * pow(rij, -5.0)  * (st2 + 0.0);
 
                 Tij.xx = -r3 + r5 * x * x ;
                 Tij.yy = -r3 + r5 * y * y ; 
@@ -405,8 +417,14 @@ void Fieldduetodipole(vector<Molecular> &mol, uint t, uint nmol, const vector<fl
               rij = mindis(x,y,z,PB_L);       
               if ((i != j && cell == 0 && rij < rcut  ) || (cell > 0 && rij < rcut))
               {
-                  r3  = pow(rij, -3.0)  ; 
-                  r5  = 3.0 * pow(rij, -5.0) ;
+                  mean_alpha1 = (mol[idi].PPol.xx + mol[idi].PPol.yy + mol[idi].PPol.zz ) / 3.0;
+                  mean_alpha2 = (mol[idj].PPol.xx + mol[idj].PPol.yy + mol[idj].PPol.zz ) / 3.0;
+                  u = rij / pow(mean_alpha1 * mean_alpha2, 0.16666);
+                  ar  = mol[idj].sl * pow(u,3.0)  ;   
+                  st1 = 1.0 - (1.0 + ar + (ar*ar/2.0)) * exp(-ar);     
+                  st2 = 1.0 - (1.0 + ar + (ar*ar/2.0) + (pow(ar,3.0)/6.0)) * exp(-ar);                   
+                  r3  = pow(rij, -3.0)  * (st1 + 0.0); 
+                  r5  = 3.0 * pow(rij, -5.0)  * (st2 + 0.0);
 
                 Tij.xx = -r3 + r5 * x * x ;
                 Tij.yy = -r3 + r5 * y * y ; 
@@ -484,8 +502,14 @@ void FieldduetoPermanentMultipoles(vector<Molecular> &mol, uint t, uint nmol, co
                    Note: Fermic  and Hesselmann daming function goes to zero quickly at smaller r, not suitable for here
                  */
 
-                  r3  = pow(rij, -3.0)  ; 
-                  r5  = 3.0 * pow(rij, -5.0) ;
+                  mean_alpha1 = (mol[idi].PPol.xx + mol[idi].PPol.yy + mol[idi].PPol.zz ) / 3.0;
+                  mean_alpha2 = (mol[idj].PPol.xx + mol[idj].PPol.yy + mol[idj].PPol.zz ) / 3.0;
+                  u = rij / pow(mean_alpha1 * mean_alpha2, 0.16666);
+                  ar  = mol[idj].sl * pow(u,3.0)  ;   
+                  st1 = 1.0 - (1.0 + ar + (ar*ar/2.0)) * exp(-ar);     
+                  st2 = 1.0 - (1.0 + ar + (ar*ar/2.0) + (pow(ar,3.0)/6.0)) * exp(-ar);                   
+                  r3  = pow(rij, -3.0)  * (st1 + 0.0); 
+                  r5  = 3.0 * pow(rij, -5.0)  * (st2 + 0.0);
 
                 /*
                   without damping function 

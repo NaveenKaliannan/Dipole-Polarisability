@@ -200,11 +200,11 @@ void Print(vector<Atom> &r, uint nsteps, uint natoms, const vector<float> & L, v
             uint id = nmol*t+i;
              if(TYPE[4] == 'P')
                {
-              //   outfile << id <<  "  " <<  mol[id].MOL <<  "  " << mol[id].PD.x << "  " << mol[id].PD.y << "  " << mol[id].PD.z << "  "<< mol[id].PPol.xx << "  " << mol[id].PPol.yy << "  " << mol[id].PPol.zz << endl;
+                // outfile << id <<  "  " <<  mol[id].MOL <<  "  " << mol[id].PD.x << "  " << mol[id].PD.y << "  " << mol[id].PD.z << "  "<< mol[id].PPol.xx << "  " << mol[id].PPol.yy << "  " << mol[id].PPol.zz << endl;
               }
              else if(TYPE[4] == 'I')
                {
-               //  outfile << mol[id].MOL <<  "  " <<  mol[id].ID.x << "  " <<  mol[id].ID.y << "  " <<  mol[id].ID.z << "  "<<  mol[id].IPol.xx << "  " <<  mol[id].IPol.yy << "  " <<  mol[id].IPol.zz << endl;
+                // outfile << id << "  " << mol[id].MOL <<  "  " <<  mol[id].ID.x << "  " <<  mol[id].ID.y << "  " <<  mol[id].ID.z << "  "<<  mol[id].IPol.xx << "  " <<  mol[id].IPol.yy << "  " <<  mol[id].IPol.zz << endl;
                }
              else if(TYPE[4] == 'T')
                {

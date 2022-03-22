@@ -10,7 +10,7 @@ cd build
 cmake . 
 make
 
-./exe ../$1 traj.psf 10000 0.4 7 18 8 ../field_atomicunit perm_polaniso  permplusDID_polaniso permplusXDID_polaniso permplusXXDID_polaniso permanet Induced total
+./exe ../$1 traj.psf 10000 0.4 7 18 18 ../field_atomicunit perm_polaniso  permplusDID_polaniso permplusXDID_polaniso permplusXXDID_polaniso permanet Induced total
 
 ## argumets
 ## 1. trajectory
