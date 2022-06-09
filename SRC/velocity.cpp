@@ -608,7 +608,7 @@ void classifywater(vector<Atom> &r, uint nsteps, uint natoms, const vector<float
   float rij1 = 0, rij2 = 0, rij = 0, temp = 0, temp1 = 0, temp2 = 0, temp3 = 0, x = 0, y = 0, z = 0 ;;
   uint hbond_cation = 0, hbond_anion = 0, hbond_cation2 = 0, hbond_anion2 = 0, hbond_oxygen = 0;
  
-  for(uint t = 0; t < nsteps; ++t )
+  for(uint t = 0; t < nsteps; t += deltat )
     {
   for(uint i = 0;i < natoms;++i)
     { 
@@ -711,7 +711,7 @@ void PrintOOdistance1(vector<Atom> &r, uint nsteps, uint natoms, const vector<fl
   //cout << "Enter number of \u03B2 species : " ;
   //cin >>  no_of_residue_second ;
 
-  string whichtype = "wateraroundcation";
+  string whichtype = "waterbetweencationandanion";
   for(uint t = 0; t < nsteps; t += deltat )  
     {
       cout << t << endl;
@@ -762,6 +762,254 @@ void PrintOOdistance1(vector<Atom> &r, uint nsteps, uint natoms, const vector<fl
   outfile.clear();
 }
 
+
+
+void Printtrans_rot_ccfn(vector<Atom> &r, uint nsteps, uint natoms, const vector<float> & L, float dt, string filename)
+{
+
+  uint tcfl = 2000; 
+  uint time_cond = 1; 
+  vector<float> total_ccfn (tcfl, 0.0), 
+                ccfn_cation (tcfl, 0.0),
+                ccfn_anion (tcfl, 0.0), 
+                ccfn_both (tcfl, 0.0), 
+                ccfn_rem (tcfl, 0.0);
+
+  float rij1 = 0, rij2 = 0, rij = 0, temp = 0, x = 0, y = 0, z = 0 ;
+  float count = 0, count_cation = 0, count_anion = 0, count_both = 0, count_rem = 0;
+  uint hbond_cation = 0, hbond_anion = 0;
+  float am_H = 1 * amu, am_O = 16 * amu, am_H2O = 18 * amu ;
+  double comv_t0[3]; 
+  double comr_t0[3]; 
+  double comv_t[3]; 
+  double comr_t[3]; 
+  double angv_t0[3]; 
+  int count_tcfl=0;
+
+
+  computeatomicvelocity(r, nsteps, natoms, L, dt); 
+  for(uint i = 0;i < natoms;++i)
+    { cout << i << endl;
+      if(r[i].symbol[0] == 'O' && r[i+1].symbol[0] == 'H' && r[i+2].symbol[0] == 'H') 
+        {
+          hbond_cation = 0, hbond_anion = 0;
+          for(uint j = 0;j < natoms;++j)
+            { 
+              uint idi = natoms*time_cond+i;  
+              uint idi1 = natoms*time_cond+i+1;          
+              uint idi2 = natoms*time_cond+i+2;                  
+              uint idj = natoms*time_cond+j;
+ 
+              /*first solvation shell*/
+              if(r[j].symbol[0] == 'M' || r[j].symbol[0] == 'N')
+                {
+                  x = min_distance(r[idj].x - r[idi].x, L[0]);
+                  y = min_distance(r[idj].y - r[idi].y, L[1]);
+                  z = min_distance(r[idj].z - r[idi].z, L[2]); 
+                  rij = mindis(x,y,z,L); 
+                  if(rij < 3.2 && rij > 0)
+                    {
+                      hbond_cation += 1;
+                    }      
+                }
+              if(r[j].symbol[0] == 'C' || r[j].symbol[0] == 'F')
+                {
+                  x = min_distance(r[idj].x - r[idi1].x, L[0]);
+                  y = min_distance(r[idj].y - r[idi1].y, L[1]);
+                  z = min_distance(r[idj].z - r[idi1].z, L[2]); 
+                  rij1 = mindis(x,y,z,L);
+
+                  x = min_distance(r[idj].x - r[idi2].x, L[0]);
+                  y = min_distance(r[idj].y - r[idi2].y, L[1]);
+                  z = min_distance(r[idj].z - r[idi2].z, L[2]); 
+                  rij2 = mindis(x,y,z,L); 
+                  if( (rij1 < 3.0 && rij1 > 0) || (rij2 < 3.0 && rij2 > 0))
+                    {
+                      hbond_anion += 1;
+                    }      
+                }
+            }
+
+          /*counting first solvation shell*/
+          count += 1;
+          if(hbond_cation == 0 && hbond_anion == 0)
+            {
+              count_rem   += 1; 
+            }
+          else if(hbond_cation > 0 && hbond_anion > 0)
+            {
+              count_both  += 1; 
+            }
+          else if(hbond_cation == 0 && hbond_anion > 0)
+            {
+              count_anion += 1; 
+            }
+          else if(hbond_cation > 0 && hbond_anion == 0)
+            {
+              count_cation += 1; 
+            }
+
+          count_tcfl=0; 
+          for(uint time_cond = 1; time_cond < nsteps - tcfl - 2000 ;  time_cond += 100 ){
+          count_tcfl+=1;
+          uint indexstart = 0;
+      
+              uint id_t0 = natoms*time_cond+i;
+              comv_t0[0] = r[id_t0].vx * (am_O/am_H2O) +  r[id_t0+1].vx * (am_H/am_H2O) +  r[id_t0+2].vx * (am_H/am_H2O) ;
+              comv_t0[1] = r[id_t0].vy * (am_O/am_H2O) +  r[id_t0+1].vy * (am_H/am_H2O) +  r[id_t0+2].vy * (am_H/am_H2O) ;
+              comv_t0[2] = r[id_t0].vz * (am_O/am_H2O) +  r[id_t0+1].vz * (am_H/am_H2O) +  r[id_t0+2].vz * (am_H/am_H2O) ;
+
+
+              comr_t0[0] = r[id_t0].x * (am_O/am_H2O) +  r[id_t0+1].x * (am_H/am_H2O) +  r[id_t0+2].x * (am_H/am_H2O) ;
+              comr_t0[1] = r[id_t0].y * (am_O/am_H2O) +  r[id_t0+1].y * (am_H/am_H2O) +  r[id_t0+2].y * (am_H/am_H2O) ;
+              comr_t0[2] = r[id_t0].z * (am_O/am_H2O) +  r[id_t0+1].z * (am_H/am_H2O) +  r[id_t0+2].z * (am_H/am_H2O) ;
+
+          for(uint t = time_cond; t < (tcfl + time_cond) - 1 ;  t += 1 )
+            {
+
+              uint id = natoms*t+i;
+              comv_t[0] = r[id].vx * (am_O/am_H2O) +  r[id+1].vx * (am_H/am_H2O) +  r[id+2].vx * (am_H/am_H2O) ;
+              comv_t[1] = r[id].vy * (am_O/am_H2O) +  r[id+1].vy * (am_H/am_H2O) +  r[id+2].vy * (am_H/am_H2O) ;
+              comv_t[2] = r[id].vz * (am_O/am_H2O) +  r[id+1].vz * (am_H/am_H2O) +  r[id+2].vz * (am_H/am_H2O) ;
+
+
+              comr_t[0] = r[id].x * (am_O/am_H2O) +  r[id+1].x * (am_H/am_H2O) +  r[id+2].x * (am_H/am_H2O) ;
+              comr_t[1] = r[id].y * (am_O/am_H2O) +  r[id+1].y * (am_H/am_H2O) +  r[id+2].y * (am_H/am_H2O) ;
+              comr_t[2] = r[id].z * (am_O/am_H2O) +  r[id+1].z * (am_H/am_H2O) +  r[id+2].z * (am_H/am_H2O) ;
+            
+
+              /*angular velocity*/
+              double vect_A[3], vect_B[3], normr ;
+              vect_A[0] = r[id_t0].x - comr_t0[0] ; 
+              vect_A[1] = r[id_t0].y - comr_t0[1] ; 
+              vect_A[2] = r[id_t0].z - comr_t0[2] ;
+              vect_B[0] = r[id_t0].vx - comv_t0[0]; 
+              vect_B[1] = r[id_t0].vy - comv_t0[1]; 
+              vect_B[2] = r[id_t0].vz - comv_t0[2] ;
+              normr =  pow(vect_A[0],2) + pow(vect_A[1],2) + pow(vect_A[2],2) ; 
+              angv_t0[0] = (vect_A[1] * vect_B[2] - vect_A[2] * vect_B[1]) / normr ;
+              angv_t0[1] = (vect_A[2] * vect_B[0] - vect_A[0] * vect_B[2]) / normr ;
+              angv_t0[2] = (vect_A[0] * vect_B[1] - vect_A[1] * vect_B[0]) / normr ;
+
+              vect_A[0] = r[id_t0+1].x - comr_t0[0] ; 
+              vect_A[1] = r[id_t0+1].y - comr_t0[1] ; 
+              vect_A[2] = r[id_t0+1].z - comr_t0[2] ;
+              vect_B[0] = r[id_t0+1].vx - comv_t0[0]; 
+              vect_B[1] = r[id_t0+1].vy - comv_t0[1]; 
+              vect_B[2] = r[id_t0+1].vz - comv_t0[2] ;
+              normr =  pow(vect_A[0],2) + pow(vect_A[1],2) + pow(vect_A[2],2) ;
+              angv_t0[0] += (vect_A[1] * vect_B[2] - vect_A[2] * vect_B[1]) / normr ;
+              angv_t0[1] += (vect_A[2] * vect_B[0] - vect_A[0] * vect_B[2]) / normr ;
+              angv_t0[2] += (vect_A[0] * vect_B[1] - vect_A[1] * vect_B[0]) / normr ;
+
+              vect_A[0] = r[id_t0+2].x - comr_t0[0] ; 
+              vect_A[1] = r[id_t0+2].y - comr_t0[1] ; 
+              vect_A[2] = r[id_t0+2].z - comr_t0[2] ;
+              vect_B[0] = r[id_t0+2].vx - comv_t0[0]; 
+              vect_B[1] = r[id_t0+2].vy - comv_t0[1]; 
+              vect_B[2] = r[id_t0+2].vz - comv_t0[2] ;
+              normr =  pow(vect_A[0],2) + pow(vect_A[1],2) + pow(vect_A[2],2) ;
+              angv_t0[0] += (vect_A[1] * vect_B[2] - vect_A[2] * vect_B[1]) / normr ;
+              angv_t0[1] += (vect_A[2] * vect_B[0] - vect_A[0] * vect_B[2]) / normr ;
+              angv_t0[2] += (vect_A[0] * vect_B[1] - vect_A[1] * vect_B[0]) / normr ;
+
+
+              double a1, a2, a3 ;
+              a1 = angv_t0[2] ;
+              a2 = comv_t0[1] ;
+              a3 = comv_t[1] ; 
+
+              temp         = (comv_t0[0]*comv_t[0]+comv_t0[1]*comv_t[1]+comv_t0[2]*comv_t[2]) / (comv_t0[0]*comv_t0[0]+comv_t0[1]*comv_t0[1]+comv_t0[2]*comv_t0[2]);
+
+              //OH vector decay
+              if(1){
+                 float a = L[0], b = L[1], c = L[2] ; 
+                 float x1,x2,y1,y2,z1,z2,top,bot;
+
+                x1 = r[id_t0+1].x - r[id_t0+0].x ;
+                x2 = r[id_t0+0].x - r[id+1].x;
+
+                y1 = r[id_t0+1].y - r[id_t0+0].y;
+                y2 = r[id_t0+0].y - r[id+1].y ;
+
+                z1 = r[id_t0+1].z - r[id_t0+0].z;
+                z2 = r[id_t0+0].z - r[id+1].z; 
+
+                x1 = x1 - a * round(x1/a);
+                x2 = x2 - a * round(x2/a);
+                y1 = y1 - b * round(y1/b);
+                y2 = y2 - b * round(y2/b);
+                z1 = z1 - c * round(z1/c);
+                z2 = z2 - c * round(z2/c);
+
+                top =  (x1*x2+y1*y2+z1*z2) ;// - 0.0001 ;
+                bot =  norm(x1,y1,z1) * norm(x2,y2,z2);
+                float ang = 0;
+                if( top == bot )
+                {
+                    ang =  180; 
+                 }
+                else
+                {
+                 ang =   180 - (acos(top/bot) * 57.296);
+                }
+
+               if(isnan(ang)) {ang = 180;}
+               temp   = cos(ang * PI / 180.0); //cout << vec[t] << endl; 
+              }
+  
+              //temp         = (a1 * a3 ) / (pow(pow(a1,2),0.5) * pow(pow(a2,2),0.5));
+              //cout << r[id+0].vx << "  " << r[id+0].vy << "  " << r[id+0].vz << endl;
+              //cout << a1 << " " << a2 << "  " << a3 <<   "  " <<  a1*a3 << "  " << (pow(pow(a1,2),0.5) * pow(pow(a2,2),0.5))  << "  " << temp << endl;
+
+              total_ccfn[indexstart]  += temp ;
+
+              /*first solvation shell*/
+              if(hbond_cation == 0 && hbond_anion == 0)
+                {
+                  ccfn_rem[indexstart]  += temp ;
+                }
+              else if(hbond_cation > 0 && hbond_anion > 0)
+                {
+                  ccfn_both[indexstart]  += temp ;
+                }
+              else if(hbond_cation == 0 && hbond_anion > 0)
+                {
+                  ccfn_anion[indexstart]  += temp ;
+                }
+              else if(hbond_cation > 0 && hbond_anion == 0)
+                {
+                  ccfn_cation[indexstart]  += temp ;
+                }
+              indexstart += 1;
+            }}
+        }
+    }
+
+  if(count == 0)        {count = 1;}
+  if(count_rem == 0)    {count_rem = 1;}
+  if(count_both == 0)   {count_both = 1;}
+  if(count_anion == 0)  {count_anion = 1;}
+  if(count_cation == 0) {count_cation = 1;}
+
+  ofstream outfile(filename);
+  for(uint t = 1; t < tcfl-1;    t += 1 )
+    {
+      if(total_ccfn[t] == 0)    {total_ccfn[t]        = 1;}
+      if(ccfn_rem[t] == 0)      {ccfn_rem[t] = 1;}
+      if(ccfn_both[t] == 0)     {ccfn_both[t]  = 1;}
+      if(ccfn_anion[t] == 0)    {ccfn_anion[t] = 1;}
+      if(ccfn_cation[t] == 0)   {ccfn_cation[t]  = 1;}
+
+      outfile << t*dt << "  "<< total_ccfn[t]  / (count * count_tcfl) << "  " << 
+                                ccfn_cation[t] / count_cation << "  " << 
+                                ccfn_anion[t]  / count_anion << "  " << 
+                                ccfn_both[t]   / count_both << "  " << 
+                                ccfn_rem[t]    / count_rem << "  " << endl;
+    }
+  outfile.close();
+  outfile.clear();
+}
 
 
 

@@ -51,7 +51,7 @@ void readtrajectory_gro(vector<Atom> &r, uint nsteps, uint natoms, string xyzfil
             uint id = natoms*t+i;
             //xyz     xyzfile >> temp >> r[id].symbol >> temp >> r[id].x  >> r[id].y  >> r[id].z;
             //xyz-vel xyzfile >> temp >> r[id].symbol >> temp >> r[id].x  >> r[id].y  >> r[id].z >>  temp >> temp >> temp;
-            xyzfile >> temp >> r[id].symbol >> temp >> r[id].x  >> r[id].y  >> r[id].z >>  temp >> temp >> temp;
+            xyzfile >> temp >> r[id].symbol >> temp >> r[id].x  >> r[id].y  >> r[id].z;
             r[id].x *= 10;
             r[id].y *= 10;
             r[id].z *= 10;

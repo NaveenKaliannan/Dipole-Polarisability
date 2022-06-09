@@ -20,5 +20,6 @@ void PrintKEnCosine(vector<Atom> &r, uint nsteps, uint natoms, const vector<floa
 void classifywater(vector<Atom> &r, uint nsteps, uint natoms, const vector<float> & L, float dt) ; 
 void PrintOOdistance(vector<Atom> &r, uint nsteps, uint natoms, const vector<float> & L, float dt, string filename);
 void Printwaterioncoordination(vector<Atom> &r, uint nsteps, uint natoms, const vector<float> & L, float dt, string filename) ;
-
+void Printtrans_rot_ccfn(vector<Atom> &r, uint nsteps, uint natoms, const vector<float> & L, float dt, string filename); 
+void PrintOOdistance1(vector<Atom> &r, uint nsteps, uint natoms, const vector<float> & L, float dt, string filename);
 #endif

@@ -10,7 +10,23 @@ cd build
 cmake . 
 make
 
-./exe ../$1 traj.psf 10000 0.4 7 18 18 ../field_atomicunit perm_polaniso  permplusDID_polaniso permplusXDID_polaniso permplusXXDID_polaniso permanet Induced total
+
+#./exe ../$1 traj.psf 50000 1 15.6404 384 128 ../field_atomicunit perm_polaniso  permplusDID_polaniso permplusXDID_polaniso permplusXXDID_polaniso permanet Induced total
+#./exe ../$1 traj.psf 50000 1 15.5732 381 131 ../field_atomicunit perm_polaniso  permplusDID_polaniso permplusXDID_polaniso permplusXXDID_polaniso permanet Induced total
+#./exe ../$1 traj.psf 50000 1 15.6287 378 136 ../field_atomicunit perm_polaniso  permplusDID_polaniso permplusXDID_polaniso permplusXXDID_polaniso permanet Induced total
+#./exe ../$1 traj.psf 50000 1 15 327 125 ../field_atomicunit perm_polaniso  permplusDID_polaniso permplusXDID_polaniso permplusXXDID_polaniso permanet Induced total
+
+#./exe ../$1 traj.psf 100000 1 15.6404 384 128 ../field_atomicunit translation_function
+#./exe ../$1 traj.psf 100000 1 15 327 125 ../field_atomicunit translation_function
+
+
+./exe ../$1 traj.psf 120000 1 15 327 125 ../field_atomicunit 
+
+#./exe ../$1 traj.psf 100000 1 15.6404 384 128 ../field_atomicunit FFMD_water
+#./exe ../$1 traj.psf 100000 1 15 327 125 ../field_atomicunit FFMD_mgcl2_4mol
+#./exe ../$1 traj.psf 100000 1 15.6287 378 136 ../field_atomicunit FFMD_mgcl2_2mol
+#./exe ../$1 traj.psf 100000 1 15.5732 381 131 ../field_atomicunit FFMD_mgcl2_1mol  
+
 
 ## argumets
 ## 1. trajectory
