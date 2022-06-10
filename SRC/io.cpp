@@ -310,6 +310,7 @@ void Fourthranktensor_vec(const rank4tensor & A, const Vector & b, Matrix & C)
   Eyy = 0.5 * b.y * b.y ;
   Ezz = 0.5 * b.z * b.z ;
 
+  //Only the diagonal elements alpha_xx alpha_yy alpha_zz are calculated if you need the full matrix then E. gamma . E matrix
   C.xx += A.xxxx * Exx + A.xxyy * Eyy + A.xxzz * Ezz;
   C.yy += A.yyxx * Exx + A.yyyy * Eyy + A.yyzz * Ezz;
   C.zz += A.zzxx * Exx + A.zzyy * Eyy + A.zzzz * Ezz; 
