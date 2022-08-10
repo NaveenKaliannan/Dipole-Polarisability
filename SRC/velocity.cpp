@@ -159,6 +159,7 @@ void computeangularvelocity(vector<Atom> &r, uint nsteps, uint natoms, const vec
               vect_B[1] = r[idi].vy - r[idi].comvy ;
               vect_B[2] = r[idi].vz - r[idi].comvz ;
               normr =  pow(vect_A[0],2) + pow(vect_A[1],2) + pow(vect_A[2],2) ;
+	      normr =  pow(normr, 0.5);
               r[idi].angvx = (vect_A[1] * vect_B[2] - vect_A[2] * vect_B[1]) / normr  ;
               r[idi].angvy = (vect_A[2] * vect_B[0] - vect_A[0] * vect_B[2]) / normr  ;
               r[idi].angvz = (vect_A[0] * vect_B[1] - vect_A[1] * vect_B[0]) / normr  ;
@@ -170,6 +171,7 @@ void computeangularvelocity(vector<Atom> &r, uint nsteps, uint natoms, const vec
               vect_B[1] = r[idi+1].vy - r[idi].comvy ;
               vect_B[2] = r[idi+1].vz - r[idi].comvz;
               normr =  pow(vect_A[0],2) + pow(vect_A[1],2) + pow(vect_A[2],2) ;
+	      normr =  pow(normr, 0.5);
               r[idi].angvx += (vect_A[1] * vect_B[2] - vect_A[2] * vect_B[1]) / normr  ;
               r[idi].angvy += (vect_A[2] * vect_B[0] - vect_A[0] * vect_B[2]) / normr  ;
               r[idi].angvz += (vect_A[0] * vect_B[1] - vect_A[1] * vect_B[0]) / normr  ;
@@ -181,6 +183,7 @@ void computeangularvelocity(vector<Atom> &r, uint nsteps, uint natoms, const vec
               vect_B[1] = r[idi+2].vy - r[idi].comvy ;
               vect_B[2] = r[idi+2].vz - r[idi].comvz ;
               normr =  pow(vect_A[0],2) + pow(vect_A[1],2) + pow(vect_A[2],2) ;
+	      normr =  pow(normr, 0.5);
               r[idi].angvx += (vect_A[1] * vect_B[2] - vect_A[2] * vect_B[1]) / normr  ;
               r[idi].angvy += (vect_A[2] * vect_B[0] - vect_A[0] * vect_B[2]) / normr  ;
               r[idi].angvz += (vect_A[0] * vect_B[1] - vect_A[1] * vect_B[0]) / normr  ;
