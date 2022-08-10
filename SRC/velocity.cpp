@@ -128,108 +128,20 @@ void computecomvelocity(vector<Atom> &r, uint nsteps, uint natoms, const vector<
 }
 
 
-void computecomvelocitymolframe(vector<Atom> &r, uint nsteps, uint natoms, const vector<float> & L, float dt)
+void computeangularvelocity(vector<Atom> &r, uint nsteps, uint natoms, const vector<float> & L, float dt)
 {
-  float am_H = 1 * amu, am_O = 16 * amu, am_H2O = 18 * amu ;
+  computecomposition(r, nsteps, natoms, L, dt);
+  computepositionmolframe(r, nsteps, natoms, L, dt);
+  computecomposition(r, nsteps, natoms, L, dt);
+  computecomvelocity(r, nsteps, natoms, L, dt);
+  double vect_A[3], vect_B[3], normr ;
   double wb_x = 0,wb_y = 0,wb_z = 0;           // bisector vector H2O
   double wb1_x = 0,wb1_y = 0,wb1_z = 0;        // bisector vector OH1
   double wb2_x = 0,wb2_y = 0,wb2_z = 0;        // bisector vector OH2
   double HH_x = 0,HH_y = 0,HH_z = 0 ;          // H-H vector
   double Pv_x = 0,Pv_y = 0,Pv_z = 0;           // vector Perpendicular to bisector and H-H vector
-  double angle = 0;
-  double x1,x2;
-  double y1,y2;
-  double z1,z2;
-  float top, bot;
   double v1,v2,v3;
 
-  for(uint t = 1; t < nsteps-1;  t += deltat )
-    {
-      for(uint i = 0;i < natoms;++i)
-        {
-          uint idi = natoms*t+i;
-          uint idi1 = natoms*t+i+1;
-          uint idi2 = natoms*t+i+2;
-
-          if(r[idi].symbol[0] == 'O' && r[idi+1].symbol[0] == 'H' && r[idi+2].symbol[0] == 'H')
-            {
-              wb1_x = min_distance(r[idi+1].x - r[idi].x, L[0]) ;
-              wb1_y = min_distance(r[idi+1].y - r[idi].y, L[1]) ;
-              wb1_z = min_distance(r[idi+1].z - r[idi].z, L[2]) ;
-              convertounivector(wb1_x, wb1_y, wb1_z);
-              wb2_x = min_distance(r[idi+2].x - r[idi].x, L[0]) ;
-              wb2_y = min_distance(r[idi+2].y - r[idi].y, L[1]) ;
-              wb2_z = min_distance(r[idi+2].z - r[idi].z, L[2]) ;
-              convertounivector(wb2_x, wb2_y, wb2_z);
-
-              wb_x = wb1_x + wb2_x ;
-              wb_y = wb1_y + wb2_y ;
-              wb_z = wb1_z + wb2_z ;
-              convertounivector(wb_x, wb_y, wb_z);
-
-              HH_x = (r[idi+1].x - r[idi+2].x) ;
-              HH_y = (r[idi+1].y - r[idi+2].y) ;
-              HH_z = (r[idi+1].z - r[idi+2].z) ;
-              convertounivector(HH_x, HH_y, HH_z);
-
-              Pv_x = wb_y * HH_z - wb_z * HH_y;
-              Pv_y = wb_z * HH_x - wb_x * HH_z;
-              Pv_z = wb_x * HH_y - wb_y * HH_x;
-              convertounivector(Pv_x, Pv_y, Pv_z);
-
-              HH_x = wb_y * Pv_z - wb_z * Pv_y;
-              HH_y = wb_z * Pv_x - wb_x * Pv_z;
-              HH_z = wb_x * Pv_y - wb_y * Pv_x;
-              convertounivector(HH_x, HH_y, HH_z);
-
-              for(unsigned int i_ = 0; i_ < 3 ; i_ = i_ + 1)
-                {
-                  uint idi_ = natoms*t+(i+i_);
-                  v1 = r[idi_].x ;
-                  v2 = r[idi_].y ;
-                  v3 = r[idi_].z ;
-                  r[idi_].x = HH_x * v1 + HH_y * v2  + HH_z * v3 ;
-                  r[idi_].y = wb_x * v1 + wb_y * v2  + wb_z * v3 ;
-                  r[idi_].z = Pv_x * v1 + Pv_y * v2  + Pv_z * v3 ;
-                
-                  v1 = r[idi_].vx ;
-                  v2 = r[idi_].vy ;
-                  v3 = r[idi_].vz ;
-                  r[idi_].vx = HH_x * v1 + HH_y * v2  + HH_z * v3 ;
-                  r[idi_].vy = wb_x * v1 + wb_y * v2  + wb_z * v3 ;
-                  r[idi_].vz = Pv_x * v1 + Pv_y * v2  + Pv_z * v3 ;
-                }
-
-              r[idi].comvx = r[idi].vx * (am_O/am_H2O) +  r[idi+1].vx * (am_H/am_H2O) +  r[idi+2].vx * (am_H/am_H2O) ;
-              r[idi].comvy = r[idi].vy * (am_O/am_H2O) +  r[idi+1].vy * (am_H/am_H2O) +  r[idi+2].vy * (am_H/am_H2O) ;
-              r[idi].comvz = r[idi].vz * (am_O/am_H2O) +  r[idi+1].vz * (am_H/am_H2O) +  r[idi+2].vz * (am_H/am_H2O) ;
-
-//              v1 = r[idi].comvx ;
-//              v2 = r[idi].comvy ; 
-//              v3 = r[idi].comvz ;
-//              r[idi].comvx = HH_x * v1 + HH_y * v2  + HH_z * v3 ;
-//              r[idi].comvy = wb_x * v1 + wb_y * v2  + wb_z * v3 ;
-//              r[idi].comvz = Pv_x * v1 + Pv_y * v2  + Pv_z * v3 ;
-
-              v1 = r[idi].angvx ;
-              v2 = r[idi].angvy ;
-              v3 = r[idi].angvz ;
-              r[idi].angvx = HH_x * v1 + HH_y * v2  + HH_z * v3 ;
-              r[idi].angvy = wb_x * v1 + wb_y * v2  + wb_z * v3 ;
-              r[idi].angvz = Pv_x * v1 + Pv_y * v2  + Pv_z * v3 ;
-            }
-        }
-    }
-    /*if(abs(r[id].vx * vAperfmstoamu  - v[id].x) > 1.E-4 ) checking condition */
-}
-
-
-void computeangularvelocity(vector<Atom> &r, uint nsteps, uint natoms, const vector<float> & L, float dt)
-{
-  float am_H = 1 * amu, am_O = 16 * amu, am_H2O = 18 * amu ;
-  double vect_A[3], vect_B[3], normr ;
-  computecomposition(r, nsteps, natoms, L, dt);
-  computecomvelocity(r, nsteps, natoms, L, dt);
   for(uint t = 1; t < nsteps-1;  t += deltat )
     {
       for(uint i = 0;i < natoms;++i)
@@ -272,6 +184,68 @@ void computeangularvelocity(vector<Atom> &r, uint nsteps, uint natoms, const vec
               r[idi].angvx += (vect_A[1] * vect_B[2] - vect_A[2] * vect_B[1]) / normr  ;
               r[idi].angvy += (vect_A[2] * vect_B[0] - vect_A[0] * vect_B[2]) / normr  ;
               r[idi].angvz += (vect_A[0] * vect_B[1] - vect_A[1] * vect_B[0]) / normr  ;
+
+              wb1_x = min_distance(r[idi+1].x - r[idi].x, L[0]) ;
+              wb1_y = min_distance(r[idi+1].y - r[idi].y, L[1]) ;
+              wb1_z = min_distance(r[idi+1].z - r[idi].z, L[2]) ;
+              convertounivector(wb1_x, wb1_y, wb1_z);
+              wb2_x = min_distance(r[idi+2].x - r[idi].x, L[0]) ;
+              wb2_y = min_distance(r[idi+2].y - r[idi].y, L[1]) ;
+              wb2_z = min_distance(r[idi+2].z - r[idi].z, L[2]) ;
+              convertounivector(wb2_x, wb2_y, wb2_z);
+
+              wb_x = wb1_x + wb2_x ;
+              wb_y = wb1_y + wb2_y ;
+              wb_z = wb1_z + wb2_z ;
+              convertounivector(wb_x, wb_y, wb_z);
+
+              HH_x = (r[idi+1].x - r[idi+2].x) ;
+              HH_y = (r[idi+1].y - r[idi+2].y) ;
+              HH_z = (r[idi+1].z - r[idi+2].z) ;
+              convertounivector(HH_x, HH_y, HH_z);
+
+              Pv_x = wb_y * HH_z - wb_z * HH_y;
+              Pv_y = wb_z * HH_x - wb_x * HH_z;
+              Pv_z = wb_x * HH_y - wb_y * HH_x;
+              convertounivector(Pv_x, Pv_y, Pv_z);
+
+              HH_x = wb_y * Pv_z - wb_z * Pv_y;
+              HH_y = wb_z * Pv_x - wb_x * Pv_z;
+              HH_z = wb_x * Pv_y - wb_y * Pv_x;
+              convertounivector(HH_x, HH_y, HH_z);
+
+//              for(unsigned int i_ = 0; i_ < 3 ; i_ = i_ + 1)
+//              {
+//                uint idi_ = natoms*t+(i+i_);
+//                v1 = r[idi_].x ;
+//                v2 = r[idi_].y ;
+//                v3 = r[idi_].z ;
+//                r[idi_].x = HH_x * v1 + HH_y * v2  + HH_z * v3 ;
+//                r[idi_].y = wb_x * v1 + wb_y * v2  + wb_z * v3 ;
+//                r[idi_].z = Pv_x * v1 + Pv_y * v2  + Pv_z * v3 ;
+//              
+//                v1 = r[idi_].vx ;
+//                v2 = r[idi_].vy ;
+//                v3 = r[idi_].vz ;
+//                r[idi_].vx = HH_x * v1 + HH_y * v2  + HH_z * v3 ;
+//                r[idi_].vy = wb_x * v1 + wb_y * v2  + wb_z * v3 ;
+//                r[idi_].vz = Pv_x * v1 + Pv_y * v2  + Pv_z * v3 ;
+//              }
+//
+
+              v1 = r[idi].angvx ;
+              v2 = r[idi].angvy ;
+              v3 = r[idi].angvz ;
+              r[idi].angvx = HH_x * v1 + HH_y * v2  + HH_z * v3 ;
+              r[idi].angvy = wb_x * v1 + wb_y * v2  + wb_z * v3 ;
+              r[idi].angvz = Pv_x * v1 + Pv_y * v2  + Pv_z * v3 ;
+
+              v1 = r[idi].comvx ;
+              v2 = r[idi].comvy ;
+              v3 = r[idi].comvz ;
+              r[idi].comvx = HH_x * v1 + HH_y * v2  + HH_z * v3 ;
+              r[idi].comvy = wb_x * v1 + wb_y * v2  + wb_z * v3 ;
+              r[idi].comvz = Pv_x * v1 + Pv_y * v2  + Pv_z * v3 ;
             }
         }
     }
@@ -281,12 +255,6 @@ void computeangularvelocity(vector<Atom> &r, uint nsteps, uint natoms, const vec
 
 void Print_trans_rot_transrot_cf(vector<Atom> &r, uint nsteps, uint natoms, const vector<float> & L, float dt, string filename)
 {
-  double wb_x = 0,wb_y = 0,wb_z = 0;           // bisector vector H2O
-  double wb1_x = 0,wb1_y = 0,wb1_z = 0;        // bisector vector OH1
-  double wb2_x = 0,wb2_y = 0,wb2_z = 0;        // bisector vector OH2
-  double HH_x = 0,HH_y = 0,HH_z = 0 ;          // H-H vector
-  double Pv_x = 0,Pv_y = 0,Pv_z = 0;           // vector Perpendicular to bisector and H-H vector
-
   uint tcfl=2000;
   vector<double> comacf(tcfl,0.0);
   vector<double> angacf(tcfl,0.0);
@@ -301,18 +269,12 @@ void Print_trans_rot_transrot_cf(vector<Atom> &r, uint nsteps, uint natoms, cons
   vector<double> ccfzy(tcfl,0.0);
   unsigned int from = 1, to = nsteps-10-tcfl ;
 
-  // compute com position and com velocity
-  computecomposition(r, nsteps, natoms, L, dt);
-
   // compute atomic velocity using CD scheme
   computeatomicvelocity(r, nsteps, natoms, L, dt); 
   computecomvelocity(r, nsteps, natoms, L, dt);
 
-  // compute angular velocity
-  computepositionmolframe(r, nsteps, natoms, L, dt);
-  computecomposition(r, nsteps, natoms, L, dt);
+  // compute angular velocity and translational velocity in molecular frame
   computeangularvelocity(r, nsteps, natoms, L, dt);
-  computecomvelocitymolframe(r, nsteps, natoms, L, dt);
 
   double mean_ = 0;
   for(unsigned int t = from;t < to; t += 100)
