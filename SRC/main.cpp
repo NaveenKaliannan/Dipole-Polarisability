@@ -1,7 +1,12 @@
 /**
  *
  * @author  Naveen Kumar Kaliannan
- * @
+ *
+ * @Reach me via naveenkumar5892@gmail.com
+ *
+ * @ Upon request, a minimal assistance will
+ * @ be provided for setting up this program.
+ *
  */
 
 
@@ -53,80 +58,75 @@ int main ( int argc, char** argv )
   vector<Vector> E (nsteps);
 
   readtrajectory(r, nsteps, natoms, xyzfilename, L); 
-  //BringintoBox(r, nsteps, natoms, L); 
-  classifywater(r, nsteps, natoms, L, dt);
-  PrintOOdistance1(r, nsteps, natoms, L, dt, "OOdistance");
+  Print_trans_rot_transrot_cf(r, nsteps, natoms, L, dt,  argv[9]);
 
 /*
-  /*Reading Trajectories - xyz, gro, tinker, tinkerhp
+  ------ Reading different format trajectory---------
   readtrajectory(r, nsteps, natoms, xyzfilename, L); 
   readtrajectory_gro(r, nsteps, natoms, xyzfilename, L); 
   readtrajectory_tinker(r, nsteps, natoms, xyzfilename, L); 
   readtrajectory_tinkerhp(r, nsteps, natoms, xyzfilename, L);
   readpsf(r, nsteps,  natoms, psffilename); 
-  */
-
-
-  /*Printing trajectories - atoms, molecules, tinker, tinkerhp format
+  ------ Reading different format trajectory---------
+  
+  ------ Writing different format trajectory---------
   Print(r, nsteps, natoms, L, mol, nmol, dt, "PBC-trajectory.xyz", "ATM");
   Print(r, nsteps, natoms, L, mol, nmol, dt, "COM.xyz", "MOL");
   Print_tinker(r, nsteps, natoms, L, mol, nmol, dt, "water.xyz", "TINKER");
   Print_tinkerhp(r, nsteps, natoms, L, mol, nmol, dt, "../water2.arc", "TINKER");
-  */
+  ------ Writing different format trajectory---------
 
-  /*Applying PBC
+  ------ Applying PBC ---------
   BringintoBox(r, nsteps, natoms, L);
-  */
+  ------ Applying PBC ---------
 
-
-  /*Estimate the simulation cell size and number of water and ions for different concentrations
+  ---Estimate the simulation cell size and number of water and ions for different concentrations---
   EstimateCellSizenNumberofResidue();
-  */
+  ---Estimate the simulation cell size and number of water and ions for different concentrations---
 
-  /*Assign atomic mass to each atom
+  -----Assign atomic mass to each atom----------------
   AssignAtomicMass(r, nsteps, natoms);
-  */
+  -----Assign atomic mass to each atom----------------
 
-  /*Transforming atomic to molecular or atomic to atomic
+  ----Transforming atomic to molecular or atomic to atomic------
   TransformAtomictoMolecular(r, nsteps, natoms, L, mol, nmol);
   TransformAtomictoAtomic(r, nsteps, natoms, L, mol, nmol);
-  */
+  ----Transforming atomic to molecular or atomic to atomic------
 
-  /*Prints rdf
+  ----- Prints radial distribution function ----
   Printrdf(r, nsteps, natoms, L, dt, argv[9]);
-  */
+  ----- Prints radial distribution function ----
 
-  /* Computing molecular dipole [debye], molecular
-     polarisability [angstrom3], molecular polarizability 
-     anisotropy [angstrom3] via first and second hyperpolarizability enhanced mechanism
-
-  readExternalfield(E, nsteps, fieldfilename);  
+  ---- Computing molecular dipole [debye], molecular polarisability [angstrom3], molecular polarizability anisotropy [angstrom3] ----     
+  readExternalfield(E, nsteps, fieldfilename);
+  TransformAtomictoMolecular(r, nsteps, natoms, L, mol, nmol);
+  PrintOpticalBirefringence(mol, nsteps, nmol, L, dt, argv[9]);
   Induced_dipole(mol, nsteps, nmol, L, 500, E);
   Induced_polarisability(mol, nsteps, nmol, L, 500, E);
+  PrintOpticalBirefringence(mol, nsteps, nmol, L, dt, argv[10]);
   Induced_polarisabilityduetofirsthyperpolarizability(mol, nsteps, nmol, L, 500, E);
+  PrintOpticalBirefringence(mol, nsteps, nmol, L, dt, argv[11]);
   Induced_polarisabilityduetosecondhyperpolarizability(mol, nsteps, nmol, L, 500, E);
-
-  Print(r, nsteps, natoms, L, mol, nmol, dt, "Permanet.data", "DIP-P");
-  Print(r, nsteps, natoms, L, mol, nmol, dt, "Induced.data", "DIP-I");
-  Print(r, nsteps, natoms, L, mol, nmol, dt, "Total.data", "DIP-T");
-
   PrintOpticalBirefringence(mol, nsteps, nmol, L, dt, argv[12]);
+  ---- Computing molecular dipole [debye], molecular polarisability [angstrom3], molecular polarizability anisotropy [angstrom3] ----     
 
-  Print_birefriengenceT_purewater(mol, nsteps, nmol, L, dt, argv[10]);
-  Print_birefriengenceP_purewater(mol, nsteps, nmol, L, dt, argv[10]);
-  Print_birefriengenceI_purewater(mol, nsteps, nmol, L, dt, argv[10]);
-  */
-
-
-  /* assinging coordination number and asymmetry gamma parameter for pure water
+  ----- Assinging coordination number and asymmetry gamma parameter for pure water -------------
   classifywater(r, nsteps, natoms, L, dt);
+  PrintOOdistance1(r, nsteps, natoms, L, dt, "OOdistance");
   PrintOOdistance(r, nsteps, natoms, L, dt, "OOdistance");
   Assigncoordinationforpurewater(r, nsteps, natoms, L, dt); 
   Assigngammaforpurewater(r, nsteps, natoms, L, dt); 
-  */
-  //Printtrans_rot_ccfn(r, nsteps, natoms, L, dt, argv[9]);
-  /*Printing cosine, Kinetic energy
-  PrintKEnCosine(r, nsteps, natoms, L, dt, argv[9]);
+  ----- Assinging coordination number and asymmetry gamma parameter for pure water -------------
+
+   ---- Print cosine and Kinetic energy----------------
+   PrintKEnCosine(r, nsteps, natoms, L, dt, argv[13])
+   ---- Print cosine and Kinetic energy----------------
+
+
+   ------ Print Rotational, translational and trans-rot correlation function --------------------
+   Print_trans_rot_transrot_cf(r, nsteps, natoms, L, dt,  argv[9]);
+   ------ Print Rotational, translational and trans-rot correlation function --------------------
+
   */
 
   return 0;

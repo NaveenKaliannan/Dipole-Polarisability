@@ -8,8 +8,9 @@
 using namespace std;
 
 
-#define deltat 250
+#define deltat 1
 
+#define vAperfmstoamu   0.0460908
 #define PI 3.14159265
 #define amu  1.66053906
 #define amutoangstrom  0.52917720859
@@ -76,7 +77,13 @@ struct Atom
   string gro;
   string symbol;
   double x,y,z;
+  double comx, comy, comz;
   double vx,vy,vz;
+  double comvx, comvy, comvz;
+  double angvx, angvy, angvz;
+  double comvxmf, comvymf, comvzmf;
+  double angvxmf, angvymf, angvzmf;
+
   uint index;
   string segname;
   uint resid;
