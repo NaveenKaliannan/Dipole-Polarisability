@@ -58,6 +58,7 @@ int main ( int argc, char** argv )
   vector<Vector> E (nsteps);
 
   readtrajectory(r, nsteps, natoms, xyzfilename, L); 
+  BringintoBox(r, nsteps, natoms, L);
   Print_trans_rot_transrot_cf(r, nsteps, natoms, L, dt,  argv[9]);
 
 /*
