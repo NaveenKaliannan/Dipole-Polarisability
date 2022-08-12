@@ -80,7 +80,7 @@ void computepositionmolframe(vector<Atom> &r, uint nsteps, uint natoms, const ve
 {
   for(uint t = 1; t < nsteps-1;  t += deltat )
     {
-      for(uint i = 0;i < natoms;i += 3)
+      for(uint i = 0;i < natoms;++i)
         {      
           uint idi = natoms*t+i;
           uint idi1 = natoms*t+i+1;
@@ -255,7 +255,7 @@ void computeangularvelocity(vector<Atom> &r, uint nsteps, uint natoms, const vec
 
 void Print_trans_rot_transrot_cf(vector<Atom> &r, uint nsteps, uint natoms, const vector<float> & L, float dt, string filename)
 {
-  uint tcfl=2000;
+  uint tcfl=3000;
   vector<double> comacf(tcfl,0.0);
   vector<double> angacf(tcfl,0.0);
   vector<double> ccfxx(tcfl,0.0);
@@ -279,9 +279,11 @@ void Print_trans_rot_transrot_cf(vector<Atom> &r, uint nsteps, uint natoms, cons
   double mean_ = 0;
   for(unsigned int t = from;t < to; t += 100)
     { 
-      for(unsigned int i = 0;i < natoms; i+=3)
+      for(unsigned int i = 0;i < natoms; ++i )
         { 
-              uint id = natoms*t+i;
+          uint id = natoms*t+i;
+	  if(r[id].symbol[0] == 'O' && r[id+1].symbol[0] == 'H' && r[id+2].symbol[0] == 'H' and abs(r[id].angvx) > 0.00001  and abs(r[id].angvy) > 0.00001 and abs(r[id].angvz) > 0.00001 and abs(r[id].comvx) > 0.00001 and abs(r[id].comvy) > 0.00001 and abs(r[id].comvz) > 0.00001 and abs(r[id].comx) < 0.00001 and abs(r[id].comy) < 0.00001 and abs(r[id].comz) < 0.00001 )
+	    {
               mean_ += 1; 
               for(unsigned int t_ = 0;t_ < tcfl;++t_)
                 {
@@ -306,6 +308,7 @@ void Print_trans_rot_transrot_cf(vector<Atom> &r, uint nsteps, uint natoms, cons
                   ccfzx[t_] +=  (r[id].angvz * r[id_t].comvx )/(abs(r[id].angvz) * abs(r[id].comvx) ) ; 
                   ccfzy[t_] +=  (r[id].angvz * r[id_t].comvy )/(abs(r[id].angvz) * abs(r[id].comvy) ) ; 
                 }
+	    }
          } 
     }
 
