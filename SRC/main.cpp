@@ -57,9 +57,25 @@ int main ( int argc, char** argv )
   vector<Molecular> mol ;
   vector<Vector> E (nsteps);
 
-  readtrajectory(r, nsteps, natoms, xyzfilename, L); 
+  readtrajectory_gro(r, nsteps, natoms, xyzfilename, L); 
   BringintoBox(r, nsteps, natoms, L);
-  Print_trans_rot_transrot_cf(r, nsteps, natoms, L, dt,  argv[9]);
+
+  // compute com  velocity and angular velocity
+  computeatomicvelocity(r, nsteps, natoms, L, dt); 
+  computecomvelocity(r, nsteps, natoms, L, dt);
+  computecomposition(r, nsteps, natoms, L, dt);
+  computepositionmolframe(r, nsteps, natoms, L, dt);
+  computecomposition(r, nsteps, natoms, L, dt);
+  computeangularvelocity(r, nsteps, natoms, L, dt);
+
+  // Local Frame
+  Print_intramolecular_coupling_btwn_translation_and_rotation(r, nsteps, natoms, L, dt,  argv[9]);
+  Print_intermolecular_coupling_btwn_translation_and_rotation(r, nsteps, natoms, L, dt,  argv[10]);
+
+  // Molecular Frame
+  transform_angular_com_velocity_into_mol_frame(r, nsteps, natoms, L, dt);
+  Print_intramolecular_coupling_btwn_translation_and_rotation(r, nsteps, natoms, L, dt,  argv[11]);
+  Print_intermolecular_coupling_btwn_translation_and_rotation(r, nsteps, natoms, L, dt,  argv[12]);
 
 /*
   ------ Reading different format trajectory---------
@@ -125,7 +141,21 @@ int main ( int argc, char** argv )
 
 
    ------ Print Rotational, translational and trans-rot correlation function --------------------
-   Print_trans_rot_transrot_cf(r, nsteps, natoms, L, dt,  argv[9]);
+  computeatomicvelocity(r, nsteps, natoms, L, dt);
+  computecomvelocity(r, nsteps, natoms, L, dt);
+  computecomposition(r, nsteps, natoms, L, dt);
+  computepositionmolframe(r, nsteps, natoms, L, dt);
+  computecomposition(r, nsteps, natoms, L, dt);
+  computeangularvelocity(r, nsteps, natoms, L, dt);
+
+  // Local Frame
+  Print_intramolecular_coupling_btwn_translation_and_rotation(r, nsteps, natoms, L, dt,  argv[9]);
+  Print_intermolecular_coupling_btwn_translation_and_rotation(r, nsteps, natoms, L, dt,  argv[10]);
+
+  // Molecular Frame
+  transform_angular_com_velocity_into_mol_frame(r, nsteps, natoms, L, dt);
+  Print_intramolecular_coupling_btwn_translation_and_rotation(r, nsteps, natoms, L, dt,  argv[11]);
+  Print_intermolecular_coupling_btwn_translation_and_rotation(r, nsteps, natoms, L, dt,  argv[12]);
    ------ Print Rotational, translational and trans-rot correlation function --------------------
 
   */

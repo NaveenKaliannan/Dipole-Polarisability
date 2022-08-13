@@ -73,7 +73,6 @@ void computecomposition(vector<Atom> &r, uint nsteps, uint natoms, const vector<
             }
         }
     }
-    /*if(abs(r[id].vx * vAperfmstoamu  - v[id].x) > 1.E-4 ) checking condition */
 }
 
 void computepositionmolframe(vector<Atom> &r, uint nsteps, uint natoms, const vector<float> & L, float dt)
@@ -102,7 +101,6 @@ void computepositionmolframe(vector<Atom> &r, uint nsteps, uint natoms, const ve
             }
         }
     }
-    /*if(abs(r[id].vx * vAperfmstoamu  - v[id].x) > 1.E-4 ) checking condition */
 }
 
 void computecomvelocity(vector<Atom> &r, uint nsteps, uint natoms, const vector<float> & L, float dt)
@@ -124,24 +122,17 @@ void computecomvelocity(vector<Atom> &r, uint nsteps, uint natoms, const vector<
             }
         }
     }
-    /*if(abs(r[id].vx * vAperfmstoamu  - v[id].x) > 1.E-4 ) checking condition */
 }
 
 
-void computeangularvelocity(vector<Atom> &r, uint nsteps, uint natoms, const vector<float> & L, float dt)
+void transform_angular_com_velocity_into_mol_frame(vector<Atom> &r, uint nsteps, uint natoms, const vector<float> & L, float dt)
 {
-  computecomposition(r, nsteps, natoms, L, dt);
-  computepositionmolframe(r, nsteps, natoms, L, dt);
-  computecomposition(r, nsteps, natoms, L, dt);
-  computecomvelocity(r, nsteps, natoms, L, dt);
-  double vect_A[3], vect_B[3], normr ;
   double wb_x = 0,wb_y = 0,wb_z = 0;           // bisector vector H2O
   double wb1_x = 0,wb1_y = 0,wb1_z = 0;        // bisector vector OH1
   double wb2_x = 0,wb2_y = 0,wb2_z = 0;        // bisector vector OH2
   double HH_x = 0,HH_y = 0,HH_z = 0 ;          // H-H vector
   double Pv_x = 0,Pv_y = 0,Pv_z = 0;           // vector Perpendicular to bisector and H-H vector
   double v1,v2,v3;
-
   for(uint t = 1; t < nsteps-1;  t += deltat )
     {
       for(uint i = 0;i < natoms;++i)
@@ -152,39 +143,6 @@ void computeangularvelocity(vector<Atom> &r, uint nsteps, uint natoms, const vec
 
           if(r[idi].symbol[0] == 'O' && r[idi+1].symbol[0] == 'H' && r[idi+2].symbol[0] == 'H')
             {
-              vect_A[0] = r[idi].x - r[idi].comx ;
-              vect_A[1] = r[idi].y - r[idi].comy ;
-              vect_A[2] = r[idi].z - r[idi].comz ;
-              vect_B[0] = r[idi].vx - r[idi].comvx ;
-              vect_B[1] = r[idi].vy - r[idi].comvy ;
-              vect_B[2] = r[idi].vz - r[idi].comvz ;
-              normr =  pow(vect_A[0],2) + pow(vect_A[1],2) + pow(vect_A[2],2) ;
-              r[idi].angvx = (vect_A[1] * vect_B[2] - vect_A[2] * vect_B[1]) / normr  ;
-              r[idi].angvy = (vect_A[2] * vect_B[0] - vect_A[0] * vect_B[2]) / normr  ;
-              r[idi].angvz = (vect_A[0] * vect_B[1] - vect_A[1] * vect_B[0]) / normr  ;
-
-              vect_A[0] = r[idi+1].x - r[idi].comx  ;
-              vect_A[1] = r[idi+1].y - r[idi].comy ;
-              vect_A[2] = r[idi+1].z - r[idi].comz ;
-              vect_B[0] = r[idi+1].vx - r[idi].comvx ;
-              vect_B[1] = r[idi+1].vy - r[idi].comvy ;
-              vect_B[2] = r[idi+1].vz - r[idi].comvz;
-              normr =  pow(vect_A[0],2) + pow(vect_A[1],2) + pow(vect_A[2],2) ;
-              r[idi].angvx += (vect_A[1] * vect_B[2] - vect_A[2] * vect_B[1]) / normr  ;
-              r[idi].angvy += (vect_A[2] * vect_B[0] - vect_A[0] * vect_B[2]) / normr  ;
-              r[idi].angvz += (vect_A[0] * vect_B[1] - vect_A[1] * vect_B[0]) / normr  ;
-
-              vect_A[0] = r[idi+2].x - r[idi].comx ;
-              vect_A[1] = r[idi+2].y - r[idi].comy ;
-              vect_A[2] = r[idi+2].z - r[idi].comz ;
-              vect_B[0] = r[idi+2].vx - r[idi].comvx ;
-              vect_B[1] = r[idi+2].vy - r[idi].comvy ;
-              vect_B[2] = r[idi+2].vz - r[idi].comvz ;
-              normr =  pow(vect_A[0],2) + pow(vect_A[1],2) + pow(vect_A[2],2) ;
-              r[idi].angvx += (vect_A[1] * vect_B[2] - vect_A[2] * vect_B[1]) / normr  ;
-              r[idi].angvy += (vect_A[2] * vect_B[0] - vect_A[0] * vect_B[2]) / normr  ;
-              r[idi].angvz += (vect_A[0] * vect_B[1] - vect_A[1] * vect_B[0]) / normr  ;
-
               wb1_x = min_distance(r[idi+1].x - r[idi].x, L[0]) ;
               wb1_y = min_distance(r[idi+1].y - r[idi].y, L[1]) ;
               wb1_z = min_distance(r[idi+1].z - r[idi].z, L[2]) ;
@@ -231,7 +189,6 @@ void computeangularvelocity(vector<Atom> &r, uint nsteps, uint natoms, const vec
 //                r[idi_].vy = wb_x * v1 + wb_y * v2  + wb_z * v3 ;
 //                r[idi_].vz = Pv_x * v1 + Pv_y * v2  + Pv_z * v3 ;
 //              }
-//
 
               v1 = r[idi].angvx ;
               v2 = r[idi].angvy ;
@@ -249,13 +206,64 @@ void computeangularvelocity(vector<Atom> &r, uint nsteps, uint natoms, const vec
             }
         }
     }
-    /*if(abs(r[id].vx * vAperfmstoamu  - v[id].x) > 1.E-4 ) checking condition */
 }
 
 
-void Print_trans_rot_transrot_cf(vector<Atom> &r, uint nsteps, uint natoms, const vector<float> & L, float dt, string filename)
+
+void computeangularvelocity(vector<Atom> &r, uint nsteps, uint natoms, const vector<float> & L, float dt)
 {
-  uint tcfl=3000;
+  double vect_A[3], vect_B[3], normr ;
+  for(uint t = 1; t < nsteps-1;  t += deltat )
+    {
+      for(uint i = 0;i < natoms;++i)
+        {
+          uint idi = natoms*t+i;
+          uint idi1 = natoms*t+i+1;
+          uint idi2 = natoms*t+i+2;
+
+          if(r[idi].symbol[0] == 'O' && r[idi+1].symbol[0] == 'H' && r[idi+2].symbol[0] == 'H')
+            {
+              vect_A[0] = r[idi].x - r[idi].comx ;
+              vect_A[1] = r[idi].y - r[idi].comy ;
+              vect_A[2] = r[idi].z - r[idi].comz ;
+              vect_B[0] = r[idi].vx - r[idi].comvx ;
+              vect_B[1] = r[idi].vy - r[idi].comvy ;
+              vect_B[2] = r[idi].vz - r[idi].comvz ;
+              normr =  pow(vect_A[0],2) + pow(vect_A[1],2) + pow(vect_A[2],2) ;
+              r[idi].angvx = (vect_A[1] * vect_B[2] - vect_A[2] * vect_B[1]) / normr  ;
+              r[idi].angvy = (vect_A[2] * vect_B[0] - vect_A[0] * vect_B[2]) / normr  ;
+              r[idi].angvz = (vect_A[0] * vect_B[1] - vect_A[1] * vect_B[0]) / normr  ;
+
+              vect_A[0] = r[idi+1].x - r[idi].comx  ;
+              vect_A[1] = r[idi+1].y - r[idi].comy ;
+              vect_A[2] = r[idi+1].z - r[idi].comz ;
+              vect_B[0] = r[idi+1].vx - r[idi].comvx ;
+              vect_B[1] = r[idi+1].vy - r[idi].comvy ;
+              vect_B[2] = r[idi+1].vz - r[idi].comvz;
+              normr =  pow(vect_A[0],2) + pow(vect_A[1],2) + pow(vect_A[2],2) ;
+              r[idi].angvx += (vect_A[1] * vect_B[2] - vect_A[2] * vect_B[1]) / normr  ;
+              r[idi].angvy += (vect_A[2] * vect_B[0] - vect_A[0] * vect_B[2]) / normr  ;
+              r[idi].angvz += (vect_A[0] * vect_B[1] - vect_A[1] * vect_B[0]) / normr  ;
+
+              vect_A[0] = r[idi+2].x - r[idi].comx ;
+              vect_A[1] = r[idi+2].y - r[idi].comy ;
+              vect_A[2] = r[idi+2].z - r[idi].comz ;
+              vect_B[0] = r[idi+2].vx - r[idi].comvx ;
+              vect_B[1] = r[idi+2].vy - r[idi].comvy ;
+              vect_B[2] = r[idi+2].vz - r[idi].comvz ;
+              normr =  pow(vect_A[0],2) + pow(vect_A[1],2) + pow(vect_A[2],2) ;
+              r[idi].angvx += (vect_A[1] * vect_B[2] - vect_A[2] * vect_B[1]) / normr  ;
+              r[idi].angvy += (vect_A[2] * vect_B[0] - vect_A[0] * vect_B[2]) / normr  ;
+              r[idi].angvz += (vect_A[0] * vect_B[1] - vect_A[1] * vect_B[0]) / normr  ;
+            }
+        }
+    }
+}
+
+
+void Print_intramolecular_coupling_btwn_translation_and_rotation(vector<Atom> &r, uint nsteps, uint natoms, const vector<float> & L, float dt, string filename)
+{
+  uint tcfl=1300;
   vector<double> comacf(tcfl,0.0);
   vector<double> angacf(tcfl,0.0);
   vector<double> ccfxx(tcfl,0.0);
@@ -269,15 +277,8 @@ void Print_trans_rot_transrot_cf(vector<Atom> &r, uint nsteps, uint natoms, cons
   vector<double> ccfzy(tcfl,0.0);
   unsigned int from = 1, to = nsteps-10-tcfl ;
 
-  // compute atomic velocity using CD scheme
-  computeatomicvelocity(r, nsteps, natoms, L, dt); 
-  computecomvelocity(r, nsteps, natoms, L, dt);
-
-  // compute angular velocity and translational velocity in molecular frame
-  computeangularvelocity(r, nsteps, natoms, L, dt);
-
   double mean_ = 0;
-  for(unsigned int t = from;t < to; t += 100)
+  for(unsigned int t = from;t < to; t += 250)
     { 
       for(unsigned int i = 0;i < natoms; ++i )
         { 
@@ -326,11 +327,88 @@ void Print_trans_rot_transrot_cf(vector<Atom> &r, uint nsteps, uint natoms, cons
                                 ccfyx[t] / mean_ << "  " << 
                                 ccfyz[t] / mean_ << "  " << 
                                 ccfzx[t] / mean_ << "  " << 
-                                ccfzy[t]    / mean_ << "  " << endl;
+                                ccfzy[t] / mean_ << "  " << endl;
     }
   outfile.close();
   outfile.clear();
 }
+
+void Print_intermolecular_coupling_btwn_translation_and_rotation(vector<Atom> &r, uint nsteps, uint natoms, const vector<float> & L, float dt, string filename)
+{
+  uint tcfl=1300;
+  vector<double> ccfxx(tcfl,0.0);
+  vector<double> ccfyy(tcfl,0.0);
+  vector<double> ccfzz(tcfl,0.0);
+  vector<double> ccfxy(tcfl,0.0);
+  vector<double> ccfxz(tcfl,0.0);
+  vector<double> ccfyx(tcfl,0.0);
+  vector<double> ccfyz(tcfl,0.0);
+  vector<double> ccfzx(tcfl,0.0);
+  vector<double> ccfzy(tcfl,0.0);
+  float  rij = 0, x = 0, y = 0, z = 0 ;
+  unsigned int from = 1, to = nsteps-10-tcfl ;
+
+  double mean_ = 0;
+  for(unsigned int t = from;t < to; t += 250)
+    { 
+      for(unsigned int i = 0;i < natoms; ++i )
+        { 
+          uint id = natoms*t+i;
+          if(r[id].symbol[0] == 'O' && r[id+1].symbol[0] == 'H' && r[id+2].symbol[0] == 'H' and abs(r[id].angvx) > 0.00001  and abs(r[id].angvy) > 0.00001 and abs(r[id].angvz) > 0.00001 and abs(r[id].comvx) > 0.00001 and abs(r[id].comvy) > 0.00001 and abs(r[id].comvz) > 0.00001 and abs(r[id].comx) < 0.00001 and abs(r[id].comy) < 0.00001 and abs(r[id].comz) < 0.00001)
+            {
+              for(uint j = 0;j < natoms;++j)
+                {
+                  uint idj = natoms*t+j;
+                  if(id != idj  && r[idj].symbol[0] == 'O' && r[idj+1].symbol[0] == 'H' && r[idj+2].symbol[0] == 'H' and abs(r[idj].angvx) > 0.00001  and abs(r[idj].angvy) > 0.00001 and abs(r[idj].angvz) > 0.00001 and abs(r[idj].comvx) > 0.00001 and abs(r[idj].comvy) > 0.00001 and abs(r[idj].comvz) > 0.00001 and abs(r[idj].comx) < 0.00001 and abs(r[idj].comy) < 0.00001 and abs(r[idj].comz) < 0.00001 )
+                    {
+                      x = min_distance(r[idj].x - r[id].x, L[0]);
+                      y = min_distance(r[idj].y - r[id].y, L[1]);
+                      z = min_distance(r[idj].z - r[id].z, L[2]);
+                      rij = mindis(x,y,z,L);
+                      if( rij < 3.5  && rij > 0 && ( angle_btwn_3points(r,id,id+1,idj, L) < 30 || angle_btwn_3points(r,id,id+2,idj, L) < 30)  )
+                        {
+                          mean_ += 1; 
+                          for(unsigned int t_ = 0;t_ < tcfl;++t_)
+                            {
+                              uint id_t = natoms*(t+t_)+i;
+            
+                              ccfxx[t_] +=  (r[idj].angvx * r[id_t].comvx )/(abs(r[idj].angvx) * abs(r[id].comvx) ) ;
+                              ccfyy[t_] +=  (r[idj].angvy * r[id_t].comvy )/(abs(r[idj].angvy) * abs(r[id].comvy) ) ;
+                              ccfzz[t_] +=  (r[idj].angvz * r[id_t].comvz )/(abs(r[idj].angvz) * abs(r[id].comvz) ) ;
+            
+                              ccfxy[t_] +=  (r[idj].angvx * r[id_t].comvy )/(abs(r[idj].angvx) * abs(r[id].comvy) ) ;
+                              ccfxz[t_] +=  (r[idj].angvx * r[id_t].comvz )/(abs(r[idj].angvx) * abs(r[id].comvz) ) ;
+            
+                              ccfyx[t_] +=  (r[idj].angvy * r[id_t].comvx )/(abs(r[idj].angvy) * abs(r[id].comvx) ) ;
+                              ccfyz[t_] +=  (r[idj].angvy * r[id_t].comvz )/(abs(r[idj].angvy) * abs(r[id].comvz) ) ;
+            
+                              ccfzx[t_] +=  (r[idj].angvz * r[id_t].comvx )/(abs(r[idj].angvz) * abs(r[id].comvx) ) ;
+                              ccfzy[t_] +=  (r[idj].angvz * r[id_t].comvy )/(abs(r[idj].angvz) * abs(r[id].comvy) ) ;
+                            }
+                        }
+                     }
+		}
+            }
+        }
+    }
+
+  ofstream outfile(filename);
+  for(uint t = 1; t < tcfl-1;    t += 1 )
+    {
+      outfile << t*dt << "  "<< ccfxx[t] / mean_ << "  " << 
+                                ccfyy[t] / mean_ << "  " << 
+                                ccfzz[t] / mean_ << "  " << 
+                                ccfxy[t] / mean_ << "  " << 
+                                ccfxz[t] / mean_ << "  " << 
+                                ccfyx[t] / mean_ << "  " << 
+                                ccfyz[t] / mean_ << "  " << 
+                                ccfzx[t] / mean_ << "  " << 
+                                ccfzy[t] / mean_ << "  " << endl;
+    }
+  outfile.close();
+  outfile.clear();
+}
+
 
 
 

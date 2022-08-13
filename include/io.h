@@ -81,8 +81,6 @@ struct Atom
   double vx,vy,vz;
   double comvx, comvy, comvz;
   double angvx, angvy, angvz;
-  double comvxmf, comvymf, comvzmf;
-  double angvxmf, angvymf, angvzmf;
 
   uint index;
   string segname;
