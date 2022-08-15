@@ -1,5 +1,5 @@
 # Dipole-Polarisability program
-This program computes the dipole moment, polarisability and polarizability anisotropy as well as radial distribution functions, cosine functions, translational and rotational auto- and cross-correlation functions, translational and rotational kinetic energies for a number of aqueous systems (e.g., pure liquid water, NaF, NaCl, Na<sub>2</sub>SO<sub>4</sub>, MgCl<sub>2</sub> MgSO<sub>4</sub>, KF) that were simulated using CP2K, Gromacs, TinkerHP, and Tinker Softwares.
+This program computes the dipole moment, polarizability and polarizability anisotropy as well as radial distribution functions, cosine functions, translational and rotational auto- and cross-correlation functions, translational and rotational kinetic energies for a number of aqueous systems (e.g., pure liquid water, NaF, NaCl, Na<sub>2</sub>SO<sub>4</sub>, MgCl<sub>2</sub> MgSO<sub>4</sub>, KF) that were simulated using CP2K, Gromacs, TinkerHP, and Tinker Softwares.
 
 The molecular dipole moment and polarizability are calculated using the first- and second-hyperpolarizabilities extended dipole-induced-dipole model reported in my papers [1,2]. The cheif advantage of this program is that it includes the effects of external electric field in the dipole moment and polarizability calculations.    
 
