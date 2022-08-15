@@ -263,7 +263,7 @@ void computeangularvelocity(vector<Atom> &r, uint nsteps, uint natoms, const vec
 
 void Print_intramolecular_coupling_btwn_translation_and_rotation(vector<Atom> &r, uint nsteps, uint natoms, const vector<float> & L, float dt, string filename)
 {
-  uint tcfl=1300;
+  uint tcfl=800/dt;
   vector<double> comacf(tcfl,0.0);
   vector<double> angacf(tcfl,0.0);
   vector<double> ccfxx(tcfl,0.0);
@@ -278,7 +278,7 @@ void Print_intramolecular_coupling_btwn_translation_and_rotation(vector<Atom> &r
   unsigned int from = 1, to = nsteps-10-tcfl ;
 
   double mean_ = 0;
-  for(unsigned int t = from;t < to; t += 250)
+  for(unsigned int t = from;t < to; t += 100)
     { 
       for(unsigned int i = 0;i < natoms; ++i )
         { 
@@ -315,7 +315,7 @@ void Print_intramolecular_coupling_btwn_translation_and_rotation(vector<Atom> &r
 
 
   ofstream outfile(filename);
-  for(uint t = 1; t < tcfl-1;    t += 1 )
+  for(uint t = 1; t < tcfl-1;   ++t )
     {
       outfile << t*dt << "  "<< comacf[t]  / mean_ << "  " << 
                                 angacf[t] / mean_ << "  " << 
@@ -335,7 +335,9 @@ void Print_intramolecular_coupling_btwn_translation_and_rotation(vector<Atom> &r
 
 void Print_intermolecular_coupling_btwn_translation_and_rotation(vector<Atom> &r, uint nsteps, uint natoms, const vector<float> & L, float dt, string filename)
 {
-  uint tcfl=1300;
+  uint tcfl=800/dt;
+  vector<double> comacf(tcfl,0.0);
+  vector<double> angacf(tcfl,0.0);
   vector<double> ccfxx(tcfl,0.0);
   vector<double> ccfyy(tcfl,0.0);
   vector<double> ccfzz(tcfl,0.0);
@@ -349,7 +351,7 @@ void Print_intermolecular_coupling_btwn_translation_and_rotation(vector<Atom> &r
   unsigned int from = 1, to = nsteps-10-tcfl ;
 
   double mean_ = 0;
-  for(unsigned int t = from;t < to; t += 250)
+  for(unsigned int t = from;t < to; t += 100)
     { 
       for(unsigned int i = 0;i < natoms; ++i )
         { 
@@ -371,6 +373,12 @@ void Print_intermolecular_coupling_btwn_translation_and_rotation(vector<Atom> &r
                           for(unsigned int t_ = 0;t_ < tcfl;++t_)
                             {
                               uint id_t = natoms*(t+t_)+i;
+                              comacf[t_] += ( r[idj].comvx * r[id_t].comvx   + r[idj].comvy * r[id_t].comvy   + r[idj].comvz * r[id_t].comvz  ) /
+                                            ( r[idj].comvx * r[id].comvx     + r[idj].comvy * r[id].comvy     + r[idj].comvz * r[id].comvz )  ;
+
+                              angacf[t_] += ( r[idj].angvx * r[id_t].angvx   + r[idj].angvy * r[id_t].angvy   + r[idj].angvz * r[id_t].angvz  ) /
+                                            ( r[idj].angvx * r[id].angvx     + r[idj].angvy * r[id].angvy     + r[idj].angvz * r[id].angvz )  ;
+
             
                               ccfxx[t_] +=  (r[idj].angvx * r[id_t].comvx )/(abs(r[idj].angvx) * abs(r[id].comvx) ) ;
                               ccfyy[t_] +=  (r[idj].angvy * r[id_t].comvy )/(abs(r[idj].angvy) * abs(r[id].comvy) ) ;
@@ -393,15 +401,17 @@ void Print_intermolecular_coupling_btwn_translation_and_rotation(vector<Atom> &r
     }
 
   ofstream outfile(filename);
-  for(uint t = 1; t < tcfl-1;    t += 1 )
+  for(uint t = 1; t < tcfl-1;   ++t )
     {
-      outfile << t*dt << "  "<< ccfxx[t] / mean_ << "  " << 
-                                ccfyy[t] / mean_ << "  " << 
-                                ccfzz[t] / mean_ << "  " << 
-                                ccfxy[t] / mean_ << "  " << 
-                                ccfxz[t] / mean_ << "  " << 
-                                ccfyx[t] / mean_ << "  " << 
-                                ccfyz[t] / mean_ << "  " << 
+      outfile << t*dt << "  "<< comacf[t]  / mean_ << "  " <<
+                                angacf[t] / mean_ << "  " <<
+                                ccfxx[t] / mean_ << "  " <<
+                                ccfyy[t] / mean_ << "  " <<
+                                ccfzz[t] / mean_ << "  " <<
+                                ccfxy[t] / mean_ << "  " <<
+                                ccfxz[t] / mean_ << "  " <<
+                                ccfyx[t] / mean_ << "  " <<
+                                ccfyz[t] / mean_ << "  " <<
                                 ccfzx[t] / mean_ << "  " << 
                                 ccfzy[t] / mean_ << "  " << endl;
     }
