@@ -158,13 +158,15 @@ int main ( int argc, char** argv )
   Print_intermolecular_coupling_btwn_translation_and_rotation(r, nsteps, natoms, L, dt,  argv[12]);
    ------ Print Rotational, translational and trans-rot correlation function --------------------
 
+   ------ Print population of HBonds --------------------
+  readtrajectory(r, nsteps, natoms, xyzfilename, L);
+  BringintoBox(r, nsteps, natoms, L);
+  Assigncoordinationforpurewater(r, nsteps, natoms, L, dt);
+  population_hbonds(r, nsteps, natoms, L, dt, argv[9]);
+   ------ Print population of HBonds --------------------
+
+
   */
 
   return 0;
 }
-
-
-
-
-
-

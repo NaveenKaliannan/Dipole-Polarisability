@@ -81,6 +81,61 @@ void Printrdf(vector<Atom> &r, uint nsteps, uint natoms, const vector<float> & L
 
 
 
+void population_hbonds(vector<Atom> &r, uint nsteps, uint natoms, const vector<float> & L, float dt, string filename)
+{
+  vector<double> vec1(nsteps,0);
+  vector<double> vec2(nsteps,0);
+  vector<double> vec3(nsteps,0);
+  vector<double> vec4(nsteps,0);
+  vector<double> vec5(nsteps,0);
+
+  for(uint t = 0; t < nsteps; ++t )
+    {
+      for(uint i = 0;i < natoms;++i)
+        {
+          uint idi = natoms*t+i;
+          uint idi1 = natoms*t+i+1;
+          uint idi2 = natoms*t+i+2;
+
+          if(r[idi].symbol[0] == 'O' && r[idi+1].symbol[0] == 'H' && r[idi+2].symbol[0] == 'H')
+            {
+              if( r[idi].totalhbonds  == 1) 
+                {   
+                  vec1[t] += 1;          
+                }            
+              if(r[idi].totalhbonds == 2) 
+                {   
+                  vec2[t] += 1;            
+                }
+              if(r[idi].totalhbonds == 3) 
+                {    
+                  vec3[t] += 1;                        
+                }
+              if(r[idi].totalhbonds == 4) 
+                {     
+                  vec4[t] += 1;                       
+                }
+              if(r[idi].totalhbonds == 5) 
+                {     
+                  vec5[t] += 1;                       
+                }  
+            }
+        }
+    }
+
+  ofstream outfile_1(filename);
+  for(uint t = 0;t < nsteps;++t)
+    {
+      outfile_1 << t*dt << "   " << vec1[t] * 100 / (vec1[t] + vec2[t] + vec3[t] + vec4[t] + vec5[t] )
+                        << "   " << vec2[t] * 100 / (vec1[t] + vec2[t] + vec3[t] + vec4[t] + vec5[t] )
+                        << "   " << vec3[t] * 100 / (vec1[t] + vec2[t] + vec3[t] + vec4[t] + vec5[t] ) 
+                        << "   " << vec4[t] * 100 / (vec1[t] + vec2[t] + vec3[t] + vec4[t] + vec5[t] )
+                        << "   " << vec5[t] * 100 / (vec1[t] + vec2[t] + vec3[t] + vec4[t] + vec5[t] ) << "\n";
+    }
+  outfile_1.close();
+  outfile_1.clear();
+
+}
 
 
 
