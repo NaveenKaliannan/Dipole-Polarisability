@@ -338,6 +338,18 @@ void Print_intermolecular_coupling_btwn_translation_and_rotation(vector<Atom> &r
   uint tcfl=800/dt;
   vector<double> comacf(tcfl,0.0);
   vector<double> angacf(tcfl,0.0);
+  vector<double> comacf1_xx(tcfl,0.0);
+  vector<double> comacf1_yy(tcfl,0.0);
+  vector<double> comacf1_zz(tcfl,0.0);
+  vector<double> comacf2_xx(tcfl,0.0);
+  vector<double> comacf2_yy(tcfl,0.0);
+  vector<double> comacf2_zz(tcfl,0.0);
+  vector<double> angacf1_xx(tcfl,0.0);
+  vector<double> angacf1_yy(tcfl,0.0);
+  vector<double> angacf1_zz(tcfl,0.0);
+  vector<double> angacf2_xx(tcfl,0.0);
+  vector<double> angacf2_yy(tcfl,0.0);
+  vector<double> angacf2_zz(tcfl,0.0);
   vector<double> ccfxx(tcfl,0.0);
   vector<double> ccfyy(tcfl,0.0);
   vector<double> ccfzz(tcfl,0.0);
@@ -392,6 +404,46 @@ void Print_intermolecular_coupling_btwn_translation_and_rotation(vector<Atom> &r
             
                               ccfzx[t_] +=  (r[idj].angvz * r[id_t].comvx )/(abs(r[idj].angvz) * abs(r[id].comvx) ) ;
                               ccfzy[t_] +=  (r[idj].angvz * r[id_t].comvy )/(abs(r[idj].angvz) * abs(r[id].comvy) ) ;
+
+                              //ACF
+                              comacf1_xx[t_] += ( r[idj].comvx * r[id_t].comvx ) /
+                                                ( r[idj].comvx * r[id].comvx   )  ;
+
+                              comacf1_yy[t_] += ( r[idj].comvy * r[id_t].comvy ) /
+                                                ( r[idj].comvy * r[id].comvy   )  ;
+
+                              comacf1_zz[t_] += ( r[idj].comvz * r[id_t].comvz ) /
+                                                ( r[idj].comvz * r[id].comvz   )  ;
+
+                              angacf1_xx[t_] += ( r[idj].angvx * r[id_t].angvx ) /
+                                                ( r[idj].angvx * r[id].angvx   )  ;
+
+                              angacf1_yy[t_] += ( r[idj].angvy * r[id_t].angvy ) /
+                                                ( r[idj].angvy * r[id].angvy   )  ;
+
+                              angacf1_zz[t_] += ( r[idj].angvz * r[id_t].angvz ) /
+               				        ( r[idj].angvz * r[id].angvz   )  ;
+
+                              //CCF
+                              comacf2_xx[t_] += ( r[idj].comvx * r[id_t].comvx ) /
+                                                ( abs(r[idj].comvx) * abs(r[id].comvx)   )  ;
+
+                              comacf2_yy[t_] += ( r[idj].comvy * r[id_t].comvy ) /
+                                                ( abs(r[idj].comvy) * abs(r[id].comvy)   )  ;
+
+                              comacf2_zz[t_] += ( r[idj].comvz * r[id_t].comvz ) /
+                                                ( abs(r[idj].comvz) * abs(r[id].comvz)   )  ;
+
+                              angacf2_xx[t_] += ( r[idj].angvx * r[id_t].angvx ) /
+                                                ( abs(r[idj].angvx) * abs(r[id].angvx)   )  ;
+
+                              angacf2_yy[t_] += ( r[idj].angvy * r[id_t].angvy ) /
+                                                ( abs(r[idj].angvy) * abs(r[id].angvy)   )  ;
+
+                              angacf2_zz[t_] += ( r[idj].angvz * r[id_t].angvz ) /
+                                                ( abs(r[idj].angvz) * abs(r[id].angvz)   )  ;
+			      
+
                             }
                         }
                      }
@@ -413,7 +465,19 @@ void Print_intermolecular_coupling_btwn_translation_and_rotation(vector<Atom> &r
                                 ccfyx[t] / mean_ << "  " <<
                                 ccfyz[t] / mean_ << "  " <<
                                 ccfzx[t] / mean_ << "  " << 
-                                ccfzy[t] / mean_ << "  " << endl;
+                                ccfzy[t] / mean_ << "  " << 
+                                comacf1_xx[t] / mean_ << "  " <<
+                                comacf1_yy[t] / mean_ << "  " <<
+                                comacf1_zz[t] / mean_ << "  " <<
+                                comacf2_xx[t] / mean_ << "  " <<
+                                comacf2_yy[t] / mean_ << "  " <<
+                                comacf2_zz[t] / mean_ << "  " <<
+                                angacf1_xx[t] / mean_ << "  " <<
+                                angacf1_yy[t] / mean_ << "  " <<
+                                angacf1_zz[t] / mean_ << "  " <<
+                                angacf2_xx[t] / mean_ << "  " <<
+                                angacf2_yy[t] / mean_ << "  " <<
+                                angacf2_zz[t] / mean_ << "  " << endl;
     }
   outfile.close();
   outfile.clear();
