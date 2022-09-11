@@ -7,6 +7,9 @@ cd build
 cmake . 
 make
 
+declare -i n
+declare -i x=$1
+declare -i y=$2
 
 #./exe ../$0 traj.psf 50000 1 15.6404 384 128 ../field_atomicunit perm_polaniso  permplusDID_polaniso permplusXDID_polaniso permplusXXDID_polaniso permanet Induced total
 #./exe ../$1 traj.psf 50000 1 15.5732 381 131 ../field_atomicunit perm_polaniso  permplusDID_polaniso permplusXDID_polaniso permplusXXDID_polaniso permanet Induced total

@@ -30,6 +30,7 @@
 #include "../include/assign.h"
 #include "../include/birefriengence.h"
 #include "../include/dipolparameterization.h"
+#include "../include/cp2k.h"
 
 using namespace std;
 
@@ -57,25 +58,9 @@ int main ( int argc, char** argv )
   vector<Molecular> mol ;
   vector<Vector> E (nsteps);
 
-  readtrajectory_gro(r, nsteps, natoms, xyzfilename, L); 
+  readtrajectory(r, nsteps, natoms, xyzfilename, L); 
   BringintoBox(r, nsteps, natoms, L);
-
-  // compute com  velocity and angular velocity
-  computeatomicvelocity(r, nsteps, natoms, L, dt); 
-  computecomvelocity(r, nsteps, natoms, L, dt);
-  computecomposition(r, nsteps, natoms, L, dt);
-  computepositionmolframe(r, nsteps, natoms, L, dt);
-  computecomposition(r, nsteps, natoms, L, dt);
-  computeangularvelocity(r, nsteps, natoms, L, dt);
-
-  // Local Frame
-  Print_intramolecular_coupling_btwn_translation_and_rotation(r, nsteps, natoms, L, dt,  argv[9]);
-  Print_intermolecular_coupling_btwn_translation_and_rotation(r, nsteps, natoms, L, dt,  argv[10]);
-
-  // Molecular Frame
-  transform_angular_com_velocity_into_mol_frame(r, nsteps, natoms, L, dt);
-  Print_intramolecular_coupling_btwn_translation_and_rotation(r, nsteps, natoms, L, dt,  argv[11]);
-  Print_intermolecular_coupling_btwn_translation_and_rotation(r, nsteps, natoms, L, dt,  argv[12]);
+  Print_ALMO_data(r, nsteps, natoms, L, dt, argv[9], argv[10], argv[11]);
 
 /*
   ------ Reading different format trajectory---------
@@ -164,6 +149,13 @@ int main ( int argc, char** argv )
   Assigncoordinationforpurewater(r, nsteps, natoms, L, dt);
   population_hbonds(r, nsteps, natoms, L, dt, argv[9]);
    ------ Print population of HBonds --------------------
+
+   ------ Print HB strength as a function of time --------------------
+  readtrajectory(r, nsteps, natoms, xyzfilename, L);
+  BringintoBox(r, nsteps, natoms, L);
+  Print_ALMO_data(r, nsteps, natoms, L, dt, argv[9], argv[10], argv[11]);
+   ------ Print HB strength as a function of time --------------------
+	   
 
 
   */

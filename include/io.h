@@ -95,7 +95,10 @@ struct Atom
   uint totalhbonds;
   uint totaldonorhbonds;
   uint totalacceptorhbonds;
-  float gamma_d, gamma_a;
+  float gamma_d, gamma_a;  
+  uint D1, D2, A1, A2;
+  float ED1, ED2, EA1, EA2;
+  float CTD1, CTD2, CTA1, CTA2;
 
   /*classifywater*/
   string watertype;
