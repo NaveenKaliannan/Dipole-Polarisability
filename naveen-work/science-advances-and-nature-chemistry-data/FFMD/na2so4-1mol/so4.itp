@@ -1,0 +1,38 @@
+; SUL_GMX.top created by acpype (Rev: 0) on Tue Dec  8 15:34:14 2015
+
+;[ defaults ]
+; nbfunc        comb-rule       gen-pairs       fudgeLJ fudgeQQ
+;1               2               yes             0.5     0.8333
+
+;[ atomtypes ]
+;name   bond_type     mass     charge   ptype   sigma         epsilon       Amb
+; OSUL     OSUL        0.00000  0.00000   A     2.95992e-01   8.78640e-01 ; 1.66  0.2100
+; s6       s6          0.00000  0.00000   A     3.56359e-01   1.04600e+00 ; 2.00  0.2500
+
+[ moleculetype ]
+;name            nrexcl
+ SUL              3
+
+[ atoms ]
+;   nr  type  resi  res  atom  cgnr     charge      mass       ; qtot   bond_type
+     1   OSUL   1   SUL    O1    1    -0.837928     16.00000 ; qtot -0.838
+     2   s6     1   SUL    S1    2     1.351711     32.06000 ; qtot 0.514
+     3   OSUL   1   SUL    O3    3    -0.837928     16.00000 ; qtot -0.324
+     4   OSUL   1   SUL    O4    4    -0.837928     16.00000 ; qtot -1.162
+     5   OSUL   1   SUL    O2    5    -0.837928     16.00000 ; qtot -2.000
+
+[ bonds ]
+;   ai     aj funct   r             k
+     1      2   1    1.4360e-01    4.5279e+05 ;     O1 - S1
+     2      3   1    1.4360e-01    4.5279e+05 ;     S1 - O3
+     2      4   1    1.4360e-01    4.5279e+05 ;     S1 - O4
+     2      5   1    1.4360e-01    4.5279e+05 ;     S1 - O2
+
+[ angles ]
+;   ai     aj     ak    funct   theta         cth
+     1      2      3      1    1.1973e+02    6.2409e+02 ;     O1 - S1     - O3
+     1      2      4      1    1.1973e+02    6.2409e+02 ;     O1 - S1     - O4
+     1      2      5      1    1.1973e+02    6.2409e+02 ;     O1 - S1     - O2
+     3      2      4      1    1.1973e+02    6.2409e+02 ;     O3 - S1     - O4
+     3      2      5      1    1.1973e+02    6.2409e+02 ;     O3 - S1     - O2
+     4      2      5      1    1.1973e+02    6.2409e+02 ;     O4 - S1     - O2

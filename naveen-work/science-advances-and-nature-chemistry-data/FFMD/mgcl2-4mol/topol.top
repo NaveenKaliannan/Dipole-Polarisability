@@ -1,0 +1,19 @@
+#include "/home/naveenk/my_programs/gromacs-2020.4/bin/share/gromacs/top/amber96.ff/forcefield.itp"
+#include "/home/naveenk/my_programs/gromacs-2020.4/bin/share/gromacs/top/amber96.ff/spc.itp"
+#include "/home/naveenk/my_programs/gromacs-2020.4/bin/share/gromacs/top/amber96.ff/ions.itp"
+
+
+[ System ]
+SPC in water
+
+[ Molecules ] 
+MG                8
+CL                16
+SOL        	  101
+
+
+
+
+
+
+
