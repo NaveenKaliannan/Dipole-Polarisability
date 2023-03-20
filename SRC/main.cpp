@@ -60,7 +60,13 @@ int main ( int argc, char** argv )
 
   readtrajectory(r, nsteps, natoms, xyzfilename, L); 
   BringintoBox(r, nsteps, natoms, L);
-  Print_ALMO_data(r, nsteps, natoms, L, dt, argv[9], argv[10], argv[11]);
+  computeatomicvelocity(r, nsteps, natoms, L, dt);
+  computecomvelocity(r, nsteps, natoms, L, dt);
+  computecomposition(r, nsteps, natoms, L, dt);
+  computepositionmolframe(r, nsteps, natoms, L, dt);
+  computecomposition(r, nsteps, natoms, L, dt);
+  computeangularvelocity(r, nsteps, natoms, L, dt);  
+  Print_power_Spectra(r, nsteps,natoms,L, dt, "RAMAN_IR_SPECTRA.dat");
 
 /*
   ------ Reading different format trajectory---------
@@ -155,8 +161,19 @@ int main ( int argc, char** argv )
   BringintoBox(r, nsteps, natoms, L);
   Print_ALMO_data(r, nsteps, natoms, L, dt, argv[9], argv[10], argv[11]);
    ------ Print HB strength as a function of time --------------------
-	   
 
+
+   ------ Print power spectra, spectra of rotational and COM  --------------------
+  readtrajectory(r, nsteps, natoms, xyzfilename, L); 
+  BringintoBox(r, nsteps, natoms, L);
+  computeatomicvelocity(r, nsteps, natoms, L, dt);
+  computecomvelocity(r, nsteps, natoms, L, dt);
+  computecomposition(r, nsteps, natoms, L, dt);
+  computepositionmolframe(r, nsteps, natoms, L, dt);
+  computecomposition(r, nsteps, natoms, L, dt);
+  computeangularvelocity(r, nsteps, natoms, L, dt);  
+  Print_power_Spectra(r, nsteps,natoms,L, dt, "RAMAN_IR_SPECTRA.dat");	   
+   ------ Print power spectra, spectra of rotational and COM  --------------------
 
   */
 

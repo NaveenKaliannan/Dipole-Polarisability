@@ -11,6 +11,10 @@ declare -i n
 declare -i x=$1
 declare -i y=$2
 
+./exe /home/naveenk/temp/traj/AIMD-Equilibrium/purewater/blyp-d3-600/OHH.xyz  traj.psf 50000 0.4 15.6404 384 128 ../field_atomicunit 
+#./exe /home/naveenk/temp/traj/200ps-AMOEBA-AMBER-SPC-trajectories-Equilibirum/200ps-PFFMD-FFMD-trajectories-equibirum/gromacs/water.xyz  traj.psf 10000 1 15.6404 384 128 ../field_atomicunit 
+#./exe /home/naveenk/temp/traj/200ps-AMOEBA-AMBER-SPC-trajectories-Equilibirum/200ps-PFFMD-FFMD-trajectories-equibirum/tinker/water.xyz  traj.psf 10000 1 15.6404 384 128 ../field_atomicunit 
+
 #./exe ../$0 traj.psf 50000 1 15.6404 384 128 ../field_atomicunit perm_polaniso  permplusDID_polaniso permplusXDID_polaniso permplusXXDID_polaniso permanet Induced total
 #./exe ../$1 traj.psf 50000 1 15.5732 381 131 ../field_atomicunit perm_polaniso  permplusDID_polaniso permplusXDID_polaniso permplusXXDID_polaniso permanet Induced total
 #./exe ../$1 traj.psf 50000 1 15.6287 378 136 ../field_atomicunit perm_polaniso  permplusDID_polaniso permplusXDID_polaniso permplusXXDID_polaniso permanet Induced total

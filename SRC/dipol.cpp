@@ -14,6 +14,7 @@
 #include "../include/dipol.h"
 #include "../include/pbc.h"
 #include "../include/assign.h"
+#include "../include/velocity.h"
 
 #define ncell  1
 #define rcut 7
@@ -767,6 +768,164 @@ void PrintOpticalBirefringence(vector<Molecular> &mol, uint nsteps, uint nmol, c
   outfile.clear();
 }
 
+void computegradient(vector<Molecular> &mol, uint nsteps, uint nmol, const vector<float> & L, float dt)
+{
+  for(uint t = 1; t < nsteps-1;  t += deltat )
+    { 
+      for(uint i = 0;i < nmol;++i)
+        {
+          uint id = nmol*(t)+i; 
+          uint id1 = nmol*(t-1)+i; 
+          uint id2 = nmol*(t+1)+i; 
+
+          mol[id].GTpol.x =(mol[id2].PPol.xx + mol[id2].IPol.xx - (mol[id1].PPol.xx + mol[id1].IPol.xx))  ;
+          mol[id].GTpol.y =(mol[id2].PPol.yy + mol[id2].IPol.yy - (mol[id1].PPol.yy + mol[id1].IPol.yy))  ;
+          mol[id].GTpol.z =(mol[id2].PPol.zz + mol[id2].IPol.zz - (mol[id1].PPol.zz + mol[id1].IPol.zz))  ;
+
+          mol[id].GTD.x = (mol[id2].PD.x + mol[id2].ID.x-(mol[id1].PD.x + mol[id1].ID.x)) ;
+          mol[id].GTD.y = (mol[id2].PD.y + mol[id2].ID.y-(mol[id1].PD.y + mol[id1].ID.y)) ;
+          mol[id].GTD.z = (mol[id2].PD.z + mol[id2].ID.z-(mol[id1].PD.z + mol[id1].ID.z)) ;
+        }
+    }
+}
 
 
+void Print_IR_RAMAN_Spectra(vector<Molecular> &mol, uint nsteps, uint nmol, const vector<float> & L, float dt, string filename)
+{ 
+  computegradient(mol, nsteps, nmol, L, dt);
+  uint tcfl=1000/dt;
+  vector<double> vvacf_pol(tcfl,0.0);
+  vector<double> vvacf_r_fft_pol(Nfreq,0);
+  vector<double> vvacf_i_fft_pol(Nfreq,0);
 
+  vector<double> vvacf_dipol(tcfl,0.0);
+  vector<double> vvacf_r_fft_dipol(Nfreq,0);
+  vector<double> vvacf_i_fft_dipol(Nfreq,0);  
+  unsigned int from = 1, to = nsteps-10-tcfl;
+
+  double mean = 0;
+  for(unsigned int t = from;t < to;t=t+100)
+    { 
+      for(unsigned int i = 0;i < nmol;++i)
+        { 
+	  uint id = nmol*t+i;
+      	  mean += 1; 
+	  for(unsigned int t_ = 0;t_ < tcfl;++t_)
+     	  {
+	    uint id_t = nmol*(t+t_)+i;
+
+	    vvacf_pol[t_] =  vvacf_pol[t_] 
+	    	    + mol[id].GTpol.x * mol[id_t].GTpol.x 
+	    	    + mol[id].GTpol.y * mol[id_t].GTpol.y 
+	    	    + mol[id].GTpol.z * mol[id_t].GTpol.z ;
+
+	    vvacf_dipol[t_] =  vvacf_dipol[t_]  
+	    	    + mol[id].GTD.x * mol[id_t].GTD.x 
+	    	    + mol[id].GTD.y * mol[id_t].GTD.y 
+	    	    + mol[id].GTD.z * mol[id_t].GTD.z ;
+		      
+       	  }
+	}  	
+    }
+
+  for(unsigned int t_ = 0;t_ < tcfl;++t_)
+  {
+     vvacf_pol[t_] = vvacf_pol[t_]  / mean; 
+     vvacf_dipol[t_] = vvacf_dipol[t_] / mean; 
+  }  
+
+  FFT(vvacf_pol,vvacf_i_fft_pol,vvacf_r_fft_pol, tcfl, dt);
+  FFT(vvacf_dipol,vvacf_i_fft_dipol,vvacf_r_fft_dipol, tcfl, dt);
+
+  ofstream outfile(filename);
+  for(unsigned int freq = 0;freq < Nfreq;++freq)
+  {  
+    outfile << freq << "   " << vvacf_i_fft_pol[freq] << "   " <<  vvacf_r_fft_pol[freq] << " " << vvacf_i_fft_dipol[freq] << "   " <<  vvacf_r_fft_dipol[freq] << "\n";
+  }  
+  outfile.close();
+  outfile.clear();
+
+}
+
+
+void Print_power_Spectra(vector<Atom> &r, uint nsteps, uint natoms, const vector<float> & L, float dt, string filename)
+{
+  uint tcfl=1000/dt;
+  vector<double> vvacf(tcfl,0.0);
+  vector<double> vvacf_r_fft(Nfreq,0);
+  vector<double> vvacf_i_fft(Nfreq,0);
+
+  vector<double> vvacf_com(tcfl,0.0);
+  vector<double> vvacf_r_fft_com(Nfreq,0);
+  vector<double> vvacf_i_fft_com(Nfreq,0);  
+
+  vector<double> vvacf_ang(tcfl,0.0);
+  vector<double> vvacf_r_fft_ang(Nfreq,0);
+  vector<double> vvacf_i_fft_ang(Nfreq,0);  
+  unsigned int from = 1, to = nsteps-10-tcfl;
+
+  double mean = 0;
+  for(unsigned int t = from;t < to;t=t+100)
+    {
+      for(unsigned int i = 0;i < natoms; i += 3 )
+        {
+	  uint id = natoms*t+i;
+
+          if(r[id].symbol[0] == 'O' && r[id+1].symbol[0] == 'H' && r[id+2].symbol[0] == 'H')
+	  {
+            mean += 1;
+            for(unsigned int t_ = 0;t_ < tcfl;++t_)
+       	    {
+              uint id_t = natoms*(t+t_)+i;
+
+              vvacf[t_] =  vvacf[t_]
+              	    + r[id].vx * r[id_t].vx
+              	    + r[id].vy * r[id_t].vy
+              	    + r[id].vz * r[id_t].vz ;
+
+              vvacf[t_] =  vvacf[t_]
+              	    + r[id+1].vx * r[id_t+1].vx
+              	    + r[id+1].vy * r[id_t+1].vy
+              	    + r[id+1].vz * r[id_t+1].vz ;
+
+              vvacf[t_] =  vvacf[t_]
+              	    + r[id+2].vx * r[id_t+2].vx
+              	    + r[id+2].vy * r[id_t+2].vy
+              	    + r[id+2].vz * r[id_t+2].vz ;	      
+
+              vvacf_com[t_] =  vvacf_com[t_]
+              	    + r[id].comvx * r[id_t].comvx
+              	    + r[id].comvy * r[id_t].comvy
+              	    + r[id].comvz * r[id_t].comvz ;
+
+              vvacf_ang[t_] =  vvacf_ang[t_]
+              	    + r[id].angvx * r[id_t].angvx
+              	    + r[id].angvy * r[id_t].angvy
+              	    + r[id].angvz * r[id_t].angvz ;
+	    }
+	  }
+	}
+    }
+
+  for(unsigned int t_ = 0;t_ < tcfl;++t_)
+  {
+     vvacf[t_] = vvacf[t_] * pow(cos((PI) * t_ * dt / (nsteps * dt * 2.0)),2) / (mean * 3) ; 
+     vvacf_com[t_] = vvacf_com[t_] * pow(cos((PI) * t_ * dt / (nsteps * dt * 2.0)),2) / mean ; 
+     vvacf_ang[t_] = vvacf_ang[t_] * pow(cos((PI) * t_ * dt / (nsteps * dt * 2.0)),2) / mean ; 
+  }
+
+  FFT(vvacf,vvacf_i_fft,vvacf_r_fft, tcfl, dt);
+  FFT(vvacf_com,vvacf_i_fft_com,vvacf_r_fft_com, tcfl, dt);
+  FFT(vvacf_ang,vvacf_i_fft_ang,vvacf_r_fft_ang, tcfl, dt);
+
+  ofstream outfile(filename);
+  for(unsigned int freq = 0;freq < Nfreq;++freq)
+  {
+    outfile << freq << "   " << vvacf_i_fft[freq] << "   " <<  vvacf_r_fft[freq] <<  
+	               "   " << vvacf_i_fft_com[freq] << "   " <<  vvacf_r_fft_com[freq] << 
+	               "   " << vvacf_i_fft_ang[freq] << "   " <<  vvacf_r_fft_ang[freq] << "\n";
+  }
+  outfile.close();
+  outfile.clear();
+
+}

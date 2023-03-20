@@ -35,6 +35,9 @@ using namespace std;
 #define Kfactor 332.0637 // 8.98 E9 (permetivity of free space Nm2C-2 or JmC-2) * (1.602E-19 C) * (1.602E-19 C) / (A2)  
                         //= 8.98 E9 * sqr(1.602E-19) * 6.023E23 (to per mol) * E-3 (J to KJ) * E10 (m to angstrom)  KJ/(mol. Angstrom) = 1389.552 KJ per mol per angstrom * 0.239006 =  332.0637 Kcal per mol per angstrom
 
+#define Nfreq    5000
+#define light_vel 299792458E-13
+
 struct rank3tensor
 {
   double xxx,yyy,zzz,
@@ -123,6 +126,8 @@ struct Molecular
 
   Vector TD;    // dipole (total) 
   Matrix TPol;  // Polarisability matrix  (total)
+
+  Vector GTpol, GTD;
 
   rank3tensor hyperpol;
   rank4tensor shyperpol;
