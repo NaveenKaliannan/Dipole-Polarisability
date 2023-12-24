@@ -29,5 +29,6 @@ void TensorduetoPolarisability(vector<Molecular> &mol, uint t, uint nmol, const 
 void PrintOpticalBirefringence(vector<Molecular> &mol, uint nsteps, uint nmol, const vector<float> & L, float dt, string filename) ;
 void Print_IR_RAMAN_Spectra(vector<Molecular> &mol, uint nsteps, uint nmol, const vector<float> & L, float dt, string filename);
 void Print_power_Spectra(vector<Atom> &r, uint nsteps, uint natoms, const vector<float> & L, float dt, string filename);
+void Print_power_Spectra_intermolecular(vector<Atom> &r, uint nsteps, uint natoms, const vector<float> & L, float dt, string filename); 
 
 #endif

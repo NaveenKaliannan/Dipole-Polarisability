@@ -58,15 +58,44 @@ int main ( int argc, char** argv )
   vector<Molecular> mol ;
   vector<Vector> E (nsteps);
 
+
   readtrajectory(r, nsteps, natoms, xyzfilename, L); 
   BringintoBox(r, nsteps, natoms, L);
+   
+  /*Computer Polarizability anisotropy*/
+  readExternalfield(E, nsteps, fieldfilename);
+  TransformAtomictoMolecular(r, nsteps, natoms, L, mol, nmol);
+  PrintOpticalBirefringence(mol, nsteps, nmol, L, dt, argv[9]);
+  Induced_dipole(mol, nsteps, nmol, L, 500, E);
+  Induced_polarisability(mol, nsteps, nmol, L, 500, E);
+  PrintOpticalBirefringence(mol, nsteps, nmol, L, dt, argv[10]);
+  Induced_polarisabilityduetofirsthyperpolarizability(mol, nsteps, nmol, L, 500, E);
+  PrintOpticalBirefringence(mol, nsteps, nmol, L, dt, argv[11]);
+  Induced_polarisabilityduetosecondhyperpolarizability(mol, nsteps, nmol, L, 500, E);
+  PrintOpticalBirefringence(mol, nsteps, nmol, L, dt, argv[12]);
+
+  /*Computer velocities*/
   computeatomicvelocity(r, nsteps, natoms, L, dt);
   computecomvelocity(r, nsteps, natoms, L, dt);
   computecomposition(r, nsteps, natoms, L, dt);
   computepositionmolframe(r, nsteps, natoms, L, dt);
   computecomposition(r, nsteps, natoms, L, dt);
-  computeangularvelocity(r, nsteps, natoms, L, dt);  
-  Print_power_Spectra(r, nsteps,natoms,L, dt, "RAMAN_IR_SPECTRA.dat");
+  computeangularvelocity(r, nsteps, natoms, L, dt);
+
+  /*CCF tensor components*/
+  Print_intramolecular_coupling_btwn_translation_and_rotation(r, nsteps, natoms, L, dt,  argv[13]);
+  Print_intermolecular_coupling_btwn_translation_and_rotation(r, nsteps, natoms, L, dt,  argv[14]);
+  transform_angular_com_velocity_into_mol_frame(r, nsteps, natoms, L, dt);
+  Print_intramolecular_coupling_btwn_translation_and_rotation(r, nsteps, natoms, L, dt,  argv[15]);
+  Print_intermolecular_coupling_btwn_translation_and_rotation(r, nsteps, natoms, L, dt,  argv[16]);
+ 
+  Print_power_Spectra(r, nsteps,natoms,L, dt, argv[17]);
+  Print_power_Spectra_intermolecular(r, nsteps,natoms,L, dt, argv[18]);
+
+  PrintKEnCosine(r, nsteps, natoms, L, dt, argv[19]);
+
+  Assigncoordinationforpurewater(r, nsteps, natoms, L, dt);
+  population_hbonds(r, nsteps, natoms, L, dt, argv[20]);
 
 /*
   ------ Reading different format trajectory---------

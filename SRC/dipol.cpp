@@ -862,6 +862,43 @@ void Print_power_Spectra(vector<Atom> &r, uint nsteps, uint natoms, const vector
   vector<double> vvacf_ang(tcfl,0.0);
   vector<double> vvacf_r_fft_ang(Nfreq,0);
   vector<double> vvacf_i_fft_ang(Nfreq,0);  
+
+  vector<double> vvccf_xx(tcfl,0.0);
+  vector<double> vvccf_r_fft_xx(Nfreq,0);
+  vector<double> vvccf_i_fft_xx(Nfreq,0);
+
+  vector<double> vvccf_yy(tcfl,0.0);
+  vector<double> vvccf_r_fft_yy(Nfreq,0);
+  vector<double> vvccf_i_fft_yy(Nfreq,0);
+
+  vector<double> vvccf_zz(tcfl,0.0);
+  vector<double> vvccf_r_fft_zz(Nfreq,0);
+  vector<double> vvccf_i_fft_zz(Nfreq,0);
+
+  vector<double> vvccf_xy(tcfl,0.0);
+  vector<double> vvccf_r_fft_xy(Nfreq,0);
+  vector<double> vvccf_i_fft_xy(Nfreq,0);
+
+  vector<double> vvccf_xz(tcfl,0.0);
+  vector<double> vvccf_r_fft_xz(Nfreq,0);
+  vector<double> vvccf_i_fft_xz(Nfreq,0);
+
+  vector<double> vvccf_yx(tcfl,0.0);
+  vector<double> vvccf_r_fft_yx(Nfreq,0);
+  vector<double> vvccf_i_fft_yx(Nfreq,0);
+
+  vector<double> vvccf_yz(tcfl,0.0);
+  vector<double> vvccf_r_fft_yz(Nfreq,0);
+  vector<double> vvccf_i_fft_yz(Nfreq,0);
+
+  vector<double> vvccf_zx(tcfl,0.0);
+  vector<double> vvccf_r_fft_zx(Nfreq,0);
+  vector<double> vvccf_i_fft_zx(Nfreq,0);
+
+  vector<double> vvccf_zy(tcfl,0.0);
+  vector<double> vvccf_r_fft_zy(Nfreq,0);
+  vector<double> vvccf_i_fft_zy(Nfreq,0);
+
   unsigned int from = 1, to = nsteps-10-tcfl;
 
   double mean = 0;
@@ -902,6 +939,34 @@ void Print_power_Spectra(vector<Atom> &r, uint nsteps, uint natoms, const vector
               	    + r[id].angvx * r[id_t].angvx
               	    + r[id].angvy * r[id_t].angvy
               	    + r[id].angvz * r[id_t].angvz ;
+
+              vvccf_xx[t_] =  vvccf_xx[t_]
+                    + r[id].angvx * r[id_t].comvx ;
+
+              vvccf_yy[t_] =  vvccf_yy[t_]
+                    + r[id].angvy * r[id_t].comvy ;
+
+              vvccf_zz[t_] =  vvccf_zz[t_]
+                    + r[id].angvz * r[id_t].comvz ;
+
+              vvccf_xy[t_] =  vvccf_xy[t_]
+                    + r[id].angvx * r[id_t].comvy ;
+
+              vvccf_xz[t_] =  vvccf_xz[t_]
+                    + r[id].angvx * r[id_t].comvz ;
+
+              vvccf_yx[t_] =  vvccf_yx[t_]
+                    + r[id].angvy * r[id_t].comvx ;
+
+              vvccf_yz[t_] =  vvccf_yz[t_]
+                    + r[id].angvy * r[id_t].comvz ;
+
+              vvccf_zx[t_] =  vvccf_zx[t_]
+                    + r[id].angvz * r[id_t].comvx ;
+
+              vvccf_zy[t_] =  vvccf_zy[t_]
+                    + r[id].angvz * r[id_t].comvy ;
+
 	    }
 	  }
 	}
@@ -912,20 +977,243 @@ void Print_power_Spectra(vector<Atom> &r, uint nsteps, uint natoms, const vector
      vvacf[t_] = vvacf[t_] * pow(cos((PI) * t_ * dt / (nsteps * dt * 2.0)),2) / (mean * 3) ; 
      vvacf_com[t_] = vvacf_com[t_] * pow(cos((PI) * t_ * dt / (nsteps * dt * 2.0)),2) / mean ; 
      vvacf_ang[t_] = vvacf_ang[t_] * pow(cos((PI) * t_ * dt / (nsteps * dt * 2.0)),2) / mean ; 
+
+     vvccf_xx[t_] = vvccf_xx[t_] * pow(cos((PI) * t_ * dt / (nsteps * dt * 2.0)),2) / mean ;
+     vvccf_yy[t_] = vvccf_yy[t_] * pow(cos((PI) * t_ * dt / (nsteps * dt * 2.0)),2) / mean ;
+     vvccf_zz[t_] = vvccf_zz[t_] * pow(cos((PI) * t_ * dt / (nsteps * dt * 2.0)),2) / mean ;
+     vvccf_xy[t_] = vvccf_xy[t_] * pow(cos((PI) * t_ * dt / (nsteps * dt * 2.0)),2) / mean ;
+     vvccf_xz[t_] = vvccf_xz[t_] * pow(cos((PI) * t_ * dt / (nsteps * dt * 2.0)),2) / mean ;
+     vvccf_yx[t_] = vvccf_yx[t_] * pow(cos((PI) * t_ * dt / (nsteps * dt * 2.0)),2) / mean ;
+     vvccf_yz[t_] = vvccf_yz[t_] * pow(cos((PI) * t_ * dt / (nsteps * dt * 2.0)),2) / mean ;
+     vvccf_zx[t_] = vvccf_zx[t_] * pow(cos((PI) * t_ * dt / (nsteps * dt * 2.0)),2) / mean ;
+     vvccf_zy[t_] = vvccf_zy[t_] * pow(cos((PI) * t_ * dt / (nsteps * dt * 2.0)),2) / mean ;
   }
 
   FFT(vvacf,vvacf_i_fft,vvacf_r_fft, tcfl, dt);
   FFT(vvacf_com,vvacf_i_fft_com,vvacf_r_fft_com, tcfl, dt);
   FFT(vvacf_ang,vvacf_i_fft_ang,vvacf_r_fft_ang, tcfl, dt);
 
+  FFT(vvccf_xx,vvccf_i_fft_xx,vvccf_r_fft_xx, tcfl, dt);
+  FFT(vvccf_yy,vvccf_i_fft_yy,vvccf_r_fft_yy, tcfl, dt);
+  FFT(vvccf_zz,vvccf_i_fft_zz,vvccf_r_fft_zz, tcfl, dt);
+  FFT(vvccf_xy,vvccf_i_fft_xy,vvccf_r_fft_xy, tcfl, dt);
+  FFT(vvccf_xz,vvccf_i_fft_xz,vvccf_r_fft_xz, tcfl, dt);
+  FFT(vvccf_yx,vvccf_i_fft_yx,vvccf_r_fft_yx, tcfl, dt);
+  FFT(vvccf_yz,vvccf_i_fft_yz,vvccf_r_fft_yz, tcfl, dt);
+  FFT(vvccf_zx,vvccf_i_fft_zx,vvccf_r_fft_zx, tcfl, dt);
+  FFT(vvccf_zy,vvccf_i_fft_zy,vvccf_r_fft_zy, tcfl, dt);
+
+
   ofstream outfile(filename);
   for(unsigned int freq = 0;freq < Nfreq;++freq)
   {
     outfile << freq << "   " << vvacf_i_fft[freq] << "   " <<  vvacf_r_fft[freq] <<  
 	               "   " << vvacf_i_fft_com[freq] << "   " <<  vvacf_r_fft_com[freq] << 
-	               "   " << vvacf_i_fft_ang[freq] << "   " <<  vvacf_r_fft_ang[freq] << "\n";
+	               "   " << vvacf_i_fft_ang[freq] << "   " <<  vvacf_r_fft_ang[freq] << 
+	               "   " << vvccf_i_fft_xx[freq] << "   " <<  vvccf_r_fft_xx[freq] << 
+	               "   " << vvccf_i_fft_yy[freq] << "   " <<  vvccf_r_fft_yy[freq] << 
+	               "   " << vvccf_i_fft_zz[freq] << "   " <<  vvccf_r_fft_zz[freq] << 
+	               "   " << vvccf_i_fft_xy[freq] << "   " <<  vvccf_r_fft_xy[freq] << 
+	               "   " << vvccf_i_fft_xz[freq] << "   " <<  vvccf_r_fft_xz[freq] << 
+	               "   " << vvccf_i_fft_yx[freq] << "   " <<  vvccf_r_fft_yx[freq] << 
+	               "   " << vvccf_i_fft_yz[freq] << "   " <<  vvccf_r_fft_yz[freq] << 
+	               "   " << vvccf_i_fft_zx[freq] << "   " <<  vvccf_r_fft_zx[freq] << 
+	               "   " << vvccf_i_fft_zy[freq] << "   " <<  vvccf_r_fft_zy[freq] << "\n";
   }
   outfile.close();
   outfile.clear();
 
 }
+
+
+void Print_power_Spectra_intermolecular(vector<Atom> &r, uint nsteps, uint natoms, const vector<float> & L, float dt, string filename)
+{
+  uint tcfl=1000/dt;
+  vector<double> vvacf(tcfl,0.0);
+  vector<double> vvacf_r_fft(Nfreq,0);
+  vector<double> vvacf_i_fft(Nfreq,0);
+
+  vector<double> vvacf_com(tcfl,0.0);
+  vector<double> vvacf_r_fft_com(Nfreq,0);
+  vector<double> vvacf_i_fft_com(Nfreq,0);
+
+  vector<double> vvacf_ang(tcfl,0.0);
+  vector<double> vvacf_r_fft_ang(Nfreq,0);
+  vector<double> vvacf_i_fft_ang(Nfreq,0);
+
+  vector<double> vvccf_xx(tcfl,0.0);
+  vector<double> vvccf_r_fft_xx(Nfreq,0);
+  vector<double> vvccf_i_fft_xx(Nfreq,0);
+
+  vector<double> vvccf_yy(tcfl,0.0);
+  vector<double> vvccf_r_fft_yy(Nfreq,0);
+  vector<double> vvccf_i_fft_yy(Nfreq,0);
+
+  vector<double> vvccf_zz(tcfl,0.0);
+  vector<double> vvccf_r_fft_zz(Nfreq,0);
+  vector<double> vvccf_i_fft_zz(Nfreq,0);
+
+  vector<double> vvccf_xy(tcfl,0.0);
+  vector<double> vvccf_r_fft_xy(Nfreq,0);
+  vector<double> vvccf_i_fft_xy(Nfreq,0);
+
+  vector<double> vvccf_xz(tcfl,0.0);
+  vector<double> vvccf_r_fft_xz(Nfreq,0);
+  vector<double> vvccf_i_fft_xz(Nfreq,0);
+
+  vector<double> vvccf_yx(tcfl,0.0);
+  vector<double> vvccf_r_fft_yx(Nfreq,0);
+  vector<double> vvccf_i_fft_yx(Nfreq,0);
+
+  vector<double> vvccf_yz(tcfl,0.0);
+  vector<double> vvccf_r_fft_yz(Nfreq,0);
+  vector<double> vvccf_i_fft_yz(Nfreq,0);
+
+  vector<double> vvccf_zx(tcfl,0.0);
+  vector<double> vvccf_r_fft_zx(Nfreq,0);
+  vector<double> vvccf_i_fft_zx(Nfreq,0);
+
+  vector<double> vvccf_zy(tcfl,0.0);
+  vector<double> vvccf_r_fft_zy(Nfreq,0);
+  vector<double> vvccf_i_fft_zy(Nfreq,0);
+
+  unsigned int from = 1, to = nsteps-10-tcfl;
+
+  float  rij = 0, x = 0, y = 0, z = 0 ;
+
+  double mean_ = 0;
+  for(unsigned int t = from;t < to; t += 100)
+    { 
+      for(unsigned int i = 0;i < natoms; ++i )
+        { 
+          uint id = natoms*t+i;
+          if(r[id].symbol[0] == 'O' && r[id+1].symbol[0] == 'H' && r[id+2].symbol[0] == 'H' and abs(r[id].angvx) > 0.00001  and abs(r[id].angvy) > 0.00001 and abs(r[id].angvz) > 0.00001 and abs(r[id].comvx) > 0.00001 and abs(r[id].comvy) > 0.00001 and abs(r[id].comvz) > 0.00001 and abs(r[id].comx) < 0.00001 and abs(r[id].comy) < 0.00001 and abs(r[id].comz) < 0.00001)
+            {
+              for(uint j = 0;j < natoms;++j)
+                {
+                  uint idj = natoms*t+j;
+                  if(id != idj  && r[idj].symbol[0] == 'O' && r[idj+1].symbol[0] == 'H' && r[idj+2].symbol[0] == 'H' and abs(r[idj].angvx) > 0.00001  and abs(r[idj].angvy) > 0.00001 and abs(r[idj].angvz) > 0.00001 and abs(r[idj].comvx) > 0.00001 and abs(r[idj].comvy) > 0.00001 and abs(r[idj].comvz) > 0.00001 and abs(r[idj].comx) < 0.00001 and abs(r[idj].comy) < 0.00001 and abs(r[idj].comz) < 0.00001 )
+                    {
+                      x = min_distance(r[idj].x - r[id].x, L[0]);
+                      y = min_distance(r[idj].y - r[id].y, L[1]);
+                      z = min_distance(r[idj].z - r[id].z, L[2]);
+                      rij = mindis(x,y,z,L);
+                      if( rij < 3.5  && rij > 0 && ( angle_btwn_3points(r,id,id+1,idj, L) < 30 || angle_btwn_3points(r,id,id+2,idj, L) < 30)  )
+                        {
+                          mean_ += 1; 
+                          for(unsigned int t_ = 0;t_ < tcfl;++t_)
+                            {
+                              uint id_t = natoms*(t+t_)+i;
+
+                              vvacf[t_] =  vvacf[t_]
+                                    + r[idj].vx * r[id_t].vx
+                                    + r[idj].vy * r[id_t].vy
+                                    + r[idj].vz * r[id_t].vz ;
+
+                              vvacf[t_] =  vvacf[t_]
+                                    + r[idj+1].vx * r[id_t+1].vx
+                                    + r[idj+1].vy * r[id_t+1].vy
+                                    + r[idj+1].vz * r[id_t+1].vz ;
+
+                              vvacf[t_] =  vvacf[t_]
+                                    + r[idj+2].vx * r[id_t+2].vx
+                                    + r[idj+2].vy * r[id_t+2].vy
+                                    + r[idj+2].vz * r[id_t+2].vz ;
+
+                              vvacf_com[t_] =  vvacf_com[t_]
+                                    + r[idj].comvx * r[id_t].comvx
+                                    + r[idj].comvy * r[id_t].comvy
+                                    + r[idj].comvz * r[id_t].comvz ;
+
+                              vvacf_ang[t_] =  vvacf_ang[t_]
+                                    + r[idj].angvx * r[id_t].angvx
+                                    + r[idj].angvy * r[id_t].angvy
+                                    + r[idj].angvz * r[id_t].angvz ;
+
+                              vvccf_xx[t_] =  vvccf_xx[t_]
+                                    + r[idj].angvx * r[id_t].comvx ;
+
+                              vvccf_yy[t_] =  vvccf_yy[t_]
+                                    + r[idj].angvy * r[id_t].comvy ;
+
+                              vvccf_zz[t_] =  vvccf_zz[t_]
+                                    + r[idj].angvz * r[id_t].comvz ;
+
+                              vvccf_xy[t_] =  vvccf_xy[t_]
+                                    + r[idj].angvx * r[id_t].comvy ;
+
+                              vvccf_xz[t_] =  vvccf_xz[t_]
+                                    + r[idj].angvx * r[id_t].comvz ;
+
+                              vvccf_yx[t_] =  vvccf_yx[t_]
+                                    + r[idj].angvy * r[id_t].comvx ;
+
+                              vvccf_yz[t_] =  vvccf_yz[t_]
+                                    + r[idj].angvy * r[id_t].comvz ;
+
+                              vvccf_zx[t_] =  vvccf_zx[t_]
+                                    + r[idj].angvz * r[id_t].comvx ;
+
+                              vvccf_zy[t_] =  vvccf_zy[t_]
+                                    + r[idj].angvz * r[id_t].comvy ;
+
+                            }
+                        }
+                     }
+		}
+            }
+        }
+    }
+
+  for(unsigned int t_ = 0;t_ < tcfl;++t_)
+  {
+     vvacf[t_] = vvacf[t_] * pow(cos((PI) * t_ * dt / (nsteps * dt * 2.0)),2) / (mean_ * 3) ;
+     vvacf_com[t_] = vvacf_com[t_] * pow(cos((PI) * t_ * dt / (nsteps * dt * 2.0)),2) / mean_ ;
+     vvacf_ang[t_] = vvacf_ang[t_] * pow(cos((PI) * t_ * dt / (nsteps * dt * 2.0)),2) / mean_ ;
+
+     vvccf_xx[t_] = vvccf_xx[t_] * pow(cos((PI) * t_ * dt / (nsteps * dt * 2.0)),2) / mean_ ;
+     vvccf_yy[t_] = vvccf_yy[t_] * pow(cos((PI) * t_ * dt / (nsteps * dt * 2.0)),2) / mean_ ;
+     vvccf_zz[t_] = vvccf_zz[t_] * pow(cos((PI) * t_ * dt / (nsteps * dt * 2.0)),2) / mean_ ;
+     vvccf_xy[t_] = vvccf_xy[t_] * pow(cos((PI) * t_ * dt / (nsteps * dt * 2.0)),2) / mean_ ;
+     vvccf_xz[t_] = vvccf_xz[t_] * pow(cos((PI) * t_ * dt / (nsteps * dt * 2.0)),2) / mean_ ;
+     vvccf_yx[t_] = vvccf_yx[t_] * pow(cos((PI) * t_ * dt / (nsteps * dt * 2.0)),2) / mean_ ;
+     vvccf_yz[t_] = vvccf_yz[t_] * pow(cos((PI) * t_ * dt / (nsteps * dt * 2.0)),2) / mean_ ;
+     vvccf_zx[t_] = vvccf_zx[t_] * pow(cos((PI) * t_ * dt / (nsteps * dt * 2.0)),2) / mean_ ;
+     vvccf_zy[t_] = vvccf_zy[t_] * pow(cos((PI) * t_ * dt / (nsteps * dt * 2.0)),2) / mean_ ;
+  }
+
+  FFT(vvacf,vvacf_i_fft,vvacf_r_fft, tcfl, dt);
+  FFT(vvacf_com,vvacf_i_fft_com,vvacf_r_fft_com, tcfl, dt);
+  FFT(vvacf_ang,vvacf_i_fft_ang,vvacf_r_fft_ang, tcfl, dt);
+
+  FFT(vvccf_xx,vvccf_i_fft_xx,vvccf_r_fft_xx, tcfl, dt);
+  FFT(vvccf_yy,vvccf_i_fft_yy,vvccf_r_fft_yy, tcfl, dt);
+  FFT(vvccf_zz,vvccf_i_fft_zz,vvccf_r_fft_zz, tcfl, dt);
+  FFT(vvccf_xy,vvccf_i_fft_xy,vvccf_r_fft_xy, tcfl, dt);
+  FFT(vvccf_xz,vvccf_i_fft_xz,vvccf_r_fft_xz, tcfl, dt);
+  FFT(vvccf_yx,vvccf_i_fft_yx,vvccf_r_fft_yx, tcfl, dt);
+  FFT(vvccf_yz,vvccf_i_fft_yz,vvccf_r_fft_yz, tcfl, dt);
+  FFT(vvccf_zx,vvccf_i_fft_zx,vvccf_r_fft_zx, tcfl, dt);
+  FFT(vvccf_zy,vvccf_i_fft_zy,vvccf_r_fft_zy, tcfl, dt);
+
+
+  ofstream outfile(filename);
+  for(unsigned int freq = 0;freq < Nfreq;++freq)
+  {
+    outfile << freq << "   " << vvacf_i_fft[freq] << "   " <<  vvacf_r_fft[freq] <<
+                       "   " << vvacf_i_fft_com[freq] << "   " <<  vvacf_r_fft_com[freq] <<
+                       "   " << vvacf_i_fft_ang[freq] << "   " <<  vvacf_r_fft_ang[freq] <<
+                       "   " << vvccf_i_fft_xx[freq] << "   " <<  vvccf_r_fft_xx[freq] <<
+                       "   " << vvccf_i_fft_yy[freq] << "   " <<  vvccf_r_fft_yy[freq] <<
+                       "   " << vvccf_i_fft_zz[freq] << "   " <<  vvccf_r_fft_zz[freq] <<
+                       "   " << vvccf_i_fft_xy[freq] << "   " <<  vvccf_r_fft_xy[freq] <<
+                       "   " << vvccf_i_fft_xz[freq] << "   " <<  vvccf_r_fft_xz[freq] <<
+                       "   " << vvccf_i_fft_yx[freq] << "   " <<  vvccf_r_fft_yx[freq] <<
+                       "   " << vvccf_i_fft_yz[freq] << "   " <<  vvccf_r_fft_yz[freq] <<
+                       "   " << vvccf_i_fft_zx[freq] << "   " <<  vvccf_r_fft_zx[freq] <<
+                       "   " << vvccf_i_fft_zy[freq] << "   " <<  vvccf_r_fft_zy[freq] << "\n";
+  }
+  outfile.close();
+  outfile.clear();
+}
+
