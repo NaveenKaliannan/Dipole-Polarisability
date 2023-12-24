@@ -59,7 +59,7 @@ int main ( int argc, char** argv )
   vector<Vector> E (nsteps);
 
 
-  readtrajectory(r, nsteps, natoms, xyzfilename, L); 
+  readtrajectory_gro(r, nsteps, natoms, xyzfilename, L); 
   BringintoBox(r, nsteps, natoms, L);
    
   /*Computer Polarizability anisotropy*/
