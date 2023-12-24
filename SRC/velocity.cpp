@@ -947,6 +947,8 @@ void PrintKEnCosine(vector<Atom> &r, uint nsteps, uint natoms, const vector<floa
       if(total_KE_rem[t] == 0)    {total_KE_rem[t]    = 1;}
       if(total_KE_oxygen[t] == 0) {total_KE_oxygen[t]    = 1;}
 
+	    //total_KE[t] * 2  * 315775.326864 / (3*384) to Kelvin. KE is in Hartree Units
+
       outfile << t*dt << "  " << total_KE[t]       << "  " << trans_KE[t] / total_KE[t]               << "  " << rot_KE[t] / total_KE[t]               << "   " << 
                                 total_KE_cation[t] << "  " << trans_KE_cation[t] / total_KE_cation[t] << "  " << rot_KE_cation[t] / total_KE_cation[t] << "   " <<
                                 total_KE_anion[t]  << "  " << trans_KE_anion[t] / total_KE_anion[t]   << "  " << rot_KE_anion[t] / total_KE_anion[t]   << "   " <<
