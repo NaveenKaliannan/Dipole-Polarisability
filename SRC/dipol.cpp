@@ -974,19 +974,19 @@ void Print_power_Spectra(vector<Atom> &r, uint nsteps, uint natoms, const vector
 
   for(unsigned int t_ = 0;t_ < tcfl;++t_)
   {
-     vvacf[t_] = vvacf[t_] * pow(cos((PI) * t_ * dt / (nsteps * dt * 2.0)),2) / (mean * 3) ; 
-     vvacf_com[t_] = vvacf_com[t_] * pow(cos((PI) * t_ * dt / (nsteps * dt * 2.0)),2) / mean ; 
-     vvacf_ang[t_] = vvacf_ang[t_] * pow(cos((PI) * t_ * dt / (nsteps * dt * 2.0)),2) / mean ; 
+     vvacf[t_] = vvacf[t_] * pow(cos((PI) * t_ * dt / (tcfl * dt * 2.0)),2) / (mean * 3) ; 
+     vvacf_com[t_] = vvacf_com[t_] * pow(cos((PI) * t_ * dt / (tcfl * dt * 2.0)),2) / mean ; 
+     vvacf_ang[t_] = vvacf_ang[t_] * pow(cos((PI) * t_ * dt / (tcfl * dt * 2.0)),2) / mean ; 
 
-     vvccf_xx[t_] = vvccf_xx[t_] * pow(cos((PI) * t_ * dt / (nsteps * dt * 2.0)),2) / mean ;
-     vvccf_yy[t_] = vvccf_yy[t_] * pow(cos((PI) * t_ * dt / (nsteps * dt * 2.0)),2) / mean ;
-     vvccf_zz[t_] = vvccf_zz[t_] * pow(cos((PI) * t_ * dt / (nsteps * dt * 2.0)),2) / mean ;
-     vvccf_xy[t_] = vvccf_xy[t_] * pow(cos((PI) * t_ * dt / (nsteps * dt * 2.0)),2) / mean ;
-     vvccf_xz[t_] = vvccf_xz[t_] * pow(cos((PI) * t_ * dt / (nsteps * dt * 2.0)),2) / mean ;
-     vvccf_yx[t_] = vvccf_yx[t_] * pow(cos((PI) * t_ * dt / (nsteps * dt * 2.0)),2) / mean ;
-     vvccf_yz[t_] = vvccf_yz[t_] * pow(cos((PI) * t_ * dt / (nsteps * dt * 2.0)),2) / mean ;
-     vvccf_zx[t_] = vvccf_zx[t_] * pow(cos((PI) * t_ * dt / (nsteps * dt * 2.0)),2) / mean ;
-     vvccf_zy[t_] = vvccf_zy[t_] * pow(cos((PI) * t_ * dt / (nsteps * dt * 2.0)),2) / mean ;
+     vvccf_xx[t_] = vvccf_xx[t_] * pow(cos((PI) * t_ * dt / (tcfl * dt * 2.0)),2) / mean ;
+     vvccf_yy[t_] = vvccf_yy[t_] * pow(cos((PI) * t_ * dt / (tcfl * dt * 2.0)),2) / mean ;
+     vvccf_zz[t_] = vvccf_zz[t_] * pow(cos((PI) * t_ * dt / (tcfl * dt * 2.0)),2) / mean ;
+     vvccf_xy[t_] = vvccf_xy[t_] * pow(cos((PI) * t_ * dt / (tcfl * dt * 2.0)),2) / mean ;
+     vvccf_xz[t_] = vvccf_xz[t_] * pow(cos((PI) * t_ * dt / (tcfl * dt * 2.0)),2) / mean ;
+     vvccf_yx[t_] = vvccf_yx[t_] * pow(cos((PI) * t_ * dt / (tcfl * dt * 2.0)),2) / mean ;
+     vvccf_yz[t_] = vvccf_yz[t_] * pow(cos((PI) * t_ * dt / (tcfl * dt * 2.0)),2) / mean ;
+     vvccf_zx[t_] = vvccf_zx[t_] * pow(cos((PI) * t_ * dt / (tcfl * dt * 2.0)),2) / mean ;
+     vvccf_zy[t_] = vvccf_zy[t_] * pow(cos((PI) * t_ * dt / (tcfl * dt * 2.0)),2) / mean ;
   }
 
   FFT(vvacf,vvacf_i_fft,vvacf_r_fft, tcfl, dt);
@@ -1167,19 +1167,19 @@ void Print_power_Spectra_intermolecular(vector<Atom> &r, uint nsteps, uint natom
 
   for(unsigned int t_ = 0;t_ < tcfl;++t_)
   {
-     vvacf[t_] = vvacf[t_] * pow(cos((PI) * t_ * dt / (nsteps * dt * 2.0)),2) / (mean_ * 3) ;
-     vvacf_com[t_] = vvacf_com[t_] * pow(cos((PI) * t_ * dt / (nsteps * dt * 2.0)),2) / mean_ ;
-     vvacf_ang[t_] = vvacf_ang[t_] * pow(cos((PI) * t_ * dt / (nsteps * dt * 2.0)),2) / mean_ ;
+     vvacf[t_] = vvacf[t_] * pow(cos((PI) * t_ * dt / (tcfl * dt * 2.0)),2) / (mean_ * 3) ;
+     vvacf_com[t_] = vvacf_com[t_] * pow(cos((PI) * t_ * dt / (tcfl * dt * 2.0)),2) / mean_ ;
+     vvacf_ang[t_] = vvacf_ang[t_] * pow(cos((PI) * t_ * dt / (tcfl * dt * 2.0)),2) / mean_ ;
 
-     vvccf_xx[t_] = vvccf_xx[t_] * pow(cos((PI) * t_ * dt / (nsteps * dt * 2.0)),2) / mean_ ;
-     vvccf_yy[t_] = vvccf_yy[t_] * pow(cos((PI) * t_ * dt / (nsteps * dt * 2.0)),2) / mean_ ;
-     vvccf_zz[t_] = vvccf_zz[t_] * pow(cos((PI) * t_ * dt / (nsteps * dt * 2.0)),2) / mean_ ;
-     vvccf_xy[t_] = vvccf_xy[t_] * pow(cos((PI) * t_ * dt / (nsteps * dt * 2.0)),2) / mean_ ;
-     vvccf_xz[t_] = vvccf_xz[t_] * pow(cos((PI) * t_ * dt / (nsteps * dt * 2.0)),2) / mean_ ;
-     vvccf_yx[t_] = vvccf_yx[t_] * pow(cos((PI) * t_ * dt / (nsteps * dt * 2.0)),2) / mean_ ;
-     vvccf_yz[t_] = vvccf_yz[t_] * pow(cos((PI) * t_ * dt / (nsteps * dt * 2.0)),2) / mean_ ;
-     vvccf_zx[t_] = vvccf_zx[t_] * pow(cos((PI) * t_ * dt / (nsteps * dt * 2.0)),2) / mean_ ;
-     vvccf_zy[t_] = vvccf_zy[t_] * pow(cos((PI) * t_ * dt / (nsteps * dt * 2.0)),2) / mean_ ;
+     vvccf_xx[t_] = vvccf_xx[t_] * pow(cos((PI) * t_ * dt / (tcfl * dt * 2.0)),2) / mean_ ;
+     vvccf_yy[t_] = vvccf_yy[t_] * pow(cos((PI) * t_ * dt / (tcfl * dt * 2.0)),2) / mean_ ;
+     vvccf_zz[t_] = vvccf_zz[t_] * pow(cos((PI) * t_ * dt / (tcfl * dt * 2.0)),2) / mean_ ;
+     vvccf_xy[t_] = vvccf_xy[t_] * pow(cos((PI) * t_ * dt / (tcfl * dt * 2.0)),2) / mean_ ;
+     vvccf_xz[t_] = vvccf_xz[t_] * pow(cos((PI) * t_ * dt / (tcfl * dt * 2.0)),2) / mean_ ;
+     vvccf_yx[t_] = vvccf_yx[t_] * pow(cos((PI) * t_ * dt / (tcfl * dt * 2.0)),2) / mean_ ;
+     vvccf_yz[t_] = vvccf_yz[t_] * pow(cos((PI) * t_ * dt / (tcfl * dt * 2.0)),2) / mean_ ;
+     vvccf_zx[t_] = vvccf_zx[t_] * pow(cos((PI) * t_ * dt / (tcfl * dt * 2.0)),2) / mean_ ;
+     vvccf_zy[t_] = vvccf_zy[t_] * pow(cos((PI) * t_ * dt / (tcfl * dt * 2.0)),2) / mean_ ;
   }
 
   FFT(vvacf,vvacf_i_fft,vvacf_r_fft, tcfl, dt);
